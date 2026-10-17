@@ -5,6 +5,7 @@ type TodayMessages = {
   greetings: Record<'morning' | 'afternoon' | 'evening', string>;
   profile: string;
   orangeBalanceLabel: (balance: number, formattedBalance: string) => string;
+  orangeBalanceUnavailable: string;
   calories: string;
   consumed: string;
   remaining: string;
@@ -35,6 +36,7 @@ type TodayMessages = {
 
 const messages = {
   ru: {
+    orangeBalanceUnavailable: 'Баланс пока недоступен',
     greetings: { morning: 'Доброе утро', afternoon: 'Добрый день', evening: 'Добрый вечер' },
     profile: 'Открыть профиль', calories: 'Калории', consumed: 'ккал съедено',
     orangeBalanceLabel: (balance: number, formattedBalance: string) => {
@@ -60,6 +62,7 @@ const messages = {
     dismiss: 'Понятно',
   },
   en: {
+    orangeBalanceUnavailable: 'Balance is currently unavailable',
     greetings: { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' },
     profile: 'Open profile', calories: 'Calories', consumed: 'kcal eaten',
     orangeBalanceLabel: (balance: number, formattedBalance: string) => `Balance: ${formattedBalance} ${balance === 1 ? 'orange' : 'oranges'}`,

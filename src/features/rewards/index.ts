@@ -8,3 +8,8 @@ export type {
   OrangeLedgerEntry, RewardEvent, RewardEventType, RewardGrant, RewardGrantResult, RewardRule, RewardRules,
 } from './domain/types';
 export { rewardsMock } from './model/rewardsMock';
+export { createOrangeWalletService } from './application/OrangeWalletService';
+export type { OrangeWalletService } from './application/OrangeWalletService';
+export { createInitialWallet, decodeOrangeWallet, getWalletSnapshot } from './application/OrangeWallet';
+export type { OrangeWalletMode, OrangeWalletState, OrangeWalletSnapshot, OrangeWalletError, WalletResult } from './application/OrangeWallet';
+export type { OrangeWalletRepository } from './application/OrangeWalletRepository';

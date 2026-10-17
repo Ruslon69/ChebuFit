@@ -8,10 +8,13 @@ const ts = require('typescript');
 const project = path.resolve(__dirname, '..');
 const output = mkdtempSync(path.join(tmpdir(), 'chebufit-rewards-test-'));
 try {
-  const program = ts.createProgram([path.join(project, 'src/features/rewards/index.ts')], {
+  const program = ts.createProgram([
+    path.join(project, 'src/features/rewards/index.ts'),
+    path.join(project, 'src/infrastructure/rewards/KeyValueOrangeWalletRepository.ts'),
+  ], {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS,
     strict: true, skipLibCheck: true, noEmitOnError: true,
-    types: [], outDir: output,
+    types: [], rootDir: path.join(project, 'src'), outDir: output,
   });
   const emitted = program.emit();
   const diagnostics = [...ts.getPreEmitDiagnostics(program), ...emitted.diagnostics];
@@ -22,8 +25,12 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const result = spawnSync(process.execPath, ['--test', path.join(project, 'tests/rewards.test.cjs')], {
-      stdio: 'inherit', env: { ...process.env, CHEBUFIT_REWARDS_BUILD: output },
+    const testFiles = process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
+      stdio: 'inherit', env: {
+        ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),
+        CHEBUFIT_WALLET_ADAPTER_BUILD: path.join(output, 'infrastructure/rewards/KeyValueOrangeWalletRepository.js'),
+      },
     });
     if (result.error) console.error(result.error);
     process.exitCode = result.status ?? 1;

@@ -10,16 +10,19 @@
   application composition will choose adapters and supply them to use cases.
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress,rewards}` owns each
   product domain. `src/features/today` composes the daily overview presentation from
-  a typed `TodayViewModel` and centralized mock fixture. Its fixture receives the
-  mock orange balance through the rewards public API; its UI has no reward operations.
+  a typed `TodayViewModel` and mock dashboard fixture. The Today route overrides
+  the fixture balance from `src/application/rewards/useOrangeWallet`; its UI has no
+  reward operations. Loading/errors show an unavailable balance, never a fake zero.
 - `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
   stable local-day/week and lifetime identities, caps, qualified active-day
   milestones, welcome eligibility, and integer ledger calculation. Its public
   `index.ts` exposes contracts and a separate mock fixture. See its `README.md`
   for identity rules and the future atomic persistence requirements. Approved
   amounts and pricing guidance are documented in `docs/ORANGE_ECONOMY_V1.md`.
-- `src/application` contains application UI shared across routes, currently the
-  global Quick Add preview modal. Keep it outside the file-based route directory.
+- `src/features/rewards/application` owns the wallet schema, repository port, and
+  serialized wallet service. No React/native/storage SDK imports belong there.
+- `src/application` composes the AsyncStorage wallet adapter/service and React hook,
+  alongside application UI shared across routes such as the Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
 - `src/shared/theme` contains semantic light-theme design tokens, with no runtime React dependency.
 - `src/shared/config` exposes non-secret application defaults. The display name
@@ -30,7 +33,9 @@
   tooling when real localized features need it. Never translate stored domain IDs.
 - `src/shared/utils` and `src/shared/types` document homes for genuinely shared
   pure helpers/contracts. They have no speculative implementations yet.
-- `src/infrastructure` is reserved for concrete external adapters. Root `assets/`
+- `src/infrastructure/rewards` implements the wallet repository through a narrow
+  key-value port, supplied with AsyncStorage in application composition. Other
+  `src/infrastructure` integrations are added when needed. Root `assets/`
   continues to hold Expo app icons; future exercise media belongs with workouts.
 
 ## Dependency direction
@@ -59,8 +64,11 @@ network calls or platform APIs through domain code or UI components.
 
 Client configuration is public in a mobile bundle. Keep server secrets out of
 client code and Expo configuration even when their source `.env` file is ignored.
-Offline persistence and sync policy will be designed with the first persisted
-feature; there is no database or generic repository abstraction yet.
+The orange wallet is the first local persisted feature: one schema-v1 JSON record
+per demo/real namespace, with canonical ledger plus an explicit demo seed. There is
+no database, generic repository base class, or cloud sync policy. Its in-process
+queue protects local operations; future backend writes must enforce identity, caps,
+ledger, and balance updates atomically. Local storage is not a security boundary.
 
 ## Domain constraints to carry forward
 
@@ -86,12 +94,13 @@ showcase is reachable through a development-only route/header control, outside t
 Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
 changes stay in component state and reset when the screen remounts. The Today
 header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
-profile-side column. Its orange balance comes from `rewards/model/rewardsMock.ts`.
-The rewards engine is independently tested and not connected to feature actions;
-there are no persisted transactions, reward notifications, or store.
+profile-side column. Its orange balance is asynchronously reconstructed from the
+local wallet. Development uses an explicit 248 demo opening credit and empty ledger;
+real-mode wallets start at zero in a separate namespace. No feature actions earn
+rewards yet, and there are no reward notifications or store.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
-No real product data, service clients, storage, authentication, or watch target exists.
+No other product persistence, network service clients, authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
 

@@ -16,6 +16,7 @@ Use Node.js 24 and npm. Install the locked dependencies with `npm ci`.
 - `npm run ios`: start Expo and open an iOS Simulator.
 - `npm run android`: start Expo and open an Android emulator.
 - `npm run typecheck`: validate TypeScript without generating files.
+- `npm run test:wallet`: validate local wallet persistence and application operations.
 - `npm run test:rewards`: run the pure orange-rewards domain tests with Node's built-in runner.
 - `node scripts/simulate-orange-economy.cjs`: verify the approved economy and projections.
 - `npx expo install --check`: check dependency compatibility with the Expo SDK.
@@ -35,4 +36,6 @@ The display name is `ChebuFit` and the Expo slug is `chebufit`.
 confirm ownership and final identifiers before configuring signing or releases.
 
 Environment files, credentials, dependencies, and generated native projects are
-excluded from Git. No backend, authentication, persistence, or watchOS target is configured.
+excluded from Git. The orange wallet persists locally with AsyncStorage; development
+uses an explicit 248 demo seed, while real mode starts at zero. No backend,
+authentication, or watchOS target is configured.

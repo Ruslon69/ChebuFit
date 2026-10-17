@@ -179,8 +179,11 @@ uniqueness. Retain successful grants and original local-day/week attribution aft
 source deletion, edits, reinstall, and retries. Eligibility from producing features
 still needs authoritative validation; this pure client domain is not a backend.
 
-No UI action earns currency yet. Today still reads mock 248 from rewards and is
-visually unchanged. There is no storage, auth, store, wardrobe, or animation work.
+No UI action earns currency yet. Today reads a local schema-v1 wallet with an
+explicit development seed of 248 (not earned grants) and remains visually unchanged.
+Real-mode wallets start at zero in a separate namespace. Local persistence uses
+AsyncStorage with an in-process queue; future server atomicity is still required.
+There is no auth, store, wardrobe, or animation work.
 
 Reproduce with `node scripts/simulate-orange-economy.cjs`; `--write` refreshes the
 calculated block. The script uses only Node built-ins, reads the production rule

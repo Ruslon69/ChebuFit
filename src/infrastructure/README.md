@@ -1,9 +1,10 @@
 # Infrastructure
 
-Add concrete integrations here when a feature needs one: backend/auth clients,
-food database providers, local persistence, and a future watch transport bridge.
-Adapters implement interfaces owned by the consuming feature and map external
-payloads to domain types. The application root supplies these implementations.
+`rewards/KeyValueOrangeWalletRepository.ts` implements the rewards-owned repository
+using one versioned JSON value per demo/real wallet key. Application composition
+supplies AsyncStorage through a narrow port; tests supply a memory-backed port.
+Validation/schema handling belongs to the rewards application boundary.
 
-No service client, repository base class, dependency-injection container, or
-transport is needed for the current placeholder.
+Add backend/auth, food-provider, other local persistence, or watch transport adapters
+when their consuming feature needs them. Keep external payloads and SDKs out of
+pure domain/application rules. No generic repository base class or DI container.

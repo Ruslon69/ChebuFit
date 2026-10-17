@@ -83,15 +83,58 @@ Balances and entry amounts are safe integers. Pure ledger replay rejects fractio
 negative/zero amounts, duplicate IDs/credits, overflow, and overdrafts. Minimal
 future cosmetic debit types exist; there is no purchase operation or catalog.
 
-Future persistence must atomically enforce wallet-scoped reward/event/grant identity
+Future server persistence must atomically enforce wallet-scoped reward/event/grant identity
 uniqueness, daily/weekly caps, welcome/milestone uniqueness, ledger insertion, and
 balance update. Retain grants/identity records after source deletion, edits,
 reinstall, and retries. Concurrent evaluation alone cannot serialize writes.
 Producing features and future authoritative validation must verify actual action
 eligibility and preserve original local attribution; client logic is not a server
-security boundary. No storage adapter is implemented here.
+security boundary. Local persistence is described below.
 
-Today still imports `rewardsMock.orangeBalance` (248); no UI action executes rewards.
-Run `npm run test:rewards` for the actual domain tests and
+## Local wallet foundation
+
+`application/OrangeWalletRepository.ts` owns `load`/`save`. Infrastructure implements
+it in `src/infrastructure/rewards/KeyValueOrangeWalletRepository.ts`; composition
+injects AsyncStorage 2.2.0 through a narrow key-value port. This purpose-built small
+key-value store is included in Expo Go for SDK 58. Only a transitive file-system
+API existed before; using AsyncStorage avoids implementing a file replacement layer.
+See [Expo's SDK 58 reference](https://docs.expo.dev/versions/v58.0.0/sdk/async-storage/).
+It is unencrypted local data, not an anti-cheat or credential store.
+
+Schema v1 stores `{ schemaVersion, seed, ledger, createdAt, updatedAt }`. Balance
+is replayed from the ledger plus the explicit opening credit; grant entries retain
+identities and qualified active-day dates. No separate balance, processed-ID list,
+or active-day counter can drift. `decodeOrangeWallet` is the future migration
+boundary. Unknown versions, malformed JSON, invalid ledger entries, duplicate IDs,
+and invalid balances return typed errors without replacing the stored record.
+
+Development uses key `@chebufit/orange-wallet/developmentDemo`, an explicit seed of
+248, and no fabricated grants. Non-development builds use the separate `real` key,
+with zero opening credit. Never promote demo state into a real account. The Today
+route reads the asynchronous application hook; a pending/unavailable balance is a
+dash, not an incorrect zero. No UI action calls reward processing.
+
+`createOrangeWalletService(repository, { now, allowDevelopmentReset? })` exposes
+`loadWallet`, `processRewardEvent`, `subscribe`, and `resetForDevelopment`.
+All load/evaluate/append/save steps are serialized by repository key across service
+instances in one JS runtime. A declined event writes nothing. A successful grant
+is published/returned only after one complete-record save. A failed write returns
+an error, not a claimed grant; subsequent operations reload storage. Subscriber
+errors do not invalidate committed saves.
+
+`resetForDevelopment()` replaces only the demo record with its initial seed and
+empty ledger; both the development flag and demo mode are required. Composition
+enables it only under `__DEV__`; there is no reset UI. Tests use it after temporary
+service-level validation grants. React/UI state and dashboard mock data are not persisted.
+
+This is **single-device, single-JS-process protection**, not a database transaction,
+crash-proof multi-write protocol, cross-process lock, cloud sync, or protection from
+malicious modification. Always mutate through the shared service. Retained history
+will grow: AsyncStorage's native size limits require a migration strategy before
+large lifetime histories; do not prune identity/milestone evidence to save space.
+Future account/backend storage must enforce the atomic requirements above.
+
+Run `npm run test:wallet` for the repository/application tests,
+`npm run test:rewards` for the actual domain tests and
 `node scripts/simulate-orange-economy.cjs` for approved-config/math/report checks.
-Both use existing tooling; no new packages were added.
+Tests use the existing TypeScript compiler and Node runner; AsyncStorage is the only added direct runtime dependency.

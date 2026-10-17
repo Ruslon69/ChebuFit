@@ -6,7 +6,7 @@ export type TodayViewModel = {
   greeting: 'morning' | 'afternoon' | 'evening';
   name: string;
   date: string;
-  orangeBalance: number;
+  orangeBalance: number | null;
   calories: { consumed: number; target: number };
   macros: ReadonlyArray<{ id: MacroId; consumed: number; target: number }>;
   water: { consumedMl: number; targetMl: number; portionMl: number };

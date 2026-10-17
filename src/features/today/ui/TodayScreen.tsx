@@ -33,8 +33,8 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
         name={model.name}
         date={format.date(model.date)}
         profileLabel={copy.profile}
-        orangeBalance={format.number(model.orangeBalance)}
-        orangeBalanceLabel={copy.orangeBalanceLabel(model.orangeBalance, format.number(model.orangeBalance))}
+        orangeBalance={model.orangeBalance === null ? '—' : format.number(model.orangeBalance)}
+        orangeBalanceLabel={model.orangeBalance === null ? copy.orangeBalanceUnavailable : copy.orangeBalanceLabel(model.orangeBalance, format.number(model.orangeBalance))}
         onOpenProfile={() => preview(copy.profilePreview)}
         onOpenDesignSystem={onOpenDesignSystem}
         artwork={headerArtwork ?? (
