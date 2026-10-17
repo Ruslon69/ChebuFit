@@ -33,7 +33,9 @@ export function TodayHeader({ greeting, name, date, profileLabel, orangeBalance,
         </View>
       </View>
       <View style={[styles.aside, artwork && styles.withArtwork]}>
-        <IconButton icon="profile" label={profileLabel} onPress={onOpenProfile} onLongPress={onOpenDesignSystem} testID="today-profile" />
+        <View style={styles.profile}>
+          <IconButton icon="profile" label={profileLabel} onPress={onOpenProfile} onLongPress={onOpenDesignSystem} testID="today-profile" />
+        </View>
         {artwork && (
           <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.artwork} testID="today-mascot-container">
             {artwork}
@@ -47,9 +49,10 @@ export function TodayHeader({ greeting, name, date, profileLabel, orangeBalance,
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: tokens.spacing.lg },
   greeting: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: tokens.spacing.xs },
-  aside: { alignItems: 'flex-end', gap: tokens.spacing.sm },
-  // Bound the decorative column on larger screens without fixing the text width.
-  withArtwork: { width: '28%', maxWidth: tokens.size.floatingControl * 2 },
+  aside: { alignItems: 'flex-end', alignSelf: 'stretch', justifyContent: 'flex-end', minWidth: tokens.size.touchTarget },
+  profile: { position: 'absolute', top: 0, right: 0 },
+  // Keep the profile clear above a larger mascot anchored to the hero's lower edge.
+  withArtwork: { width: '40%', maxWidth: tokens.spacing.section * 4, paddingTop: tokens.size.touchTarget + tokens.spacing.sm },
   artwork: { width: '100%', aspectRatio: 1 },
   date: { marginTop: tokens.spacing.xs },
   wallet: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', maxWidth: '100%', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm, paddingVertical: tokens.spacing.sm, paddingHorizontal: tokens.spacing.md, borderRadius: tokens.radii.pill, backgroundColor: tokens.colors.primarySubtle },
