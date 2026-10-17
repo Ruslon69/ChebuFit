@@ -77,8 +77,11 @@ The root renders a four-tab navigation shell and a separate onboarding placehold
 Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/development`
 showcase is reachable through a development-only route/header control, outside tabs.
 Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
-changes stay in component state and reset when the screen remounts. Meals/history
-open existing tabs; workout/profile and Quick Add actions are explicit previews.
+changes stay in component state and reset when the screen remounts. The Today
+header accepts optional decorative artwork in its profile-side column; it renders
+no artwork or reserved empty illustration space until an asset is supplied.
+Meals/history open existing tabs; workout/profile and Quick Add actions remain
+unconnected previews.
 No real product data, service clients, storage, authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.

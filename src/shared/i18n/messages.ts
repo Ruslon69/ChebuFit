@@ -17,7 +17,7 @@ type Messages = {
     close: string;
     title: string;
     subtitle: string;
-    preview: string;
+    actionHint: string;
     actions: Record<'food' | 'barcode' | 'water' | 'workout' | 'weight' | 'measurement', string>;
   };
 };
@@ -26,7 +26,7 @@ const translations = {
   en: {
     quickAdd: {
       open: 'Quick add', close: 'Close quick add', title: 'Quick add',
-      subtitle: 'Choose an action for your day.', preview: 'Preview only. This action will be available in a later stage.',
+      subtitle: 'Choose an action for your day.', actionHint: 'This action is not available yet.',
       actions: { food: 'Add food', barcode: 'Scan a product', water: 'Add water', workout: 'Add a workout', weight: 'Add weight', measurement: 'Add a measurement' },
     },
     navigation: {
@@ -42,7 +42,7 @@ const translations = {
   ru: {
     quickAdd: {
       open: 'Быстро добавить', close: 'Закрыть быстрые действия', title: 'Быстро добавить',
-      subtitle: 'Всё нужное для вашего дня.', preview: 'Предпросмотр. Это действие появится на следующем этапе.',
+      subtitle: 'Всё нужное для вашего дня.', actionHint: 'Действие пока недоступно.',
       actions: { food: 'Добавить еду', barcode: 'Сканировать продукт', water: 'Добавить воду', workout: 'Добавить тренировку', weight: 'Добавить вес', measurement: 'Добавить замер' },
     },
     navigation: {

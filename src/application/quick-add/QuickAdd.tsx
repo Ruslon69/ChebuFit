@@ -22,7 +22,6 @@ export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
   const { quickAdd: copy } = useMessages();
   const insets = useSafeAreaInsets();
   const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
   const headingRef = useRef<ComponentRef<typeof View>>(null);
   const triggerRef = useRef<ComponentRef<typeof View>>(null);
   const focus = (view: ComponentRef<typeof View> | null) => {
@@ -36,7 +35,7 @@ export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
     <>
       <View pointerEvents="box-none" style={[styles.floating, { bottom: tabBarHeight + tokens.spacing.lg, right: insets.right + tokens.spacing.page }]}>
         <View style={tokens.elevation.card}>
-          <IconButton ref={triggerRef} icon="plus" label={copy.open} variant="primary" size="large" onPress={() => { setSelected(null); setVisible(true); }} testID="quick-add-open" />
+          <IconButton ref={triggerRef} icon="plus" label={copy.open} variant="primary" size="large" onPress={() => setVisible(true)} testID="quick-add-open" />
         </View>
       </View>
       <Modal
@@ -68,8 +67,8 @@ export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
                   key={action.id}
                   accessibilityRole="button"
                   accessibilityLabel={copy.actions[action.id]}
-                  accessibilityHint={copy.preview}
-                  onPress={() => setSelected(copy.actions[action.id])}
+                  accessibilityHint={copy.actionHint}
+                  onPress={() => { /* Entry flows will be connected in their feature tasks. */ }}
                   style={({ pressed }) => [styles.action, { backgroundColor: pressed ? tokens.colors.primarySubtle : tokens.colors.surface }]}
                   testID={`quick-add-${action.id}`}
                 >
@@ -78,9 +77,6 @@ export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
                   <Icon name="chevron" size="small" />
                 </Pressable>
               ))}
-              <AppText variant="caption" tone="textSecondary" accessibilityLiveRegion="polite" testID="quick-add-preview">
-                {selected ? `${selected}. ${copy.preview}` : copy.preview}
-              </AppText>
             </ScrollView>
           </View>
         </View>

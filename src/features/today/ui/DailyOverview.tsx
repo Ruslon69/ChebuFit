@@ -52,9 +52,12 @@ export function MealsOverview({ meals, onOpen, copy, format }: Presentation & {
           {meals.map((meal, index) => (
             <Fragment key={meal.id}>
               {index > 0 && <Divider />}
-              <View style={styles.row} accessible accessibilityLabel={`${copy.meals[meal.id]}, ${format.number(meal.calories)} ${copy.kcal}`}>
-                <AppText>{copy.meals[meal.id]}</AppText>
-                <AppText variant="bodySecondary" tone="textSecondary">{format.number(meal.calories)} {copy.kcal}</AppText>
+              <View style={[styles.row, styles.mealRow]} accessible accessibilityLabel={`${copy.meals[meal.id]}, ${format.number(meal.calories)} ${copy.kcal}`}>
+                <AppText style={styles.mealName}>{copy.meals[meal.id]}</AppText>
+                <View style={styles.mealCalories}>
+                  <AppText variant="cardTitle">{format.number(meal.calories)}</AppText>
+                  <AppText variant="caption" tone="textSecondary">{copy.kcal}</AppText>
+                </View>
               </View>
             </Fragment>
           ))}
@@ -70,12 +73,14 @@ export function WorkoutCard({ workout, onStart, copy }: { workout: TodayViewMode
       <SectionHeader title={copy.workout} />
       <Card>
         <View style={styles.content}>
-          <AppText variant="cardTitle">{workout.title}</AppText>
-          <View style={styles.workoutMeta}>
-            <Icon name="workouts" size="small" />
-            <AppText variant="bodySecondary" tone="textSecondary">{copy.workoutDetails(workout.exerciseCount, workout.durationMinutes)}</AppText>
+          <View style={styles.workoutHeading}>
+            <View style={styles.workoutIcon}><Icon name="workouts" color={tokens.colors.text} /></View>
+            <View style={styles.workoutSummary}>
+              <AppText variant="sectionTitle">{workout.title}</AppText>
+              <AppText variant="bodySecondary" tone="textSecondary">{copy.workoutDetails(workout.exerciseCount, workout.durationMinutes)}</AppText>
+            </View>
           </View>
-          <Button label={copy.startWorkout} variant="secondary" onPress={onStart} testID="today-workout-start" />
+          <Button label={copy.startWorkout} onPress={onStart} testID="today-workout-start" />
         </View>
       </Card>
     </View>
@@ -104,7 +109,12 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: tokens.spacing.sm },
   waterHeading: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.sm },
   waterIcon: { padding: tokens.spacing.sm, backgroundColor: tokens.colors.successSubtle, borderRadius: tokens.radii.control },
-  meals: { gap: tokens.spacing.md },
-  workoutMeta: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.sm },
+  meals: { gap: tokens.spacing.none },
+  mealRow: { minHeight: tokens.size.touchTarget, paddingVertical: tokens.spacing.sm },
+  mealName: { fontWeight: tokens.typography.label.fontWeight },
+  mealCalories: { flexDirection: 'row', alignItems: 'baseline', gap: tokens.spacing.xs },
+  workoutHeading: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.md },
+  workoutIcon: { padding: tokens.spacing.md, borderRadius: tokens.radii.control, backgroundColor: tokens.colors.surfaceSecondary },
+  workoutSummary: { flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 0, gap: tokens.spacing.xs },
   weightChange: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: tokens.spacing.sm },
 });
