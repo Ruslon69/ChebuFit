@@ -30,11 +30,10 @@ export function DesignSystemScreen() {
     <Screen scroll edges={['left', 'right', 'bottom']} testID="design-system-screen" contentContainerStyle={styles.page}>
       <View style={styles.section} testID="showcase-intro">
         <View style={styles.headingRow}>
-          <Badge label="LIGHT FOUNDATION" tone="accent" />
+          <AppText variant="pageTitle">Компоненты</AppText>
           <IconButton icon="settings" label="Пример кнопки с иконкой" onPress={demonstrate} testID="showcase-icon" />
         </View>
-        <AppText variant="pageTitle">Тёплая основа.{ '\n' }Чистая форма.</AppText>
-        <AppText variant="bodySecondary" tone="textSecondary">ChebuFit / визуальный язык и компоненты</AppText>
+        <AppText variant="bodySecondary" tone="textSecondary">ChebuFit · светлая тема · образцы интерфейса</AppText>
       </View>
 
       <View style={styles.swatches}>
@@ -49,22 +48,23 @@ export function DesignSystemScreen() {
       <Card testID="showcase-card">
         <View style={styles.section}>
           <View style={styles.headingRow}>
-            <AppText variant="cardTitle">Поверхность и ритм</AppText>
+            <AppText variant="cardTitle">Card / Metric</AppText>
             <Badge label="Готово" tone="positive" />
           </View>
-          <Metric label="Пример значения" value="128" unit="ед." description="Нейтральный образец типографики" />
+          <Metric label="Пример значения" value="128" unit="ед." description="Крупное значение и спокойная подпись" />
           <ProgressBar value={0.64} label="Пример прогресса" testID="showcase-progress" />
           <AppText variant="caption" tone="textSecondary">64% · определённый прогресс</AppText>
         </View>
       </Card>
 
       <View style={styles.section}>
-        <SectionHeader title="Действия" action={{ label: 'Пример', onPress: demonstrate }} />
-        <Button label="Основное действие" onPress={demonstrate} testID="showcase-primary" />
+        <SectionHeader title="Кнопки" action={{ label: 'Проверить', onPress: demonstrate }} />
+        <Button label="Основная" onPress={demonstrate} testID="showcase-primary" />
         <View style={styles.buttonRow}>
-          <View style={styles.buttonCell}><Button label="Вторичное" variant="secondary" onPress={demonstrate} /></View>
-          <View style={styles.buttonCell}><Button label="Без фона" variant="ghost" onPress={demonstrate} /></View>
+          <View style={styles.buttonCell}><Button label="Вторичная" variant="secondary" onPress={demonstrate} /></View>
+          <View style={styles.buttonCell}><Button label="Ghost" variant="ghost" onPress={demonstrate} /></View>
         </View>
+        <Button label="Недоступно" disabled onPress={demonstrate} testID="showcase-disabled" />
         <AppText variant="caption" tone="textTertiary" accessibilityLiveRegion="polite">{notice}</AppText>
       </View>
 
@@ -72,7 +72,6 @@ export function DesignSystemScreen() {
         <SectionHeader title="Состояния" />
         <Card>
           <View style={styles.section}>
-            <Button label="Недоступно" disabled onPress={demonstrate} testID="showcase-disabled" />
             <Button label="Загрузка" loading onPress={demonstrate} testID="showcase-loading" />
             <Divider />
             <Button label="Опасное действие" variant="destructive" onPress={demonstrate} testID="showcase-destructive" />

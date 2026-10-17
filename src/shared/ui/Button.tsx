@@ -5,9 +5,9 @@ import { AppText } from './AppText';
 
 const variants = {
   primary: { background: 'primary', pressed: 'primaryPressed', foreground: 'onPrimary' },
-  secondary: { background: 'surfaceSecondary', pressed: 'divider', foreground: 'text' },
+  secondary: { background: 'primarySubtle', pressed: 'primarySubtlePressed', foreground: 'primaryText' },
   ghost: { background: 'background', pressed: 'primarySubtle', foreground: 'primaryText' },
-  destructive: { background: 'destructive', pressed: 'destructivePressed', foreground: 'onPrimary' },
+  destructive: { background: 'destructive', pressed: 'destructivePressed', foreground: 'onDestructive' },
 } satisfies Record<string, { background: ColorRole; pressed: ColorRole; foreground: ColorRole }>;
 
 export type ButtonProps = Omit<PressableProps, 'children' | 'style' | 'accessibilityRole'> & {

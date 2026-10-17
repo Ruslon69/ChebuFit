@@ -2,7 +2,7 @@ import { Text, type TextProps } from 'react-native';
 
 import { tokens, type TypographyVariant } from '../theme/tokens';
 
-export type TextTone = 'text' | 'textSecondary' | 'textTertiary' | 'primaryText' | 'onPrimary' | 'success' | 'destructive' | 'disabledText';
+export type TextTone = 'text' | 'textSecondary' | 'textTertiary' | 'primaryText' | 'onPrimary' | 'onDestructive' | 'success' | 'destructive' | 'disabledText';
 
 export type AppTextProps = Omit<TextProps, 'allowFontScaling'> & {
   variant?: TypographyVariant;

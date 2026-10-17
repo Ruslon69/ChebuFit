@@ -13,8 +13,11 @@ repeated need appears; avoid adding arbitrary values to individual screens.
 - **Color:** `background` is the cream canvas; `surface` is clean white;
   `surfaceSecondary` groups quiet content. `primary`/`primaryPressed` fill primary
   controls; `primaryText` is the stronger orange for readable text on light surfaces.
-  `primarySubtle` is a restrained accent surface. Success and destructive roles
-  include subtle surfaces. Use the three text roles for hierarchy, divider/border
+  `primarySubtle` is a restrained peach surface for secondary controls, with
+  `primarySubtlePressed` feedback. Primary fills use warm dark `onPrimary` labels
+  to preserve contrast with the fresher orange; destructive fills retain white
+  `onDestructive` labels. These are shades of one accent hue. Success and destructive
+  roles include subtle surfaces. Use the three text roles for hierarchy, divider/border
   for necessary separation, and disabled roles only for unavailable controls.
 - **Spacing:** 4, 8, 12, 16, 20, 24, 32, 40 points. Page inset 24, card inset 20,
   section gap 32. Smaller gaps establish relationships within components.
@@ -23,7 +26,7 @@ repeated need appears; avoid adding arbitrary values to individual screens.
 - **Typography:** native system font; display 40/48, page 30/38, section 22/28,
   card 18/26, body 16/24, secondary body 14/21, label 14/20, caption 12/18,
   button 16/24 (size/line height). No custom font or fixed text-box heights.
-- **Elevation:** cards use a low-opacity warm shadow and Android elevation 1.
+- **Elevation:** cards use a low-opacity warm shadow and Android elevation 2.
   Surface contrast and whitespace supply most separation; do not stack shadows.
 - **Motion:** fast 120 ms, standard 220 ms, slow 360 ms. Standard cubic intent is
   `[0.2, 0, 0, 1]`; enter eases out, exit eases in. These are conventions only.
@@ -42,8 +45,9 @@ Import components directly from `src/shared/ui`.
 - `Card`: white rounded surface; standard/compact/spacious/none padding and optional
   elevation. It does not make all children one accessibility element.
 - `Button`: primary, secondary, ghost, destructive; an explicit press handler is
-  required. Disabled/loading controls cannot be pressed. Loading retains its label
-  and announces busy state; destructive labels must communicate the action.
+  required. Secondary controls use a soft peach fill; ghost controls have no
+  resting fill. Disabled labels remain readable on a muted surface. Disabled/loading
+  controls cannot be pressed. Loading retains its label and announces busy state; destructive labels must communicate the action.
 - `Icon`/`IconButton`: Expo Symbols, SF Symbols on iOS and matching Material Symbols
   on Android. Icons are decorative; IconButton requires an accessible label.
 - `ProgressBar`: determinate fraction from 0 to 1, clamped to bounds (NaN becomes
