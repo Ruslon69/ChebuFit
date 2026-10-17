@@ -22,6 +22,7 @@
     "react-dom": "19.3.0"
   },
   "scripts": {
+    "test:rewards": "node scripts/test-rewards.cjs",
     "typecheck": "tsc --noEmit",
     "start": "expo start",
     "android": "expo start --android",

@@ -8,9 +8,14 @@
 - `src/app` owns navigation and cross-domain screen composition. Feature screens
   live with their feature and are exposed through thin route wrappers. Future
   application composition will choose adapters and supply them to use cases.
-- `src/features/{onboarding,profile,nutrition,water,workouts,progress}` owns each
+- `src/features/{onboarding,profile,nutrition,water,workouts,progress,rewards}` owns each
   product domain. `src/features/today` composes the daily overview presentation from
-  a typed `TodayViewModel` and centralized mock fixture, with no domain/service imports.
+  a typed `TodayViewModel` and centralized mock fixture. Its fixture receives the
+  mock orange balance through the rewards public API; its UI has no reward operations.
+- `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
+  stable achievement identities, caps, and integer ledger calculation. Its public
+  `index.ts` exposes contracts and a separate mock fixture. See its `README.md`
+  for identity rules and the future atomic persistence requirements.
 - `src/application` contains application UI shared across routes, currently the
   global Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
@@ -79,8 +84,9 @@ showcase is reachable through a development-only route/header control, outside t
 Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
 changes stay in component state and reset when the screen remounts. The Today
 header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
-profile-side column. Its orange balance is a mock presentation value only; no
-reward engine, transactions, persistence, or store exists.
+profile-side column. Its orange balance comes from `rewards/model/rewardsMock.ts`.
+The rewards engine is independently tested and not connected to feature actions;
+there are no persisted transactions, reward notifications, or store.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
 No real product data, service clients, storage, authentication, or watch target exists.

@@ -16,6 +16,7 @@ Use Node.js 24 and npm. Install the locked dependencies with `npm ci`.
 - `npm run ios`: start Expo and open an iOS Simulator.
 - `npm run android`: start Expo and open an Android emulator.
 - `npm run typecheck`: validate TypeScript without generating files.
+- `npm run test:rewards`: run the pure orange-rewards domain tests with Node's built-in runner.
 - `npx expo install --check`: check dependency compatibility with the Expo SDK.
 
 Navigation uses Expo Router. On a fresh checkout, start Expo once to generate its

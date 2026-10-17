@@ -1,10 +1,11 @@
+import { rewardsMock } from '../../rewards';
 import type { TodayViewModel } from './TodayViewModel';
 
 export const todayMock = {
   greeting: 'evening',
   name: 'Руслан',
   date: '2026-10-17T12:00:00+02:00',
-  orangeBalance: 248,
+  orangeBalance: rewardsMock.orangeBalance,
   calories: { consumed: 1940, target: 2845 },
   macros: [
     { id: 'protein', consumed: 128, target: 185 },
