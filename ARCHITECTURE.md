@@ -78,8 +78,9 @@ Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/developmen
 showcase is reachable through a development-only route/header control, outside tabs.
 Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
 changes stay in component state and reset when the screen remounts. The Today
-header accepts optional decorative artwork in its profile-side column; it renders
-no artwork or reserved empty illustration space until an asset is supplied.
+header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
+profile-side column. Its orange balance is a mock presentation value only; no
+reward engine, transactions, persistence, or store exists.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
 No real product data, service clients, storage, authentication, or watch target exists.

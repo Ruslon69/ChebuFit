@@ -1,6 +1,7 @@
 import { useState, type ReactElement } from 'react';
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, Image, StyleSheet } from 'react-native';
 
+import { mascotAssets } from '../../../shared/assets/mascot';
 import { appConfig } from '../../../shared/config/app';
 import { tokens } from '../../../shared/theme/tokens';
 import { Screen } from '../../../shared/ui/Screen';
@@ -32,9 +33,19 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
         name={model.name}
         date={format.date(model.date)}
         profileLabel={copy.profile}
+        orangeBalance={format.number(model.orangeBalance)}
+        orangeBalanceLabel={copy.orangeBalanceLabel(model.orangeBalance, format.number(model.orangeBalance))}
         onOpenProfile={() => preview(copy.profilePreview)}
         onOpenDesignSystem={onOpenDesignSystem}
-        artwork={headerArtwork}
+        artwork={headerArtwork ?? (
+          <Image
+            source={mascotAssets.greeting}
+            resizeMode="contain"
+            accessible={false}
+            style={styles.mascot}
+            testID="today-mascot"
+          />
+        )}
       />
       <CaloriesCard calories={model.calories} macros={model.macros} copy={copy} format={format} />
       <WaterCard water={model.water} consumedMl={waterMl} onAdd={addWater} copy={copy} format={format} />
@@ -47,4 +58,5 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
 
 const styles = StyleSheet.create({
   page: { gap: tokens.spacing.xxl },
+  mascot: { width: '100%', height: '100%' },
 });

@@ -4,6 +4,7 @@ import type { MacroId, MealId } from './TodayViewModel';
 type TodayMessages = {
   greetings: Record<'morning' | 'afternoon' | 'evening', string>;
   profile: string;
+  orangeBalanceLabel: (balance: number, formattedBalance: string) => string;
   calories: string;
   consumed: string;
   remaining: string;
@@ -36,6 +37,14 @@ const messages = {
   ru: {
     greetings: { morning: 'Доброе утро', afternoon: 'Добрый день', evening: 'Добрый вечер' },
     profile: 'Открыть профиль', calories: 'Калории', consumed: 'ккал съедено',
+    orangeBalanceLabel: (balance: number, formattedBalance: string) => {
+      const lastTwo = Math.abs(balance) % 100;
+      const lastDigit = Math.abs(balance) % 10;
+      const unit = lastTwo >= 11 && lastTwo <= 14 ? 'апельсинов'
+        : lastDigit === 1 ? 'апельсин'
+        : lastDigit >= 2 && lastDigit <= 4 ? 'апельсина' : 'апельсинов';
+      return `Баланс: ${formattedBalance} ${unit}`;
+    },
     remaining: 'Осталось', target: 'Цель', kcal: 'ккал', grams: 'г', litres: 'л', kg: 'кг',
     macros: { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' },
     water: 'Вода', waterRemaining: (litres: string) => `Ещё ${litres} л до цели`,
@@ -53,6 +62,7 @@ const messages = {
   en: {
     greetings: { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' },
     profile: 'Open profile', calories: 'Calories', consumed: 'kcal eaten',
+    orangeBalanceLabel: (balance: number, formattedBalance: string) => `Balance: ${formattedBalance} ${balance === 1 ? 'orange' : 'oranges'}`,
     remaining: 'Remaining', target: 'Goal', kcal: 'kcal', grams: 'g', litres: 'l', kg: 'kg',
     macros: { protein: 'Protein', fat: 'Fat', carbs: 'Carbs' },
     water: 'Water', waterRemaining: (litres: string) => `${litres} l to go`,

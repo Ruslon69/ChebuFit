@@ -13,7 +13,8 @@
 - New approved poses continue sequentially: CHEBU-13, CHEBU-14, and so on.
 - Any future approved runtime optimization applies to `app/` only. Never upscale.
   Evaluate sizing against actual display needs before generating derivatives.
-- No mascot is integrated into a screen by this task.
+- Today uses `mascotAssets.greeting` (CHEBU-02) as decorative, contain-scaled
+  artwork. Other poses remain available for future approved integrations.
 
 ## Stable catalog
 
