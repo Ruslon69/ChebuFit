@@ -179,8 +179,11 @@ uniqueness. Retain successful grants and original local-day/week attribution aft
 source deletion, edits, reinstall, and retries. Eligibility from producing features
 still needs authoritative validation; this pure client domain is not a backend.
 
-No UI action earns currency yet. Today reads a local schema-v1 wallet with an
-explicit development seed of 248 (not earned grants) and remains visually unchanged.
+Today water-goal completion is the first integrated earning action. It processes
+water, active-day, then eligible welcome rewards in one committed batch. Other
+feature actions remain unconnected. Today reads a local schema-v1 wallet with an
+explicit development seed of 248 (not earned grants); earned credits persist and
+update its balance. A temporary CHEBU-07 notice shows only newly committed credits.
 Real-mode wallets start at zero in a separate namespace. Local persistence uses
 AsyncStorage with an in-process queue; future server atomicity is still required.
 There is no auth, store, wardrobe, or animation work.

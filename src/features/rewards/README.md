@@ -112,7 +112,7 @@ Development uses key `@chebufit/orange-wallet/developmentDemo`, an explicit seed
 248, and no fabricated grants. Non-development builds use the separate `real` key,
 with zero opening credit. Never promote demo state into a real account. The Today
 route reads the asynchronous application hook; a pending/unavailable balance is a
-dash, not an incorrect zero. No UI action calls reward processing.
+dash, not an incorrect zero. Today water-goal transitions are the first integrated reward producer; other feature actions remain unconnected.
 
 `createOrangeWalletService(repository, { now, allowDevelopmentReset? })` exposes
 `loadWallet`, `processRewardEvent`, `subscribe`, and `resetForDevelopment`.
@@ -138,3 +138,30 @@ Run `npm run test:wallet` for the repository/application tests,
 `npm run test:rewards` for the actual domain tests and
 `node scripts/simulate-orange-economy.cjs` for approved-config/math/report checks.
 Tests use the existing TypeScript compiler and Node runner; AsyncStorage is the only added direct runtime dependency.
+
+## First producer: Today water goal
+
+The water model emits a fact only when a +250 ml action crosses from below the
+personal goal to the goal; mount/relaunch and already-complete amounts emit nothing.
+Water quantities stay in local component state. The rewards domain never inspects
+quantities. Application composition captures the current device-local date and
+occurrence timestamp once, rather than using the dashboard's illustrative date.
+
+`rewardWaterGoalReached` uses a serialized wallet batch in this order:
+`waterGoalCompleted` → `activeDayQualified` (`waterTracking`) → `welcomeReward`.
+The welcome reference is either an existing useful grant or the new water grant.
+All new credits are saved together in one JSON record, then the subscription
+publishes one final balance. Normal declines remain zero; storage failure returns
+an error without claiming any batch credits. The single-event API uses this same
+batch path. Local storage retains its single-runtime limitations described above.
+
+`createOrangeRewardNotice` creates one notice from the committed aggregate only:
+fresh demo 248 can earn 2+5+10=17 and become 265; established wallets normally earn
+7, or less when some identities already exist. Zero/error produces no notice.
+`OrangeRewardFeedback` shows decorative CHEBU-07, accessible amount text, a subtle
+220 ms entrance, dismissal, and a short timeout. It is nonmodal, respects reduced
+motion, and never increments wallet state. No global popup queue is introduced.
+Future producers should use the same fact → ordered committed batch → one notice
+pattern. No meal/workout/weight UI integration or automatic milestone producer.
+
+Run `npm run test:water-rewards` for the end-to-end application workflow tests.

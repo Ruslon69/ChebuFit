@@ -9,7 +9,9 @@ export type {
 } from './domain/types';
 export { rewardsMock } from './model/rewardsMock';
 export { createOrangeWalletService } from './application/OrangeWalletService';
-export type { OrangeWalletService } from './application/OrangeWalletService';
+export type { OrangeWalletService, RewardBatchResult } from './application/OrangeWalletService';
+export { createOrangeRewardNotice } from './application/OrangeRewardNotice';
+export type { OrangeRewardNotice } from './application/OrangeRewardNotice';
 export { createInitialWallet, decodeOrangeWallet, getWalletSnapshot } from './application/OrangeWallet';
 export type { OrangeWalletMode, OrangeWalletState, OrangeWalletSnapshot, OrangeWalletError, WalletResult } from './application/OrangeWallet';
 export type { OrangeWalletRepository } from './application/OrangeWalletRepository';

@@ -23,6 +23,7 @@
     "react-dom": "19.3.0"
   },
   "scripts": {
+    "test:water-rewards": "node scripts/test-rewards.cjs --water",
     "test:wallet": "node scripts/test-rewards.cjs --wallet",
     "test:rewards": "node scripts/test-rewards.cjs",
     "typecheck": "tsc --noEmit",

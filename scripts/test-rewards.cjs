@@ -11,6 +11,10 @@ try {
   const program = ts.createProgram([
     path.join(project, 'src/features/rewards/index.ts'),
     path.join(project, 'src/infrastructure/rewards/KeyValueOrangeWalletRepository.ts'),
+    path.join(project, 'src/application/rewards/waterGoalRewards.ts'),
+    path.join(project, 'src/application/rewards/localRewardContext.ts'),
+    path.join(project, 'src/features/water/model/waterTracking.ts'),
+    path.join(project, 'src/features/rewards/model/rewardMessages.ts'),
   ], {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS,
     strict: true, skipLibCheck: true, noEmitOnError: true,
@@ -25,10 +29,11 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),
+        CHEBUFIT_BUILD: output,
         CHEBUFIT_WALLET_ADAPTER_BUILD: path.join(output, 'infrastructure/rewards/KeyValueOrangeWalletRepository.js'),
       },
     });

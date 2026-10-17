@@ -3,6 +3,13 @@ import type { RewardEvent, RewardGrant, RewardGrantResult } from '../domain/type
 import { createInitialWallet, getWalletSnapshot, type OrangeWalletSnapshot, type WalletResult } from './OrangeWallet';
 import type { OrangeWalletRepository } from './OrangeWalletRepository';
 
+export type RewardBatchResult = Readonly<{
+  results: readonly RewardGrantResult[];
+  amount: number;
+  wallet: OrangeWalletSnapshot;
+}>;
+type RewardBatchInput = readonly RewardEvent[] | ((wallet: OrangeWalletSnapshot) => readonly RewardEvent[]);
+
 type Listener = (wallet: OrangeWalletSnapshot) => void;
 type Scope = { tail: Promise<void>; listeners: Set<Listener> };
 const scopes = new Map<string, Scope>();
@@ -34,6 +41,36 @@ export function createOrangeWalletService(repository: OrangeWalletRepository, op
     return { ok: true, value: { state: loaded.value ?? createInitialWallet(repository.mode, options.now()), missing: loaded.value === null } } as const;
   };
 
+  const processRewardEvents = (input: RewardBatchInput): Promise<WalletResult<RewardBatchResult>> => serial(async () => {
+    const loaded = await read();
+    if (!loaded.ok) return loaded;
+    const { state } = loaded.value;
+    const initial = getWalletSnapshot(state);
+    if (!initial.ok) return initial;
+    const events = typeof input === 'function' ? input(initial.value) : input;
+    const history = state.ledger.flatMap(entry => entry.kind === 'credit' ? [entry.grant] : []) satisfies RewardGrant[];
+    const results: RewardGrantResult[] = [];
+    const credits: RewardGrant[] = [];
+    const now = options.now();
+    let balance = initial.value.balance;
+    for (const event of events) {
+      const result = evaluateReward({ balance, event, history, grantedAt: now });
+      results.push(result);
+      if (result.granted) { credits.push(result.grant); history.push(result.grant); balance = result.newBalance; }
+    }
+    if (!credits.length) return { ok: true, value: { results, amount: 0, wallet: initial.value } };
+    const updated = {
+      ...state, ledger: [...state.ledger, ...credits.map(grant => ({ kind: 'credit', grant } as const))],
+      updatedAt: Date.parse(now) < Date.parse(state.updatedAt) ? state.updatedAt : now,
+    };
+    const next = getWalletSnapshot(updated);
+    if (!next.ok) return next;
+    const saved = await repository.save(updated);
+    if (!saved.ok) return saved;
+    publish(next.value);
+    return { ok: true, value: { results, amount: credits.reduce((sum, grant) => sum + grant.amount, 0), wallet: next.value } };
+  });
+
   return {
     subscribe(listener: Listener) {
       scope.listeners.add(listener);
@@ -53,28 +90,10 @@ export function createOrangeWalletService(repository: OrangeWalletRepository, op
         return snapshot;
       });
     },
-    processRewardEvent(event: RewardEvent): Promise<WalletResult<{ result: RewardGrantResult; wallet: OrangeWalletSnapshot }>> {
-      return serial<{ result: RewardGrantResult; wallet: OrangeWalletSnapshot }>(async () => {
-        const loaded = await read();
-        if (!loaded.ok) return loaded;
-        const { state } = loaded.value;
-        const snapshot = getWalletSnapshot(state);
-        if (!snapshot.ok) return snapshot;
-        const history = state.ledger.flatMap(entry => entry.kind === 'credit' ? [entry.grant] : []) satisfies RewardGrant[];
-        const now = options.now();
-        const result = evaluateReward({ balance: snapshot.value.balance, event, history, grantedAt: now });
-        if (!result.granted) return { ok: true, value: { result, wallet: snapshot.value } };
-        const updated = {
-          ...state, ledger: [...state.ledger, { kind: 'credit', grant: result.grant } as const],
-          updatedAt: Date.parse(now) < Date.parse(state.updatedAt) ? state.updatedAt : now,
-        };
-        const next = getWalletSnapshot(updated);
-        if (!next.ok) return next;
-        const saved = await repository.save(updated);
-        if (!saved.ok) return saved;
-        publish(next.value);
-        return { ok: true, value: { result, wallet: next.value } };
-      });
+    processRewardEvents,
+    async processRewardEvent(event: RewardEvent): Promise<WalletResult<{ result: RewardGrantResult; wallet: OrangeWalletSnapshot }>> {
+      const batch = await processRewardEvents([event]);
+      return batch.ok ? { ok: true, value: { result: batch.value.results[0], wallet: batch.value.wallet } } : batch;
     },
     resetForDevelopment(): Promise<WalletResult<OrangeWalletSnapshot>> {
       if (!options.allowDevelopmentReset || repository.mode !== 'developmentDemo') return Promise.resolve({ ok: false, error: 'resetDisabled' });

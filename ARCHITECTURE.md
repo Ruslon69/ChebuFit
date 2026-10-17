@@ -11,8 +11,9 @@
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress,rewards}` owns each
   product domain. `src/features/today` composes the daily overview presentation from
   a typed `TodayViewModel` and mock dashboard fixture. The Today route overrides
-  the fixture balance from `src/application/rewards/useOrangeWallet`; its UI has no
-  reward operations. Loading/errors show an unavailable balance, never a fake zero.
+  the fixture balance from `src/application/rewards/useOrangeWallet`. Its UI emits
+  a water-goal fact; application composition processes rewards. Loading/errors
+  show an unavailable balance, never a fake zero.
 - `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
   stable local-day/week and lifetime identities, caps, qualified active-day
   milestones, welcome eligibility, and integer ledger calculation. Its public
@@ -96,8 +97,10 @@ changes stay in component state and reset when the screen remounts. The Today
 header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
 profile-side column. Its orange balance is asynchronously reconstructed from the
 local wallet. Development uses an explicit 248 demo opening credit and empty ledger;
-real-mode wallets start at zero in a separate namespace. No feature actions earn
-rewards yet, and there are no reward notifications or store.
+real-mode wallets start at zero in a separate namespace. The first integrated reward action is a Today water-goal transition. Application
+composition commits water/active-day/welcome credits in order and shows one
+CHEBU-07 notice for the actual positive total. Other feature actions and the store
+remain unconnected.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
 No other product persistence, network service clients, authentication, or watch target exists.

@@ -1,7 +1,7 @@
 # ChebuFit
 
 Minimal Expo SDK 58, React Native, and TypeScript foundation for iOS and Android.
-Today renders a mock-backed daily dashboard; the other three tabs and onboarding
+Today renders a mock-backed daily dashboard with a real persisted water-goal reward loop; the other three tabs and onboarding
 remain placeholders. See
 [ARCHITECTURE.md](./ARCHITECTURE.md) for source organization and dependency rules.
 The warm light-theme primitives and usage rules are documented in
@@ -16,6 +16,7 @@ Use Node.js 24 and npm. Install the locked dependencies with `npm ci`.
 - `npm run ios`: start Expo and open an iOS Simulator.
 - `npm run android`: start Expo and open an Android emulator.
 - `npm run typecheck`: validate TypeScript without generating files.
+- `npm run test:water-rewards`: validate the water-goal reward workflow and aggregation.
 - `npm run test:wallet`: validate local wallet persistence and application operations.
 - `npm run test:rewards`: run the pure orange-rewards domain tests with Node's built-in runner.
 - `node scripts/simulate-orange-economy.cjs`: verify the approved economy and projections.
