@@ -1,11 +1,12 @@
 # ChebuFit
 
 Minimal Expo SDK 58, React Native, and TypeScript foundation for iOS and Android.
-The app currently renders four navigation placeholders and a separate onboarding route. See
+Today renders a mock-backed daily dashboard; the other three tabs and onboarding
+remain placeholders. See
 [ARCHITECTURE.md](./ARCHITECTURE.md) for source organization and dependency rules.
 The warm light-theme primitives and usage rules are documented in
-[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md). During development, use the palette icon in
-Today's header to open the internal design-system showcase; it is not a tab.
+[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md). During development, long-press Today's
+profile control to open the internal design-system showcase; it is not a tab.
 
 ## Development
 
@@ -32,5 +33,4 @@ The display name is `ChebuFit` and the Expo slug is `chebufit`.
 confirm ownership and final identifiers before configuring signing or releases.
 
 Environment files, credentials, dependencies, and generated native projects are
-excluded from Git. No backend, authentication, product features, or watchOS
-target is configured.
+excluded from Git. No backend, authentication, persistence, or watchOS target is configured.

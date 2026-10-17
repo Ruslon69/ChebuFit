@@ -48,7 +48,8 @@ Import components directly from `src/shared/ui`.
   required. Secondary controls use a soft peach fill; ghost controls have no
   resting fill. Disabled labels remain readable on a muted surface. Disabled/loading
   controls cannot be pressed. Loading retains its label and announces busy state; destructive labels must communicate the action.
-- `Icon`/`IconButton`: Expo Symbols, SF Symbols on iOS and matching Material Symbols
+- `Icon`/`IconButton`: the primary, large 56pt icon control supports global Quick Add.
+  Expo Symbols, SF Symbols on iOS and matching Material Symbols
   on Android. Icons are decorative; IconButton requires an accessible label.
 - `ProgressBar`: determinate fraction from 0 to 1, clamped to bounds (NaN becomes
   zero; infinities saturate). Requires a label and exposes a 0–100 accessibility
@@ -79,7 +80,7 @@ asymmetric safe areas. No absolute/floating tab bar is introduced.
 
 ## Internal showcase
 
-In development, the palette icon in Today's header opens `/design-system` outside
+In development, long-press Today's profile control to open `/design-system` outside
 the four tabs. The root `Stack.Protected` guard excludes it from production
 navigation/deep links. Expo Go URL: `exp://127.0.0.1:8081/--/design-system`.
 The showcase has component states, typed system text, semantic swatches, and a

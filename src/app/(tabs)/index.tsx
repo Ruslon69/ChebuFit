@@ -1,12 +1,15 @@
-import { useMessages } from '../../shared/i18n/useMessages';
-import { PlaceholderScreen } from '../../shared/ui/PlaceholderScreen';
+import { router } from 'expo-router';
+
+import { todayMock } from '../../features/today/model/todayMock';
+import { TodayScreen } from '../../features/today/ui/TodayScreen';
 
 export default function TodayRoute() {
-  const messages = useMessages();
   return (
-    <PlaceholderScreen
-      title={messages.navigation.today}
-      subtitle={messages.development.screenSubtitle}
+    <TodayScreen
+      model={todayMock}
+      onOpenNutrition={() => router.navigate('/nutrition')}
+      onOpenProgress={() => router.navigate('/progress')}
+      onOpenDesignSystem={__DEV__ ? () => router.push('/design-system') : undefined}
     />
   );
 }

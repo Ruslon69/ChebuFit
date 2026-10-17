@@ -24,6 +24,7 @@ export const lightColors = {
   disabledSurface: '#EAE5DE',
   disabledText: '#776B60',
   shadow: '#3A2B20',
+  scrim: 'rgba(43, 36, 31, 0.28)',
 } as const;
 
 export type ColorRole = keyof typeof lightColors;
@@ -57,10 +58,10 @@ export const tokens = {
       elevation: 2,
     },
   } satisfies Record<string, ViewStyle>,
-  size: { touchTarget: 44, button: 52, tabBar: 64, iconSmall: 16, icon: 22, iconLarge: 28, progress: 8, swatch: 36 },
+  size: { touchTarget: 44, button: 52, floatingControl: 56, tabBar: 64, iconSmall: 16, icon: 22, iconLarge: 28, progress: 8, swatch: 36 },
   stroke: { thin: 1 },
   opacity: { pressed: 0.72 },
-  layout: { contentMaxWidth: 640, compactWidth: 320 },
+  layout: { contentMaxWidth: 640, compactWidth: 320, modalMaxHeight: '90%' },
   motion: {
     duration: { fast: 120, standard: 220, slow: 360 },
     easing: { standard: [0.2, 0, 0, 1], enter: 'ease-out', exit: 'ease-in' },

@@ -9,7 +9,10 @@
   live with their feature and are exposed through thin route wrappers. Future
   application composition will choose adapters and supply them to use cases.
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress}` owns each
-  product domain. Their UI folders currently contain navigation placeholders only.
+  product domain. `src/features/today` composes the daily overview presentation from
+  a typed `TodayViewModel` and centralized mock fixture, with no domain/service imports.
+- `src/application` contains application UI shared across routes, currently the
+  global Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
 - `src/shared/theme` contains semantic light-theme design tokens, with no runtime React dependency.
 - `src/shared/config` exposes non-secret application defaults. The display name
@@ -73,7 +76,10 @@ feature; there is no database or generic repository abstraction yet.
 The root renders a four-tab navigation shell and a separate onboarding placeholder.
 Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/development`
 showcase is reachable through a development-only route/header control, outside tabs.
-No product data, service clients, storage, authentication, or watch target exists.
+Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
+changes stay in component state and reset when the screen remounts. Meals/history
+open existing tabs; workout/profile and Quick Add actions are explicit previews.
+No real product data, service clients, storage, authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
 
@@ -112,7 +118,9 @@ none of these becomes a fifth tab. Create a nested stack inside a tab only when
 it needs its own navigation history.
 
 Navigator headers and the in-flow tab bar own vertical safe areas; tab placeholders
-apply horizontal safe areas. Standalone onboarding also applies the bottom inset.
+apply horizontal safe areas. Today owns its top safe area with the navigator header
+hidden. The tab scene reserves a small action lane above the bar so global Quick Add never
+covers card content. Standalone onboarding also applies the bottom inset.
 Avoid an absolute-positioned tab bar unless content explicitly accounts for it.
 `Screen` uses safe-area-context and allows explicit edges for other layouts.
 
