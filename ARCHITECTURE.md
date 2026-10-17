@@ -2,17 +2,20 @@
 
 ## Responsibilities
 
-- `App.tsx` delegates to `src/app/AppRoot.tsx`; `index.ts` keeps Expo registration.
-- `src/app` composes the application, future navigation/providers, and feature use
-  cases. It chooses concrete adapters and passes them to the code that needs them.
+- `expo-router/entry` registers the app; `src/app/_layout.tsx` composes its root
+  stack and application-level providers. Keep only routes/layouts in `src/app`
+  because Expo Router treats other files there as routes too.
+- `src/app` owns navigation and cross-domain screen composition. Feature screens
+  live with their feature and are exposed through thin route wrappers. Future
+  application composition will choose adapters and supply them to use cases.
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress}` owns each
-  product domain. The feature READMEs define ownership before implementation.
+  product domain. Their UI folders currently contain navigation placeholders only.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
 - `src/shared/theme` contains temporary design tokens, with no React dependency.
 - `src/shared/config` exposes non-secret application defaults. The display name
   comes from `app.json` so native and JavaScript configuration stay aligned.
-- `src/shared/i18n` holds typed messages. The application chooses the locale and
-  supplies text to presentation components. Move selection into an app provider
+- `src/shared/i18n` holds typed messages. `useMessages` selects the configured
+  locale centrally; Russian is the current development default. Move selection into an app provider
   when user/device locale selection is implemented; add pluralization and formatting
   tooling when real localized features need it. Never translate stored domain IDs.
 - `src/shared/utils` and `src/shared/types` document homes for genuinely shared
@@ -67,7 +70,56 @@ feature; there is no database or generic repository abstraction yet.
 
 ## Current scope
 
-The root renders a temporary development placeholder using shared layout, tokens,
-and messages. There are no feature implementations, service clients, navigation,
-storage, authentication, or watch target. Add concrete abstractions with their first
-consumer instead of filling each documented layer in advance.
+The root renders a four-tab navigation shell and a separate onboarding placeholder.
+No product data, service clients, storage, authentication, or watch target exists.
+Add concrete abstractions with their first consumer instead of filling each
+documented layer in advance.
+
+## Navigation
+
+Expo Router owns file-based deep links and generated route types. Its JavaScript
+tabs provide the four primary sections, with a native root stack for other flows:
+
+```text
+src/app/
+  _layout.tsx            root stack; initial route is (tabs)
+  (tabs)/
+    _layout.tsx         four explicitly declared tabs
+    index.tsx           Today at /
+    nutrition.tsx       /nutrition
+    workouts.tsx        /workouts
+    progress.tsx        /progress
+  onboarding.tsx        /onboarding, outside the tab shell
+```
+
+The app currently opens Today. Onboarding is independently reachable by deep link
+and its temporary continue action returns to Today; it does not record completion.
+When onboarding/auth state exists, introduce root `Stack.Protected` guards and an
+explicit loading state. Those guards must gate both tab routes and protected
+detail/modal routes, including incoming deep links. They do not replace backend
+authorization. No fake onboarding or authentication state is introduced now.
+
+Add profile/settings, add-food, scanner, product details, active workout, exercise
+details, weight entry, and measurement entry as root stack routes when their
+features are built. For example, `product/[productId]` and `workout/[sessionId]`
+receive IDs; feature application operations load the data. Modal entry/scanner
+flows can set `presentation: 'modal'` on their root stack screen. Profile will open
+from the header/avatar, while scanner and quick-add actions will launch flows;
+none of these becomes a fifth tab. Create a nested stack inside a tab only when
+it needs its own navigation history.
+
+Navigator headers and the in-flow tab bar own vertical safe areas; tab placeholders
+apply horizontal safe areas. Standalone onboarding also applies the bottom inset.
+Avoid an absolute-positioned tab bar unless content explicitly accounts for it.
+`Screen` uses safe-area-context and allows explicit edges for other layouts.
+
+Set `scheme: 'chebufit'` for future native deep links. Until a native build includes
+that scheme, test Expo Go using `exp://127.0.0.1:8081/--/onboarding` and equivalent
+paths. Typed routes are generated into ignored `.expo/types` when Expo starts;
+start Expo once before type checking a fresh checkout. Keep the generated types
+and `expo-env.d.ts` in TypeScript's include list and out of Git.
+
+Expo Router pulls in `react-dom` transitively. Its version is pinned to the installed
+React version via an npm override so optional web peers cannot select an incompatible
+newer renderer. Revisit the pin alongside a future Expo/React upgrade; no web UI or
+additional direct web dependency is introduced here.

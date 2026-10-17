@@ -3,5 +3,5 @@ import type { AppLocale } from '../i18n/messages';
 
 export const appConfig = {
   displayName: expo.name,
-  defaultLocale: 'en' satisfies AppLocale,
+  defaultLocale: 'ru' satisfies AppLocale,
 } as const;

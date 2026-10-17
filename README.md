@@ -1,7 +1,7 @@
 # ChebuFit
 
 Minimal Expo SDK 58, React Native, and TypeScript foundation for iOS and Android.
-The app currently renders a temporary development placeholder. See
+The app currently renders four navigation placeholders and a separate onboarding route. See
 [ARCHITECTURE.md](./ARCHITECTURE.md) for source organization and dependency rules.
 
 ## Development
@@ -13,6 +13,11 @@ Use Node.js 24 and npm. Install the locked dependencies with `npm ci`.
 - `npm run android`: start Expo and open an Android emulator.
 - `npm run typecheck`: validate TypeScript without generating files.
 - `npx expo install --check`: check dependency compatibility with the Expo SDK.
+
+Navigation uses Expo Router. On a fresh checkout, start Expo once to generate its
+ignored route types before running the TypeScript check. The development UI uses
+Russian labels: Сегодня, Питание, Тренировки, Прогресс. `/onboarding` is a separate
+placeholder flow; real onboarding/authentication gating will be added later.
 
 Simulator and emulator commands require the corresponding platform tools and a
 compatible Expo Go installation. Native builds require additional native setup.

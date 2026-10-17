@@ -1,10 +1,40 @@
 type Messages = {
-  developmentPlaceholder: string;
+  navigation: {
+    today: string;
+    nutrition: string;
+    workouts: string;
+    progress: string;
+    onboarding: string;
+  };
+  development: {
+    screenSubtitle: string;
+    onboardingSubtitle: string;
+    continueToApp: string;
+  };
 };
 
 const translations = {
   en: {
-    developmentPlaceholder: 'Application foundation ready.',
+    navigation: {
+      today: 'Today', nutrition: 'Nutrition', workouts: 'Workouts',
+      progress: 'Progress', onboarding: 'Welcome',
+    },
+    development: {
+      screenSubtitle: 'This section is under development.',
+      onboardingSubtitle: 'Onboarding will be introduced here.',
+      continueToApp: 'Continue to the app',
+    },
+  },
+  ru: {
+    navigation: {
+      today: 'Сегодня', nutrition: 'Питание', workouts: 'Тренировки',
+      progress: 'Прогресс', onboarding: 'Знакомство',
+    },
+    development: {
+      screenSubtitle: 'Раздел находится в разработке.',
+      onboardingSubtitle: 'Здесь появится первоначальная настройка.',
+      continueToApp: 'Перейти к приложению',
+    },
   },
 } satisfies Record<string, Messages>;
 
