@@ -13,9 +13,11 @@
   a typed `TodayViewModel` and centralized mock fixture. Its fixture receives the
   mock orange balance through the rewards public API; its UI has no reward operations.
 - `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
-  stable achievement identities, caps, and integer ledger calculation. Its public
+  stable local-day/week and lifetime identities, caps, qualified active-day
+  milestones, welcome eligibility, and integer ledger calculation. Its public
   `index.ts` exposes contracts and a separate mock fixture. See its `README.md`
-  for identity rules and the future atomic persistence requirements.
+  for identity rules and the future atomic persistence requirements. Approved
+  amounts and pricing guidance are documented in `docs/ORANGE_ECONOMY_V1.md`.
 - `src/application` contains application UI shared across routes, currently the
   global Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.

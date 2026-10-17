@@ -1,92 +1,97 @@
-# Orange rewards
+# Orange rewards — approved economy v1
 
-Oranges encourage useful, sustainable tracking and fitness engagement, equally
-for fat loss, maintenance, and muscle gain. They never reward eating less, calorie
-deficits, skipped meals, weight loss, low body weight, or body-fat reduction.
-Completion events describe tracking, not a nutritional or body-composition outcome.
+Oranges reward useful tracking, not eating less, calorie deficits, weight loss,
+low body weight, skipped meals, or body-fat reduction. Currency never expires;
+inactivity never debits it or resets active-day progress. Cosmetics offer no
+fitness/gameplay advantage. Every user has a complete free default outfit.
+See [the approved economy](../../../docs/ORANGE_ECONOMY_V1.md) for pricing guidance,
+projections, and product principles. There is no store or wardrobe state.
 
-## Initial tuning
+## Rules and public API
 
-`domain/rules.ts` is the single configurable rule set. Caps count successful grants
-of that event type on the supplied **local calendar day**, not delivery/UTC days.
+`domain/rules.ts` centralizes runtime values. The approved JSON in `docs/` is a
+validated documentation snapshot, not a runtime import. Import contracts and
+functions through `src/features/rewards/index.ts`.
 
-| Event | Oranges | Daily cap | Logical achievement |
-| --- | ---: | ---: | --- |
-| `mealLogged` | 2 | 4 | Local day + stable meal slot ID |
-| `dailyMealsCompleted` | 5 | 1 | Local day |
-| `waterGoalCompleted` | 3 | 1 | Local day |
-| `workoutCompleted` | 10 | 1 | Stable workout session ID |
-| `weightLogged` | 2 | 1 | Stable weight entry ID |
-| `dailyTrackingCompleted` | 5 | 1 | Local day |
-| `streakMilestone` | 15 | — | Streak instance ID + 7-day milestone |
+| Event | Oranges | Once per |
+| --- | ---: | --- |
+| `mealLogged` | 2 | Local day, regardless of meal/source |
+| `plannedMealsCompleted` | 1 | Local day |
+| `waterGoalCompleted` | 2 | Local day |
+| `workoutCompleted` | 3 | Local day, regardless of session |
+| `weightLogged` | 1 | Local Monday–Sunday week |
+| `activeDayQualified` | 5 | Local day, regardless of qualifying category |
+| `welcomeReward` | 10 | Account lifetime |
+| `activeDayMilestone` | 10/20/35/50/75 | Lifetime threshold 7/30/90/180/365 |
 
-`mealSlotId` identifies a stable meal occasion, e.g. `breakfast`, `lunch`, `dinner`,
-or `snacks`, rather than an individual food row or a newly generated log ID.
-Deleting/recreating food in a slot must reuse that slot. Custom slots can exist,
-but only four distinct slots can be rewarded per day. No actual feature integration
-or completion/streak qualification logic is implemented here.
-
-## API and identities
-
-Import the public API from `src/features/rewards/index.ts`. The domain is pure
-TypeScript with no React, platform APIs, clock reads, randomness, or storage.
+The producer owns action qualification. An active-day event supplies one approved
+category (`foodTracking`, `waterTracking`, `completedWorkout`) and source ID.
+There is no all-categories checklist. Weight alone does not qualify; the evaluator
+never emits secondary events. Planned-meal completion means logging the user's
+planned meal occasions, without a fixed count or calorie/intake condition.
 
 ```ts
 const result = evaluateReward({
   balance: createOrangeBalance(248),
   event: {
-    type: 'mealLogged', eventId: 'delivery-1', mealSlotId: 'breakfast',
+    type: 'mealLogged', eventId: 'delivery-1', sourceId: 'food-entry-1',
     occurredAt: '2026-10-17T08:30:00+02:00', localDay: '2026-10-17',
   },
   history: [],
   grantedAt: '2026-10-17T08:30:01+02:00',
-  // rules: customRules, // optional; defaults to the central rule set
 });
 ```
 
-The caller supplies the user's local day at the original achievement and retains
-it on retries/edits; processing time is separate. Do not recompute it from today's
-clock, the device's current timezone, or UTC. Timestamp offsets are explicit;
-day/timezone consistency and action eligibility belong to the future producing
-feature/application boundary. The engine validates calendar dates and timestamps
-without a timezone dependency.
+Welcome references an existing useful tracking grant using `qualifyingEventId`.
+Meal, planned meals, water, workout, weight, or qualified active-day grants can
+establish eligibility. Opening the app/onboarding cannot; neither can welcome or
+milestone grants. Weight may unlock welcome without creating an active day.
 
-Reward identities are collision-safe JSON tuples:
-`["rewards-v1", eventType, ...logicalAchievement]`, using the final column above.
-Grant IDs are deterministically `reward:` plus that identity. Changing delivery
-`eventId` does not bypass the logical identity; replaying an already granted event
-ID is also rejected. Workout/weight source IDs survive edits and recompletions,
-even across days. A streak ID denotes one continuous streak instance, not a delivery
-or a new ID per milestone attempt. Rule amount tuning does not change identities.
-Changing the identity version later requires a migration that retains deduplication.
+Milestone candidates specify `activeDays`; eligibility is checked against the
+number of unique local dates of retained `activeDayQualified` grants. Dates need
+not be consecutive. Thresholds may be processed after a gap or out of order, but
+never twice. Additional thresholds belong in central rules. Old provisional event
+names are unsupported; no migration aliases are needed without persisted grants.
 
-Supply complete, wallet-scoped successful grant history, including grants for
-deleted source records. A successful result contains `amount`, `newBalance`, and
-an immutable-shaped `grant` record. Duplicate, capped, unsupported, or invalid
-candidates return a non-grant result with zero amount and a reason; they do not
-throw. Invalid incoming balance returns `newBalance: null`, never an invalid number.
-`createOrangeBalance` is an explicit boundary constructor and throws for invalid
-input; evaluation and ledger replay return typed failure results instead.
+## Calendar and idempotency
+
+The caller supplies the original local date, retaining it on retries/edits.
+The domain does not infer timezone/day from the event UTC timestamp. Timestamps
+must carry an explicit offset. `getLocalWeekStart` returns the Monday date via
+pure date-only arithmetic, unaffected by host timezone/DST. For example,
+2026-12-31 and 2027-01-03 share week key 2026-12-28; 2027-01-04 starts another.
+
+Collision-safe identities are JSON tuples `["rewards-v1", eventType, ...key]`:
+local date for daily rewards, Monday date for weight, no additional key for welcome,
+and threshold number for milestones. IDs are scoped to one account/wallet by
+history/persistence. `grantId` is deterministically `reward:` plus the identity.
+Delivery event IDs are also deduplicated. Workout and weight source IDs survive
+edits and cannot be relabeled to earn again in a later period. A newly created
+source within the same day/week still shares the product identity and earns nothing.
+
+Pass complete retained successful grant history for one wallet. Successful results
+contain amount, new balance, and a grant with original day/week and trace fields.
+Normal duplicates, caps, ineligible/invalid events return zero with a typed reason.
+An invalid incoming balance returns `newBalance: null`. The explicit boundary
+constructor `createOrangeBalance` throws for invalid currency input; evaluation
+and ledger replay return typed results instead. There are no clock/random calls,
+React imports, feature imports, I/O, or automatic event emission in the domain.
 
 ## Ledger and future persistence
 
-`OrangeBalance` is a branded nonnegative safe integer. `calculateRewardBalance`
-replays reward grants; `calculateLedgerBalance` also understands a minimal future
-cosmetic debit with an item ID. Both support an explicit opening balance and reject
-nonpositive/fractional amounts, duplicate credits/entry IDs, overflow, and overdrafts.
-There is no purchasing operation, catalog, ownership, or equipment state.
+Balances and entry amounts are safe integers. Pure ledger replay rejects fractional,
+negative/zero amounts, duplicate IDs/credits, overflow, and overdrafts. Minimal
+future cosmetic debit types exist; there is no purchase operation or catalog.
 
-Evaluation alone does not save a grant or serialize concurrent requests. Future
-persistence must atomically check identities and per-day caps, insert the grant/
-ledger entry, and update the balance. Enforce wallet-scoped unique reward/event/
-grant IDs and retain deduplication records even after source deletion. Transactions
-must prevent simultaneous candidates from bypassing caps. Future authoritative
-validation must verify qualifying actions and stable source/day/streak identities;
-this client domain is not a security boundary. No storage adapter is introduced yet.
+Future persistence must atomically enforce wallet-scoped reward/event/grant identity
+uniqueness, daily/weekly caps, welcome/milestone uniqueness, ledger insertion, and
+balance update. Retain grants/identity records after source deletion, edits,
+reinstall, and retries. Concurrent evaluation alone cannot serialize writes.
+Producing features and future authoritative validation must verify actual action
+eligibility and preserve original local attribution; client logic is not a server
+security boundary. No storage adapter is implemented here.
 
-Today consumes `model/rewardsMock.ts` through the public API and still displays 248.
-It does not evaluate events. Water remains local UI state without reward integration.
-
-Run `npm run test:rewards`: the existing TypeScript compiler builds this pure module
-in a temporary directory, Node's built-in runner tests it, and the output is removed.
-No test framework or runtime dependency was added.
+Today still imports `rewardsMock.orangeBalance` (248); no UI action executes rewards.
+Run `npm run test:rewards` for the actual domain tests and
+`node scripts/simulate-orange-economy.cjs` for approved-config/math/report checks.
+Both use existing tooling; no new packages were added.
