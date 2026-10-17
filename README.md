@@ -1,7 +1,8 @@
 # ChebuFit
 
 Minimal Expo SDK 58, React Native, and TypeScript foundation for iOS and Android.
-The app currently contains the unmodified blank-template screen.
+The app currently renders a temporary development placeholder. See
+[ARCHITECTURE.md](./ARCHITECTURE.md) for source organization and dependency rules.
 
 ## Development
 
