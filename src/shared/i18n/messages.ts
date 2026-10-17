@@ -5,6 +5,7 @@ type Messages = {
     workouts: string;
     progress: string;
     onboarding: string;
+    designSystem: string;
   };
   development: {
     screenSubtitle: string;
@@ -17,7 +18,7 @@ const translations = {
   en: {
     navigation: {
       today: 'Today', nutrition: 'Nutrition', workouts: 'Workouts',
-      progress: 'Progress', onboarding: 'Welcome',
+      progress: 'Progress', onboarding: 'Welcome', designSystem: 'Design system',
     },
     development: {
       screenSubtitle: 'This section is under development.',
@@ -28,7 +29,7 @@ const translations = {
   ru: {
     navigation: {
       today: 'Сегодня', nutrition: 'Питание', workouts: 'Тренировки',
-      progress: 'Прогресс', onboarding: 'Знакомство',
+      progress: 'Прогресс', onboarding: 'Знакомство', designSystem: 'Дизайн-система',
     },
     development: {
       screenSubtitle: 'Раздел находится в разработке.',

@@ -11,7 +11,7 @@
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress}` owns each
   product domain. Their UI folders currently contain navigation placeholders only.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
-- `src/shared/theme` contains temporary design tokens, with no React dependency.
+- `src/shared/theme` contains semantic light-theme design tokens, with no runtime React dependency.
 - `src/shared/config` exposes non-secret application defaults. The display name
   comes from `app.json` so native and JavaScript configuration stay aligned.
 - `src/shared/i18n` holds typed messages. `useMessages` selects the configured
@@ -71,6 +71,8 @@ feature; there is no database or generic repository abstraction yet.
 ## Current scope
 
 The root renders a four-tab navigation shell and a separate onboarding placeholder.
+Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/development`
+showcase is reachable through a development-only route/header control, outside tabs.
 No product data, service clients, storage, authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
@@ -90,6 +92,7 @@ src/app/
     workouts.tsx        /workouts
     progress.tsx        /progress
   onboarding.tsx        /onboarding, outside the tab shell
+  design-system.tsx     development-only visual review, outside the tab shell
 ```
 
 The app currently opens Today. Onboarding is independently reachable by deep link

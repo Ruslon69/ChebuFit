@@ -1,9 +1,10 @@
 import type { PropsWithChildren } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import type { Edge } from 'react-native-safe-area-context';
 
 import { tokens } from '../theme/tokens';
 import { Screen } from './Screen';
+import { AppText } from './AppText';
 
 type PlaceholderScreenProps = PropsWithChildren<{
   title: string;
@@ -20,8 +21,8 @@ export function PlaceholderScreen({
   return (
     <Screen edges={edges}>
       <View style={styles.content}>
-        <Text accessibilityRole="header" style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        <AppText variant="pageTitle" align="center">{title}</AppText>
+        <AppText tone="textSecondary" align="center">{subtitle}</AppText>
         {children}
       </View>
     </Screen>
@@ -29,16 +30,5 @@ export function PlaceholderScreen({
 }
 
 const styles = StyleSheet.create({
-  content: { flex: 1, justifyContent: 'center', gap: tokens.spacing.medium },
-  title: {
-    color: tokens.colors.text,
-    fontSize: tokens.typography.title,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  subtitle: {
-    color: tokens.colors.textMuted,
-    fontSize: tokens.typography.body,
-    textAlign: 'center',
-  },
+  content: { flex: 1, justifyContent: 'center', gap: tokens.spacing.md },
 });

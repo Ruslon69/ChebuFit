@@ -18,6 +18,8 @@ export default function RootLayout() {
         screenOptions={{
           headerStyle: { backgroundColor: tokens.colors.background },
           headerTintColor: tokens.colors.text,
+          headerTitleStyle: tokens.typography.cardTitle,
+          headerShadowVisible: false,
           headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: tokens.colors.background },
         }}
@@ -27,6 +29,9 @@ export default function RootLayout() {
           name="onboarding"
           options={{ title: messages.navigation.onboarding }}
         />
+        <Stack.Protected guard={__DEV__}>
+          <Stack.Screen name="design-system" options={{ title: messages.navigation.designSystem }} />
+        </Stack.Protected>
       </Stack>
     </>
   );

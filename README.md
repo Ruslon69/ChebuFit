@@ -3,6 +3,9 @@
 Minimal Expo SDK 58, React Native, and TypeScript foundation for iOS and Android.
 The app currently renders four navigation placeholders and a separate onboarding route. See
 [ARCHITECTURE.md](./ARCHITECTURE.md) for source organization and dependency rules.
+The warm light-theme primitives and usage rules are documented in
+[DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md). During development, use the palette icon in
+Today's header to open the internal design-system showcase; it is not a tab.
 
 ## Development
 
