@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0-proposal",
+  "status": "proposal-only-not-production-config",
+  "currency": "oranges",
+  "assumptions": {
+    "simulationStarts": "Monday, new wallet, zero opening balance; Today's mock 248 is excluded",
+    "weekStarts": "Monday in the user's local calendar",
+    "horizonsDays": [7, 30, 90, 365],
+    "inflationHorizonsDays": [30, 90, 180, 365],
+    "monthApproximationDays": [30, 90, 180, 365],
+    "weeklySchedulesRepeat": true,
+    "currentStreakInterpretation": "7 consecutive active local days; once per continuous streak instance, not once every 7 days",
+    "currentStreakCaveat": "Qualification is not implemented; arbitrary new streak IDs have no daily product cap. The safe-integer balance guard is not an economy cap.",
+    "activeDayQualification": "At least one actual meal log, personalized water-goal completion, or completed workout; no requirement to do all three. Weight alone does not qualify.",
+    "dailyMealsQualification": "All user-planned meal occasions logged; no fixed meal count, calorie target, or food-intake outcome",
+    "proposedDailyTrackingQualification": "One qualified active day; replaces an all-categories checklist interpretation",
+    "currentDailyTrackingQualification": "Profile-specific complete tracking days; never assumed on every active day",
+    "noAutomaticGrantFromAppOpen": true
+  },
+  "principles": {
+    "neverExpire": true,
+    "noMissedDayPenalty": true,
+    "noInactivityDebit": true,
+    "cosmeticOnly": true,
+    "noPurchasableAdvantage": true,
+    "excludedRewardCriteria": ["lowFoodIntake", "calorieDeficit", "weightLoss", "bodyFatReduction", "skippedMeals"],
+    "casualProgress": "Entry purchase in the first active week under the modeled schedule",
+    "powerUserSpread": "Approximately 2.3x Casual, from more active days and varied activity rather than repeated entries",
+    "optionalCollection": true,
+    "noCountdownOrStreakReset": true,
+    "purchaseAnticipationWithoutDailyChores": true
+  },
+  "currentRulesSnapshot": {
+    "mealLogged": { "amount": 2, "dailyCap": 4 },
+    "dailyMealsCompleted": { "amount": 5, "dailyCap": 1 },
+    "waterGoalCompleted": { "amount": 3, "dailyCap": 1 },
+    "workoutCompleted": { "amount": 10, "dailyCap": 1 },
+    "weightLogged": { "amount": 2, "dailyCap": 1 },
+    "dailyTrackingCompleted": { "amount": 5, "dailyCap": 1 },
+    "streakMilestone": { "amount": 15, "dailyCap": null, "milestoneDays": 7 }
+  },
+  "proposedRewards": {
+    "mealLogged": { "amount": 2, "dailyCap": 1, "reason": "First meal log only; additional food entries do not multiply income" },
+    "dailyMealsCompleted": { "amount": 1, "dailyCap": 1, "reason": "Small optional completeness bonus, without a required meal count" },
+    "waterGoalCompleted": { "amount": 2, "dailyCap": 1, "reason": "A useful but optional personalized goal" },
+    "workoutCompleted": { "amount": 3, "dailyCap": 1, "reason": "Recognize training without making it dominate" },
+    "weightLogged": { "amount": 1, "dailyCap": 1, "weeklyCap": 1, "reason": "No extra currency for daily weighing" },
+    "dailyTrackingCompleted": { "amount": 5, "dailyCap": 1, "reason": "An inclusive active-day base, not an all-features checklist" }
+  },
+  "activeDayMilestones": {
+    "mode": "lifetime-cumulative-unique-local-days",
+    "identity": "walletId + lifetimeActiveDays + threshold; once per wallet and threshold",
+    "repeat": false,
+    "resetAfterMissedDay": false,
+    "rewards": [
+      { "activeDays": 7, "amount": 10 },
+      { "activeDays": 30, "amount": 20 },
+      { "activeDays": 90, "amount": 35 },
+      { "activeDays": 180, "amount": 50 },
+      { "activeDays": 365, "amount": 75 }
+    ],
+    "after365": "No automatic repeat bonus proposed; revisit with actual usage data"
+  },
+  "welcomeReward": {
+    "amount": 10,
+    "trigger": "First qualifying active day, after introducing cosmetic currency",
+    "identity": "walletId + welcome-v1; once, retained across reinstall/re-onboarding",
+    "requiresProfileOrBodyData": false
+  },
+  "storeTiers": [
+    { "tier": 1, "category": "tinyAccessory", "examples": ["socks", "wristband"], "min": 40, "max": 70, "referencePrice": 40 },
+    { "tier": 2, "category": "accessory", "examples": ["cap", "glasses", "shaker"], "min": 90, "max": 130, "referencePrice": 100 },
+    { "tier": 3, "category": "standardClothing", "examples": ["T-shirt", "tankTop", "shorts"], "min": 160, "max": 220, "referencePrice": 180 },
+    { "tier": 4, "category": "premiumClothing", "examples": ["sneakers", "hoodie", "jacket"], "min": 300, "max": 450, "referencePrice": 360 },
+    { "tier": 5, "category": "premiumOutfit", "min": 600, "max": 850, "referencePrice": 720 },
+    { "tier": 6, "category": "rareSpecial", "min": 1000, "max": 1400, "referencePrice": 1200 }
+  ],
+  "profiles": {
+    "Casual": {
+      "mealLogged": [2, 0, 0, 2, 0, 3, 0],
+      "dailyMealsCompleted": [0, 0, 0, 0, 0, 1, 0],
+      "waterGoalCompleted": [0, 1, 0, 0, 0, 1, 0],
+      "workoutCompleted": [0, 1, 0, 0, 0, 1, 0],
+      "weightLogged": [0, 0, 0, 0, 0, 1, 0],
+      "dailyTrackingCompleted": [0, 0, 0, 0, 0, 1, 0]
+    },
+    "Regular": {
+      "mealLogged": [3, 3, 3, 3, 3, 4, 0],
+      "dailyMealsCompleted": [1, 0, 1, 0, 1, 1, 0],
+      "waterGoalCompleted": [1, 1, 0, 1, 1, 1, 0],
+      "workoutCompleted": [0, 1, 0, 1, 0, 1, 0],
+      "weightLogged": [0, 1, 0, 0, 0, 1, 0],
+      "dailyTrackingCompleted": [1, 0, 1, 0, 1, 1, 0]
+    },
+    "Power": {
+      "mealLogged": [3, 3, 3, 3, 3, 4, 3],
+      "dailyMealsCompleted": [1, 1, 1, 1, 1, 1, 1],
+      "waterGoalCompleted": [1, 1, 1, 1, 1, 1, 1],
+      "workoutCompleted": [1, 1, 0, 1, 1, 1, 0],
+      "weightLogged": [1, 0, 0, 1, 0, 1, 0],
+      "dailyTrackingCompleted": [1, 1, 1, 1, 1, 1, 1]
+    }
+  },
+  "illustrativePurchases": [
+    { "day": 30, "tier": 2, "amount": 100 },
+    { "day": 60, "tier": 3, "amount": 180 },
+    { "day": 90, "tier": 2, "amount": 100 },
+    { "day": 180, "tier": 4, "amount": 360 },
+    { "day": 270, "tier": 3, "amount": 180 },
+    { "day": 365, "tier": 5, "amount": 720 }
+  ]
+}
