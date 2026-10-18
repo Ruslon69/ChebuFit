@@ -20,6 +20,7 @@ const symbols = {
   barcode: { ios: 'barcode.viewfinder', android: 'barcode_scanner', web: 'barcode_scanner' },
   weight: { ios: 'scalemass', android: 'monitor_weight', web: 'monitor_weight' },
   measurement: { ios: 'ruler', android: 'straighten', web: 'straighten' },
+  chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
   chevron: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
 } satisfies Record<string, ComponentProps<typeof SymbolView>['name']>;
 

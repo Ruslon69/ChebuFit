@@ -61,6 +61,7 @@ export const tokens = {
   size: { touchTarget: 44, button: 52, floatingControl: 56, tabBar: 64, iconSmall: 16, icon: 22, iconLarge: 28, progress: 8, swatch: 36 },
   stroke: { thin: 1 },
   opacity: { pressed: 0.72 },
+  accessibility: { headingTextScale: 1.6, bodyTextScale: 2, controlTextScale: 1.8 },
   layout: { contentMaxWidth: 640, compactWidth: 320, modalMaxHeight: '90%' },
   motion: {
     duration: { fast: 120, standard: 220, slow: 360 },

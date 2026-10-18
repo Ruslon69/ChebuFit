@@ -154,9 +154,10 @@ src/app/
   (tabs)/
     _layout.tsx         four explicitly declared tabs
     index.tsx           Today at /
-    nutrition.tsx       /nutrition
+    nutrition.tsx       /nutrition, persistent daily diary
     workouts.tsx        /workouts
     progress.tsx        /progress
+  add-food.tsx          /add-food, explicit local date + meal context placeholder
   onboarding.tsx        /onboarding, outside the tab shell
   design-system.tsx     development-only visual review, outside the tab shell
 ```
@@ -168,7 +169,7 @@ explicit loading state. Those guards must gate both tab routes and protected
 detail/modal routes, including incoming deep links. They do not replace backend
 authorization. No fake onboarding or authentication state is introduced now.
 
-Add profile/settings, add-food, scanner, product details, active workout, exercise
+Add profile/settings, scanner, product details, active workout, exercise
 details, weight entry, and measurement entry as root stack routes when their
 features are built. For example, `product/[productId]` and `workout/[sessionId]`
 receive IDs; feature application operations load the data. Modal entry/scanner
@@ -178,7 +179,7 @@ none of these becomes a fifth tab. Create a nested stack inside a tab only when
 it needs its own navigation history.
 
 Navigator headers and the in-flow tab bar own vertical safe areas; tab placeholders
-apply horizontal safe areas. Today owns its top safe area with the navigator header
+apply horizontal safe areas. Today and Nutrition own their top safe area with the navigator header
 hidden. The tab scene reserves a small action lane above the bar so global Quick Add never
 covers card content. Standalone onboarding also applies the bottom inset.
 Avoid an absolute-positioned tab bar unless content explicitly accounts for it.

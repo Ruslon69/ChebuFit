@@ -14,10 +14,11 @@ export type ButtonProps = Omit<PressableProps, 'children' | 'style' | 'accessibi
   label: string;
   variant?: keyof typeof variants;
   loading?: boolean;
+  maxFontSizeMultiplier?: number;
   onPress: NonNullable<PressableProps['onPress']>;
 };
 
-export function Button({ label, variant = 'primary', disabled = false, loading = false, accessibilityLabel, accessibilityState, ...props }: ButtonProps) {
+export function Button({ label, variant = 'primary', disabled = false, loading = false, maxFontSizeMultiplier, accessibilityLabel, accessibilityState, ...props }: ButtonProps) {
   const unavailable = disabled || loading;
   const colors = variants[variant];
   const foreground = disabled ? 'disabledText' : colors.foreground;
@@ -36,7 +37,7 @@ export function Button({ label, variant = 'primary', disabled = false, loading =
     >
       <View style={styles.content} pointerEvents="none">
         {loading && <ActivityIndicator color={tokens.colors[foreground]} accessible={false} />}
-        <AppText variant="button" tone={foreground} align="center" accessible={false}>{label}</AppText>
+        <AppText maxFontSizeMultiplier={maxFontSizeMultiplier} variant="button" tone={foreground} align="center" accessible={false}>{label}</AppText>
       </View>
     </Pressable>
   );

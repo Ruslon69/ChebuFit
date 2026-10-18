@@ -69,10 +69,16 @@ export function createNutritionService(repository: NutritionRepository, options:
   });
   return {
     subscribe(listener: Listener) { scope.listeners.add(listener); return () => { scope.listeners.delete(listener); }; },
-    getDay(localDate: LocalDateKey): Promise<NutritionResult<DailyNutritionView>> {
+    getDay(localDate: LocalDateKey, settings: { readOnly?: boolean } = {}): Promise<NutritionResult<DailyNutritionView>> {
       return serial(async () => {
         const loaded = await read();
         if (!loaded.ok) return loaded;
+        if (!isLocalDateKey(localDate)) return { ok: false, error: 'invalidLocalDate' };
+        if (settings.readOnly && !loaded.value.diaries.some(diary => diary.localDate === localDate)) {
+          const now = options.now();
+          if (!isTimestamp(now)) return { ok: false, error: 'invalidTimestamp' };
+          return viewFor({ localDate, entries: [], createdAt: now, updatedAt: now }, loaded.value.targets);
+        }
         const day = ensureDay(loaded.value, localDate);
         if (!day.ok) return day;
         const view = viewFor(day.value.diary, day.value.state.targets);
@@ -96,6 +102,13 @@ export function createNutritionService(repository: NutritionRepository, options:
         const entry: NutritionDiaryEntry = { id: id as NutritionEntryId, localDate, meal, food: food.value, quantity: quantity.value, createdAt: now, updatedAt: now };
         return { ok: true, value: { entry, entries: [...diary.entries, entry], added: true } };
       });
+    },
+    updateEntryDetails(localDate: LocalDateKey, id: NutritionEntryId, input: { quantityGrams: number; meal: MealType }): Promise<NutritionResult<NutritionChange>> {
+      const quantity = quantityFromGrams(input.quantityGrams), meal = input.meal;
+      if (!quantity.ok) return Promise.resolve(quantity);
+      if (!isMealType(meal)) return Promise.resolve({ ok: false, error: 'invalidMeal' });
+      // One queue operation and one save: quantity and meal commit together.
+      return editEntry(localDate, id, (entry, now) => ({ ...entry, quantity: quantity.value, meal, updatedAt: now }));
     },
     updateEntryQuantity(localDate: LocalDateKey, id: NutritionEntryId, grams: number): Promise<NutritionResult<NutritionChange>> {
       const quantity = quantityFromGrams(grams);

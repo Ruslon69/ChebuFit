@@ -108,6 +108,42 @@ snapshot math remains interpretable; no serving/provider/search UI is built here
 Local JSON persistence is not a security, cross-process, or multi-device transaction
 boundary. Future sync needs authoritative conflict resolution, stable delivery IDs,
 and atomic writes. Whole-record history is adequate for MVP; growth eventually
-needs a storage migration. No backend, nutrition rewards, or full Nutrition UI.
+needs a storage migration. No backend or nutrition rewards.
 
 Run `npm run test:nutrition` and the existing Water/reward/wallet/presentation tests.
+
+## Daily diary experience
+
+The Nutrition tab owns only selected local date and form drafts. `useNutritionDiary`
+loads authoritative views on focus, foreground and service commits; stale responses
+cannot replace a newly selected day. Dates use local device calendar getters.
+Previous/next arrows browse through today; tapping the date returns to today, and
+Home opens the Today tab. Future navigation is disabled. Missing historical days
+use `getDay(date, { readOnly: true })`: a zero summary without persisting a diary,
+consuming the demo seed, or generating facts. Existing historical days remain editable.
+
+Meal rows derive nutrition through domain calculations, once per selected view,
+and use stable entry IDs. Entry editing keeps grams/meal as drafts. Save invokes
+`updateEntryDetails(date, id, { quantityGrams, meal })`, one serialized operation
+and one persistence write for both changes. Quantity accepts positive decimal grams
+(up to three places, dot or comma); saves are guarded against repeat submission.
+Delete requires a separate confirmation and retains the existing correctable-tracking
+semantics. Failed writes keep the editor open with a retryable message. The sheet
+scrolls with the keyboard and keeps Save reachable; all mutations notify Today.
+
+`/add-food?date=YYYY-MM-DD&meal=breakfast|lunch|dinner|snacks` is a typed navigation
+contract. The placeholder validates explicit context, shows meal/date, and performs
+no diary reads or writes. It does not simulate search or additions. Global Quick
+Add remains unchanged. No seed/read/date-navigation/edit/move/delete/placeholder
+operation grants rewards. Future real additions must deliberately connect committed
+add facts to Rewards.
+
+UI copy is centralized in `model/messages.ts`; dates/numbers use locale formatters.
+Read errors/loading show no fabricated totals. Meal progress and controls expose
+accessible labels/states; layout wraps at larger text sizes, with opt-in shared scale limits (headings 1.6×, body 2×, controls 1.8×). Numeric keyboard has
+an inline Done action and a fixed Save footer, with no keyboard dependency.
+
+Run `npm run test:nutrition-ui` for projection, routing context, calendar navigation,
+quantity parsing, non-persisting browsing and atomic edit integration checks. Native
+simulator validation additionally exercises the actual UI handlers and inspects
+screenshots, keyboard, persistence and existing Today/Water/Quick Add behavior.

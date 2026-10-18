@@ -66,7 +66,7 @@ export default function MainTabsLayout() {
         />
         <Tabs.Screen
           name="nutrition"
-          options={{ title: navigation.nutrition, tabBarButtonTestID: 'tab-nutrition', tabBarAccessibilityLabel: navigation.nutrition, tabBarIcon: ({ color }) => <Icon name="nutrition" color={color} /> }}
+          options={{ title: navigation.nutrition, headerShown: false, tabBarButtonTestID: 'tab-nutrition', tabBarAccessibilityLabel: navigation.nutrition, tabBarIcon: ({ color }) => <Icon name="nutrition" color={color} /> }}
         />
         <Tabs.Screen
           name="workouts"

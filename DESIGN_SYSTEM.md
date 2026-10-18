@@ -86,3 +86,10 @@ navigation/deep links. Expo Go URL: `exp://127.0.0.1:8081/--/design-system`.
 The showcase has component states, typed system text, semantic swatches, and a
 320-point page-width preview. Its sample numbers/copy are internal design examples,
 not product functionality. Remove or evolve this internal tool when it stops helping.
+
+Diary layouts use the typed `accessibility` text-scale limits (headings 1.6×,
+body 2×, controls 1.8×) alongside reflow and scrolling at extreme Dynamic Type
+sizes. These are opt-in; other screens retain their existing scaling behavior.
+`Button.maxFontSizeMultiplier` allows a bounded control label without disabling
+font scaling. Never use a scale cap as a substitute for accessible labels,
+comfortable targets, or an adaptive layout.
