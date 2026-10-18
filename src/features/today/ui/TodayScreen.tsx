@@ -18,9 +18,10 @@ type TodayScreenProps = {
   onOpenDesignSystem?: () => void;
   headerArtwork?: ReactElement;
   onAddWater: () => void;
+  onRemoveWater: () => void;
 };
 
-export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesignSystem, headerArtwork, onAddWater }: TodayScreenProps) {
+export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesignSystem, headerArtwork, onAddWater, onRemoveWater }: TodayScreenProps) {
   const copy = getTodayMessages(appConfig.defaultLocale);
   const format = createTodayFormatters(appConfig.defaultLocale);
   const preview = (message: string) => Alert.alert(copy.previewTitle, message, [{ text: copy.dismiss }]);
@@ -47,7 +48,7 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
         )}
       />
       <CaloriesCard calories={model.calories} macros={model.macros} copy={copy} format={format} />
-      <WaterCard water={model.water} onAdd={onAddWater} copy={copy} format={format} />
+      <WaterCard water={model.water} onAdd={onAddWater} onRemove={onRemoveWater} copy={copy} format={format} />
       <MealsOverview meals={model.meals} onOpen={onOpenNutrition} copy={copy} format={format} />
       <WorkoutCard workout={model.workout} onStart={() => preview(copy.workoutPreview)} copy={copy} />
       <WeightCard weight={model.weight} onOpen={onOpenProgress} copy={copy} format={format} />

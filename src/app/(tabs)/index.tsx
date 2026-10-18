@@ -28,6 +28,7 @@ export default function TodayRoute() {
         onOpenProgress={() => router.navigate('/progress')}
         onOpenDesignSystem={__DEV__ ? () => router.push('/design-system') : undefined}
         onAddWater={() => { void water.addWater(waterDefaults.portionMl); }}
+        onRemoveWater={() => { void water.removeWater(waterDefaults.portionMl); }}
       />
       <OrangeRewardFeedback notice={notice} onDismiss={dismiss} />
     </>

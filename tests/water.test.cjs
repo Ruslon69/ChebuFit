@@ -178,3 +178,55 @@ test('integer ml persistence and polished Russian liters never store floating-po
   assert.equal(Object.hasOwn(state.dailyRecords[0],'litres'),false);
   const format=createTodayFormatters('ru');assert.equal(format.number(2750/1000),'2,75');assert.equal(format.number(2500/1000),'2,5');
 });
+
+test('correction examples and repeated removal stay nonnegative and survive reload', async () => {
+  for (const [from, expected] of [[0,0],[250,0],[1500,1250],[2500,2250],[2750,2500]]) {
+    const f=fixture();
+    if(from)ok(await f.service().addWater(from,day));
+    const correction=ok(await f.service().removeWater(250,day));
+    assert.equal(correction.record.consumedMl,expected);assert.equal(correction.crossedGoal,false);
+    assert.equal(ok(await f.service().getDay(day)).consumedMl,expected);
+    for(let i=0;i<15;i++)ok(await f.service().removeWater(250,day));
+    assert.equal(ok(await f.service().getDay(day)).consumedMl,0);
+  }
+});
+test('tracking correction retains all water/active-day/welcome ledger entries unchanged; re-cross is zero and tomorrow remains eligible', async () => {
+  const f=fixture(), water=f.service();
+  const wallet=createOrangeWalletService(createKeyValueOrangeWalletRepository(f.storage,'developmentDemo'),{now:()=>now});
+  ok(await water.addWater(2250,day));assert.equal(ok(await water.addWater(250,day)).crossedGoal,true);
+  ok(await rewardWaterGoalReached(wallet,{localDay:day,occurredAt:now}));
+  const earned=ok(await wallet.loadWallet());assert.equal(earned.balance,265);
+  const ledger=structuredClone(earned.state.ledger);
+  assert.deepEqual(ledger.map(e=>e.grant.eventType),['waterGoalCompleted','activeDayQualified','welcomeReward']);
+  ok(await water.removeWater(250,day));
+  const after=ok(await wallet.loadWallet());assert.equal(after.balance,265);assert.deepEqual(after.state.ledger,ledger);
+  assert.equal(ok(await water.addWater(250,day)).crossedGoal,true);
+  const repeated=await rewardWaterGoalReached(wallet,{localDay:day,occurredAt:now});
+  assert.equal(ok(repeated).amount,0);assert.equal(createOrangeRewardNotice(repeated,'repeat'),null);
+  assert.deepEqual(ok(await wallet.loadWallet()).state.ledger,ledger);
+  assert.equal(ok(await water.addWater(2500,nextDay)).crossedGoal,true);
+  const tomorrow=ok(await rewardWaterGoalReached(wallet,{localDay:nextDay,occurredAt:now}));
+  assert.equal(tomorrow.amount,7);assert.deepEqual(tomorrow.wallet.state.ledger.slice(0,3),ledger);
+});
+test('above-goal corrections preserve full quantities through and below the goal', async () => {
+  const f=fixture();ok(await f.service().addWater(3000,day));
+  for(const expected of [2750,2500,2250]){
+    const result=ok(await f.service().removeWater(250,day));
+    assert.equal(result.record.consumedMl,expected);assert.equal(result.crossedGoal,false);
+  }
+});
+test('rapid mixed plus/minus operations across services preserve every accepted operation in order', async () => {
+  const f=fixture();ok(await f.service().addWater(1500,day));
+  const operations=[250,-250,-250,250,250,...Array.from({length:20},()=>[250,-250]).flat()];
+  const requests=operations.map(amount=>amount>0?f.service().addWater(amount,day):f.service().removeWater(-amount,day));
+  const results=await Promise.all(requests);let expected=1500;
+  for(let i=0;i<operations.length;i++){expected=Math.max(0,expected+operations[i]);assert.equal(ok(results[i]).record.consumedMl,expected);}
+  assert.equal(ok(await f.service().getDay(day)).consumedMl,1750);
+});
+test('failed correction never publishes an unsaved amount and leaves storage unchanged', async () => {
+  const f=fixture(),service=f.service();ok(await service.addWater(1500,day));
+  const before=f.data.get(f.key),updates=[];const unsubscribe=service.subscribe(r=>updates.push(r));
+  f.failWrite(true);assert.equal((await service.removeWater(250,day)).error,'storageUnavailable');
+  assert.deepEqual(updates,[]);assert.equal(f.data.get(f.key),before);
+  f.failWrite(false);unsubscribe();assert.equal(ok(await f.service().getDay(day)).consumedMl,1500);
+});

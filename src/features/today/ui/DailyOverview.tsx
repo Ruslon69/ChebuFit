@@ -8,6 +8,7 @@ import { Button } from '../../../shared/ui/Button';
 import { Card } from '../../../shared/ui/Card';
 import { Divider } from '../../../shared/ui/Divider';
 import { Icon } from '../../../shared/ui/Icon';
+import { IconButton } from '../../../shared/ui/IconButton';
 import { ProgressBar } from '../../../shared/ui/ProgressBar';
 import { SectionHeader } from '../../../shared/ui/SectionHeader';
 import type { TodayViewModel } from '../model/TodayViewModel';
@@ -15,8 +16,8 @@ import type { TodayCopy, TodayFormatters } from '../model/messages';
 
 type Presentation = { copy: TodayCopy; format: TodayFormatters };
 
-export function WaterCard({ water, onAdd, copy, format }: Presentation & {
-  water: TodayViewModel['water']; onAdd: () => void;
+export function WaterCard({ water, onAdd, onRemove, copy, format }: Presentation & {
+  water: TodayViewModel['water']; onAdd: () => void; onRemove: () => void;
 }) {
   const { consumedMl, targetMl } = water;
   const ready = consumedMl !== null && targetMl !== null;
@@ -35,7 +36,10 @@ export function WaterCard({ water, onAdd, copy, format }: Presentation & {
         </View>
         <View style={styles.row}>
           <AppText variant="sectionTitle" testID="today-water-value">{ready ? format.number(consumedMl / 1000) : '—'} <AppText variant="bodySecondary" tone="textSecondary">/ {ready ? format.number(targetMl / 1000) : '—'} {copy.litres}</AppText></AppText>
-          <Button label={copy.waterAdd(water.portionMl)} variant="secondary" disabled={!ready} onPress={onAdd} testID="today-water-add" />
+          <View style={styles.waterControls}>
+            <IconButton icon="minus" label={copy.waterRemoveLabel(water.portionMl)} disabled={!ready || consumedMl === 0} onPress={onRemove} testID="today-water-remove" />
+            <Button label={copy.waterAdd(water.portionMl)} accessibilityLabel={copy.waterAddLabel(water.portionMl)} variant="secondary" disabled={!ready} onPress={onAdd} testID="today-water-add" />
+          </View>
         </View>
         <ProgressBar value={ready ? consumedMl / targetMl : 0} tone="success" label={copy.water} testID="today-water-progress" />
       </View>
@@ -109,6 +113,7 @@ export function WeightCard({ weight, onOpen, copy, format }: Presentation & {
 const styles = StyleSheet.create({
   content: { gap: tokens.spacing.lg },
   row: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: tokens.spacing.sm },
+  waterControls: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: tokens.spacing.sm },
   waterHeading: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.sm },
   waterIcon: { padding: tokens.spacing.sm, backgroundColor: tokens.colors.successSubtle, borderRadius: tokens.radii.control },
   meals: { gap: tokens.spacing.none },

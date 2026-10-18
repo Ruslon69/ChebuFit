@@ -19,6 +19,8 @@ type TodayMessages = {
   waterUnavailable: string;
   waterRemaining: (litres: string) => string;
   waterAdd: (ml: number) => string;
+  waterAddLabel: (ml: number) => string;
+  waterRemoveLabel: (ml: number) => string;
   waterComplete: string;
   nutrition: string;
   allMeals: string;
@@ -51,6 +53,8 @@ const messages = {
     remaining: 'Осталось', target: 'Цель', kcal: 'ккал', grams: 'г', litres: 'л', kg: 'кг',
     macros: { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' },
     water: 'Вода', waterUnavailable: 'Пока недоступно', waterRemaining: (litres: string) => `Ещё ${litres} л до цели`,
+    waterAddLabel: (ml: number) => `Добавить ${ml} миллилитров воды`,
+    waterRemoveLabel: (ml: number) => `Убавить ${ml} миллилитров воды`,
     waterAdd: (ml: number) => `+${ml} мл`, waterComplete: 'Цель достигнута',
     nutrition: 'Питание', allMeals: 'Все приёмы',
     meals: { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snacks: 'Перекусы' },
@@ -70,6 +74,8 @@ const messages = {
     remaining: 'Remaining', target: 'Goal', kcal: 'kcal', grams: 'g', litres: 'l', kg: 'kg',
     macros: { protein: 'Protein', fat: 'Fat', carbs: 'Carbs' },
     water: 'Water', waterUnavailable: 'Currently unavailable', waterRemaining: (litres: string) => `${litres} l to go`,
+    waterAddLabel: (ml: number) => `Add ${ml} milliliters of water`,
+    waterRemoveLabel: (ml: number) => `Remove ${ml} milliliters of water`,
     waterAdd: (ml: number) => `+${ml} ml`, waterComplete: 'Goal reached',
     nutrition: 'Nutrition', allMeals: 'All meals',
     meals: { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snacks: 'Snacks' },

@@ -41,5 +41,17 @@ export function useDailyWater(onGoalCrossed: (fact: GoalCrossing) => void) {
     // Save succeeded. Reads, corrections, and already-above-goal adds never emit this fact.
     if (result.value.crossedGoal) onGoalCrossed(fact);
   }, [onGoalCrossed]);
-  return { record, error, addWater };
+  const removeWater = useCallback(async (amountMl: number) => {
+    const localDate = getLocalDateKey(new Date());
+    setRecord(current => current?.localDate === localDate ? current : null);
+    const result = await waterService.removeWater(amountMl, localDate);
+    if (!result.ok) {
+      if (mounted.current) setError(result.error);
+      if (__DEV__) console.warn('[Water] Correction was not saved:', result.error);
+    }
+    // Corrections update tracking only; they never rewrite or reverse rewards.
+  }, []);
+  // Keep controls responsive: every accepted tap queues in WaterService, with
+  // no optimistic quantity or competing UI-side read/modify/write calculation.
+  return { record, error, addWater, removeWater };
 }

@@ -66,3 +66,18 @@ or automatic retry/outbox; a future reliable cross-store workflow must address
 this explicitly. Do not claim atomicity across both features.
 
 Run `npm run test:water` plus existing reward/wallet/integration/presentation tests.
+
+## Today correction controls
+
+Today exposes an accessible 44 pt secondary minus control (−250 ml) alongside the
+existing orange +250 ml action. Minus is disabled for zero/unavailable amounts.
+Both call the application hook and WaterService; quantities update from the
+committed subscription only. While operations are pending, accepted taps continue
+through the service's serialized queue, with no UI-side optimistic arithmetic.
+Corrections persist across navigation/relaunch, including above-goal values.
+
+Correction does not reverse any orange grant, active-day reward, or welcome reward.
+A later same-day re-cross can emit a new water fact, but wallet identities grant
+zero and presentation creates no notice. This follows the product-wide
+[correctable tracking principle](../../../ARCHITECTURE.md#correctable-tracking-historical-economy).
+The existing separate-water/wallet crash boundary above remains unchanged.

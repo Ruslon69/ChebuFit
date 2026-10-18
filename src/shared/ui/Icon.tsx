@@ -16,6 +16,7 @@ const symbols = {
   profile: { ios: 'person.crop.circle', android: 'account_circle', web: 'account_circle' },
   water: { ios: 'drop', android: 'water_drop', web: 'water_drop' },
   plus: { ios: 'plus', android: 'add', web: 'add' },
+  minus: { ios: 'minus', android: 'remove', web: 'remove' },
   barcode: { ios: 'barcode.viewfinder', android: 'barcode_scanner', web: 'barcode_scanner' },
   weight: { ios: 'scalemass', android: 'monitor_weight', web: 'monitor_weight' },
   measurement: { ios: 'ruler', android: 'straighten', web: 'straighten' },

@@ -42,6 +42,23 @@
   `src/infrastructure` integrations are added when needed. Root `assets/`
   continues to hold Expo app icons; future exercise media belongs with workouts.
 
+## Correctable tracking, historical economy
+
+User-entered tracking records are correctable; reward and economy ledger
+transactions are immutable/idempotent historical records.
+
+Water quantities, nutrition entries (including grams/meal placement), body weight
+and measurements, and workout exercises/sets/reps/loads must support appropriate
+edit/delete/correction flows as their features are built. Corrections update the
+tracking source; they do not erase orange grants, active days, or welcome rewards.
+Re-qualifying an already rewarded logical achievement must remain idempotent.
+
+Orange grants, future cosmetic purchases, and future refunds/reversals are
+ledger-style history. Do not silently delete/edit ledger entries to mimic a
+tracking correction. A refund or reversal is a new explicit transaction, linked
+to the original when that capability is implemented. No purchasing/reversal
+implementation is introduced by this principle.
+
 ## Dependency direction
 
 Application composition depends on features, shared code, and concrete adapters.
