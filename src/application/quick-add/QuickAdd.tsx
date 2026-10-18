@@ -18,7 +18,7 @@ const actions = [
 ] as const satisfies ReadonlyArray<{ id: keyof ReturnType<typeof useMessages>['quickAdd']['actions']; icon: IconName }>;
 
 // Application-level UI: shared by all main tabs. These are explicit flow previews.
-export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
+export function QuickAdd({ tabBarHeight, subdued = false }: { tabBarHeight: number; subdued?: boolean }) {
   const { quickAdd: copy } = useMessages();
   const insets = useSafeAreaInsets();
   const [visible, setVisible] = useState(false);
@@ -34,8 +34,8 @@ export function QuickAdd({ tabBarHeight }: { tabBarHeight: number }) {
   return (
     <>
       <View pointerEvents="box-none" style={[styles.floating, { bottom: tabBarHeight + tokens.spacing.lg, right: insets.right + tokens.spacing.page }]}>
-        <View style={tokens.elevation.card}>
-          <IconButton ref={triggerRef} icon="plus" label={copy.open} variant="primary" size="large" onPress={() => setVisible(true)} testID="quick-add-open" />
+        <View style={subdued ? tokens.elevation.flat : tokens.elevation.card}>
+          <IconButton ref={triggerRef} icon="plus" label={copy.open} variant="primary" size={subdued ? 'standard' : 'large'} onPress={() => setVisible(true)} testID="quick-add-open" />
         </View>
       </View>
       <Modal

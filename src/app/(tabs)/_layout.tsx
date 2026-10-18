@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router/js-tabs';
+import { usePathname } from 'expo-router';
 import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +11,7 @@ import { QuickAdd } from '../../application/quick-add/QuickAdd';
 
 export default function MainTabsLayout() {
   const { navigation } = useMessages();
+  const nutritionIsVisible = usePathname() === '/nutrition';
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
   const tabBarHeight = Math.max(tokens.size.tabBar, tokens.size.iconLarge + tokens.typography.caption.lineHeight * fontScale + tokens.spacing.md) + insets.bottom;
@@ -66,7 +68,15 @@ export default function MainTabsLayout() {
         />
         <Tabs.Screen
           name="nutrition"
-          options={{ title: navigation.nutrition, headerShown: false, tabBarButtonTestID: 'tab-nutrition', tabBarAccessibilityLabel: navigation.nutrition, tabBarIcon: ({ color }) => <Icon name="nutrition" color={color} /> }}
+          options={{
+            title: navigation.nutrition,
+            headerShown: false,
+            // Match the quieter 44pt Quick Add while keeping food rows unobscured.
+            sceneStyle: { backgroundColor: tokens.colors.background, paddingBottom: tokens.size.touchTarget + tokens.spacing.lg },
+            tabBarButtonTestID: 'tab-nutrition',
+            tabBarAccessibilityLabel: navigation.nutrition,
+            tabBarIcon: ({ color }) => <Icon name="nutrition" color={color} />,
+          }}
         />
         <Tabs.Screen
           name="workouts"
@@ -77,7 +87,7 @@ export default function MainTabsLayout() {
           options={{ title: navigation.progress, tabBarButtonTestID: 'tab-progress', tabBarAccessibilityLabel: navigation.progress, tabBarIcon: ({ color }) => <Icon name="progress" color={color} /> }}
         />
       </Tabs>
-      <QuickAdd tabBarHeight={tabBarHeight} />
+      <QuickAdd tabBarHeight={tabBarHeight} subdued={nutritionIsVisible} />
     </View>
   );
 }

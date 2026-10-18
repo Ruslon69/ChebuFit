@@ -96,7 +96,7 @@ export function NutritionEntryEditor({ entry, copy, onClose, onSave, onDelete }:
                 testID="nutrition-delete" accessibilityRole="button" disabled={busy} accessibilityState={{ disabled: busy }}
                 onPress={() => { Keyboard.dismiss(); setConfirm(true); }} style={styles.delete}
               >
-                <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label" tone="destructive">{copy.delete}</AppText>
+                <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">{copy.delete}</AppText>
               </Pressable>
             )}
           </ScrollView>

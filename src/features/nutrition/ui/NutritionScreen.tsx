@@ -99,8 +99,8 @@ export function NutritionScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { gap: t.spacing.lg }, title: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md }, flex: { flex: 1 },
-  dates: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.xs, marginBottom: t.spacing.sm },
+  content: { gap: t.spacing.md }, title: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md }, flex: { flex: 1 },
+  dates: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.xs, marginBottom: t.spacing.none },
   dateLabel: { flex: 1, minHeight: t.size.touchTarget, justifyContent: 'center', gap: t.spacing.xs },
-  meals: { gap: t.spacing.lg }, loading: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md }, error: { gap: t.spacing.lg },
+  meals: { gap: t.spacing.md }, loading: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md }, error: { gap: t.spacing.lg },
 });

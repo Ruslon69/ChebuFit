@@ -49,10 +49,10 @@ export function MealSection({ meal, copy, number, onEdit, onAdd }: CopyProps & {
   meal: ReturnType<typeof toDiaryMeals>[number]; onEdit: (entry: NutritionDiaryEntry) => void; onAdd: (meal: MealType) => void;
 }) {
   return (
-    <Card>
+    <Card padding="none" style={styles.mealCard} testID={`nutrition-meal-${meal.meal}`}>
       <View style={styles.mealHeader}>
         <AppText maxFontSizeMultiplier={t.accessibility.headingTextScale} variant="cardTitle" style={styles.name}>{copy.meals[meal.meal]}</AppText>
-        <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label">
+        <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">
           {number(meal.calories)} <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="caption" tone="textSecondary">{copy.kcal}</AppText>
         </AppText>
       </View>
@@ -67,10 +67,9 @@ export function MealSection({ meal, copy, number, onEdit, onAdd }: CopyProps & {
             <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{entry.food.name}</AppText>
             <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">{entry.food.brand ? `${entry.food.brand} · ` : ''}{number(grams, 3)} {copy.grams}</AppText>
           </View>
-          <View style={styles.foodEnergy}>
-            <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label">{number(calories)}</AppText>
-            <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="caption" tone="textSecondary">{copy.kcal}</AppText>
-          </View>
+          <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label" align="right" style={styles.foodEnergy}>
+            {number(calories)} <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="caption" tone="textSecondary">{copy.kcal}</AppText>
+          </AppText>
         </Pressable>
       )) : (
         <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary" style={styles.empty}>{copy.emptyMeal}</AppText>
@@ -80,7 +79,7 @@ export function MealSection({ meal, copy, number, onEdit, onAdd }: CopyProps & {
         onPress={() => onAdd(meal.meal)} style={({ pressed }) => [styles.add, pressed && styles.pressed]}
       >
         <Icon name="plus" size="small" color={t.colors.primaryText} />
-        <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label" tone="primaryText">{copy.add}</AppText>
+        <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="primaryText">{copy.add}</AppText>
       </Pressable>
     </Card>
   );
@@ -90,9 +89,10 @@ const styles = StyleSheet.create({
   summary: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: t.spacing.lg },
   remaining: { gap: t.spacing.xs }, macros: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.lg, marginTop: t.spacing.xxl },
   macro: { flexGrow: 1, flexBasis: 0, minWidth: t.size.touchTarget + t.spacing.section, gap: t.spacing.sm },
-  mealHeader: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: t.spacing.sm, marginBottom: t.spacing.sm }, name: { flexGrow: 1 },
-  foodRow: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md, paddingVertical: t.spacing.md, minHeight: t.size.button, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
-  foodCopy: { flex: 1, gap: t.spacing.xs }, foodEnergy: { alignItems: 'flex-end' },
-  pressed: { opacity: t.opacity.pressed }, empty: { paddingVertical: t.spacing.lg },
-  add: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, minHeight: t.size.touchTarget, paddingTop: t.spacing.sm },
+  mealCard: { paddingHorizontal: t.spacing.xl, paddingVertical: t.spacing.md },
+  mealHeader: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', gap: t.spacing.sm, marginBottom: t.spacing.xs }, name: { flexGrow: 1 },
+  foodRow: { flexDirection: 'row', alignItems: 'baseline', gap: t.spacing.md, paddingVertical: t.spacing.xs, minHeight: t.size.button, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
+  foodCopy: { flex: 1, minWidth: 0 }, foodEnergy: { maxWidth: '45%' },
+  pressed: { opacity: t.opacity.pressed }, empty: { paddingVertical: t.spacing.sm },
+  add: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, minHeight: t.size.touchTarget, paddingVertical: t.spacing.xs },
 });

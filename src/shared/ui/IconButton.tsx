@@ -24,7 +24,13 @@ export function IconButton({ icon, label, variant = 'surface', size = 'standard'
       style={({ pressed }) => [
         styles.button,
         size === 'large' && styles.large,
-        { backgroundColor: disabled ? tokens.colors.disabledSurface : variant === 'primary' ? tokens.colors[pressed ? 'primaryPressed' : 'primary'] : pressed ? tokens.colors.primarySubtle : variant === 'surface' ? tokens.colors.surfaceSecondary : undefined },
+        {
+          opacity: disabled && variant === 'ghost' ? tokens.opacity.disabled : 1,
+          backgroundColor: disabled
+            ? variant === 'ghost' ? undefined : tokens.colors.disabledSurface
+            : variant === 'primary' ? tokens.colors[pressed ? 'primaryPressed' : 'primary']
+              : pressed ? tokens.colors.primarySubtle : variant === 'surface' ? tokens.colors.surfaceSecondary : undefined,
+        },
       ]}
     >
       <Icon name={icon} size={size === 'large' ? 'large' : 'medium'} color={disabled ? tokens.colors.disabledText : variant === 'primary' ? tokens.colors.onPrimary : tokens.colors.text} />
