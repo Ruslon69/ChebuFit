@@ -1,10 +1,11 @@
+import { normalizeFoodBarcode } from '../../features/food-catalog/domain/barcode';
 import { isObject } from '../../features/nutrition/domain/nutrition';
 import type { CatalogFood } from '../../features/food-catalog/domain/types';
 
 export const offProviderId = 'open-food-facts';
 // Accept GTIN-8, UPC-A, EAN-13 and GTIN-14, preserving leading zeroes.
 // No checksum gate: community catalogues also contain assigned/internal codes.
-export const isOffBarcode = (value: unknown): value is string => typeof value === 'string' && /^(?:\d{8}|\d{12,14})$/.test(value) && !/^0+$/.test(value);
+export const isOffBarcode = (value: unknown): value is string => typeof value === 'string' && normalizeFoodBarcode(value)?.lookupCode === value;
 const text = (value: unknown, max = 500): string | undefined => {
   if (typeof value !== 'string') return;
   const clean = value.replace(/<[^>]*>/g, '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();

@@ -18,6 +18,7 @@ import { IconButton } from '../../../shared/ui/IconButton';
 import { catalogFoodIdentity } from '../domain/catalogFood';
 import type { CatalogFood } from '../domain/types';
 import { foodNutrientLine, getFoodCatalogMessages } from '../model/messages';
+import { getScannerMessages } from '../model/scannerMessages';
 import { FoodSelectionSheet } from './FoodSelectionSheet';
 
 type Context = { date: LocalDateKey; meal: MealType };
@@ -162,6 +163,7 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           {query.length > 0 && <IconButton icon="close" variant="ghost" label={copy.clear} onPress={() => changeQuery('')} testID="food-search-clear" />}
         </View>
         {search.policy && <Button label={copy.submit} variant="secondary" disabled={Array.from(query.trim()).length < search.policy.minimumLength || state.status === 'searching' || (!!retryAt && Math.max(now, Date.now()) < retryAt)} onPress={submit} testID="food-search-submit" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
+        <Button label={getScannerMessages(locale).entry} variant="ghost" onPress={() => { Keyboard.dismiss(); router.push({ pathname: '/scan-food', params: context }); }} testID="food-scan-open" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
         {renderSearchState()}
         {attribution && <View style={styles.section}>
           <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.remoteNote}</AppText>

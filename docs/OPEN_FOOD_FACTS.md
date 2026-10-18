@@ -86,7 +86,8 @@ provider order. Normalized v3 and legacy formats are never blended when a curren
 nutrition object is present but invalid. Values enter the existing canonical
 centi-kcal/milligram math and detached FoodSnapshot conversion. Barcode lookup
 returns `ok: true, value: null` for not-found, `invalidFood` for unusable data.
-No camera/scanner UI or permissions are added.
+Barcode camera/manual discovery reuses this exact read path and its cooldown;
+see `BARCODE_SCANNING.md` for scanner permissions, normalization and lifecycle.
 
 ## Composition, offline use and rewards
 

@@ -16,6 +16,8 @@ try {
     path.join(project, 'src/application/rewards/localRewardContext.ts'),
     path.join(project, 'src/features/nutrition/index.ts'),
     path.join(project, 'src/features/food-catalog/application/FoodSearchController.ts'),
+    path.join(project, 'src/features/food-catalog/application/BarcodeLookupController.ts'),
+    path.join(project, 'src/features/food-catalog/model/scannerPresentation.ts'),
     path.join(project, 'src/infrastructure/food-catalog/DevelopmentFoodCatalog.ts'),
     path.join(project, 'src/infrastructure/food-catalog/OpenFoodFactsProvider.ts'),
     path.join(project, 'src/infrastructure/food-catalog/KeyValueRecentFoodsRepository.ts'),
@@ -42,7 +44,7 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--off') ? ['open-food-facts.test.cjs'] : process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--scanner') ? ['barcode-scanner.test.cjs'] : process.argv.includes('--off') ? ['open-food-facts.test.cjs'] : process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),

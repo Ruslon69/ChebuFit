@@ -142,8 +142,8 @@ real-mode wallets start at zero in a separate namespace. The first integrated re
 composition commits water/active-day/welcome credits in order and shows one
 notice for the actual positive total. Presentation policy selects a brief micro
 toast for ordinary grants, or a compact CHEBU-07 celebration when newly granted
-welcome/milestone credits are present. Both are nonmodal and dismissible. Other feature actions and the store
-remain unconnected.
+welcome/milestone credits are present. Both are nonmodal and dismissible. Committed catalog food additions also use
+the existing meal/active-day/welcome reward producer. The store remains unconnected.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
 Water uses versioned daily records with integer ml and historical goal snapshots,
@@ -151,8 +151,8 @@ separate from the wallet. Both use the existing AsyncStorage adapter pattern and
 serialize local operations; cross-device/feature atomicity is not provided. See
 `src/features/water/README.md` for the explicit-date API and future Watch contract.
 Nutrition additionally persists versioned daily diaries with food snapshots; targets
-remain separate current goals. No other product persistence, network service clients,
-authentication, or watch target exists.
+remain separate current goals. Food discovery uses the replaceable OFF adapter;
+authentication, backend sync and a Watch target remain future work.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
 
@@ -171,6 +171,7 @@ src/app/
     workouts.tsx        /workouts
     progress.tsx        /progress
   add-food.tsx          /add-food, catalog search + selection; explicit date/meal
+  scan-food.tsx         /scan-food, camera/manual discovery; explicit date/meal
   onboarding.tsx        /onboarding, outside the tab shell
   design-system.tsx     development-only visual review, outside the tab shell
 ```
@@ -182,7 +183,7 @@ explicit loading state. Those guards must gate both tab routes and protected
 detail/modal routes, including incoming deep links. They do not replace backend
 authorization. No fake onboarding or authentication state is introduced now.
 
-Add profile/settings, scanner, product details, active workout, exercise
+Add profile/settings, product details, active workout, exercise
 details, weight entry, and measurement entry as root stack routes when their
 features are built. For example, `product/[productId]` and `workout/[sessionId]`
 receive IDs; feature application operations load the data. Modal entry/scanner
@@ -218,3 +219,11 @@ spacing; see `docs/OPEN_FOOD_FACTS.md` for data validation, attribution and priv
 existing diary history independent of future network/provider changes. The existing
 reward feedback is hosted once at application root so both Food and Water can
 present persisted grants across navigation. See the feature README for details.
+
+Barcode discovery is a separate root route opened from Add Food. Its pure catalog
+controller normalizes camera/manual input, locks duplicate callbacks and calls the
+existing provider barcode port. It never adds diary entries or grants rewards.
+Found food reuses the same selection, quantity, Add, recents and reward operation
+as search. Camera SDK access stays in feature presentation; focus/background/lookup
+state gates the preview. See `docs/BARCODE_SCANNING.md` for permission and privacy
+boundaries and physical-device verification status.

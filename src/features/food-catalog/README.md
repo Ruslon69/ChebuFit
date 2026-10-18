@@ -43,8 +43,9 @@ remote failures, and typed cooldowns disable Retry. Initial suggestions, ready,
 searching, results, empty, and retryable error states are separate. No fake
 Recent/Frequent history. Recent snapshots remain selectable without a provider
 response, including alongside search errors. OFF implements the optional barcode
-port using v3.6; scanner UI is omitted. Custom creation is visibly marked
-as coming later and disabled. Pagination and frequent-food ranking are future work.
+port using v3.6. `/scan-food?date=YYYY-MM-DD&meal=...` adds camera/manual discovery
+through the same provider and selection sheet; see `docs/BARCODE_SCANNING.md`.
+Custom creation is visibly marked as coming later and disabled. Pagination and frequent-food ranking are future work.
 
 ## Commit, rewards and recents
 
@@ -83,5 +84,5 @@ because an optional follow-up failed. Future backend/sync must supply durable
 idempotency, reconciliation and authoritative atomic wallet enforcement. In-process
 submission deduplication is not crash-safe or an anti-cheat boundary.
 
-Run `npm run test:off`, `npm run test:food-catalog` and the existing
+Run `npm run test:scanner`, `npm run test:off`, `npm run test:food-catalog` and the existing
 Nutrition/Water/wallet/reward tests. Offline fixtures never use live OFF servers.
