@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, Image, PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Image, PanResponder, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { mascotAssets } from '../../../shared/assets/mascot';
@@ -15,6 +15,7 @@ type Props = { notice: OrangeRewardNotice | null; onDismiss: (id: string) => voi
 /** Only the feedback surface intercepts touches. No modal, backdrop or focus movement. */
 export function OrangeRewardFeedback({ notice, onDismiss }: Props) {
   const insets = useSafeAreaInsets();
+  const { fontScale } = useWindowDimensions();
   const opacity = useRef(new Animated.Value(0)).current;
   const offset = useRef(new Animated.Value(tokens.spacing.sm)).current;
   const [reduceMotion, setReduceMotion] = useState(true);
@@ -75,23 +76,37 @@ export function OrangeRewardFeedback({ notice, onDismiss }: Props) {
 
   if (!notice) return null;
   const celebration = notice.kind === 'celebration';
+  const compactCelebration = celebration && fontScale >= 1.5;
   const amount = new Intl.NumberFormat(appConfig.defaultLocale).format(notice.amount);
   const label = `${copy.received} ${amount} ${copy.unit(notice.amount)}${celebration ? `. ${notice.includesWelcome ? copy.welcomeTitle : copy.milestoneTitle}` : ''}`;
+  // Transient feedback scales with Dynamic Type, with bounded growth; the full
+  // earned amount is always announced independently of the visual layout.
+  const textScaleLimit = celebration ? 2 : 1.5;
+  const metric = (
+    <View style={styles.metric} testID="orange-reward-amount" accessible={false}>
+      <AppText variant="sectionTitle" tone="primaryText" maxFontSizeMultiplier={textScaleLimit} accessible={false}>+{amount}</AppText>
+      <View style={styles.orange} accessible={false}><View style={styles.leaf} /></View>
+    </View>
+  );
+  const mascot = <Image source={mascotAssets.orangeReward} resizeMode="contain" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={compactCelebration ? styles.compactMascot : styles.mascot} testID="orange-reward-mascot" />;
+  const celebrationCopy = <>
+    <AppText variant="label" maxFontSizeMultiplier={textScaleLimit} accessible={false}>{notice.includesWelcome ? copy.welcomeTitle : copy.milestoneTitle}</AppText>
+    <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={textScaleLimit} accessible={false}>{notice.includesWelcome ? copy.welcomePhrase : copy.phrase}</AppText>
+  </>;
   return (
     <View pointerEvents="box-none" style={[styles.overlay, { top: insets.top + tokens.size.touchTarget + tokens.spacing.md, left: insets.left + tokens.spacing.page, right: insets.right + tokens.spacing.page }]} testID="orange-reward-feedback">
       <Animated.View {...responder.panHandlers} style={[styles.surface, celebration ? styles.celebration : styles.micro, { opacity, transform: [{ translateY: offset }] }]} testID={`orange-reward-${notice.kind}`}>
-        <Pressable onPress={dismiss} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={copy.dismiss} testID="orange-reward-dismiss" style={({ pressed }) => [styles.content, pressed && styles.pressed]}>
-          {celebration && <Image source={mascotAssets.orangeReward} resizeMode="contain" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.mascot} testID="orange-reward-mascot" />}
-          <View style={celebration ? styles.text : styles.microText}>
-            <View style={styles.metric} testID="orange-reward-amount" accessible={false}>
-              <AppText variant="sectionTitle" tone="primaryText" accessible={false}>+{amount}</AppText>
-              <View style={styles.orange} accessible={false}><View style={styles.leaf} /></View>
+        <Pressable onPress={dismiss} accessibilityRole="button" accessibilityLabel={label} accessibilityHint={copy.dismiss} testID="orange-reward-dismiss" style={({ pressed }) => [styles.content, compactCelebration && styles.compactContent, pressed && styles.pressed]}>
+          {compactCelebration ? <>
+            <View style={styles.compactHeading}>{mascot}{metric}</View>
+            {celebrationCopy}
+          </> : <>
+            {celebration && mascot}
+            <View style={celebration ? styles.text : styles.microText}>
+              {metric}
+              {celebration && celebrationCopy}
             </View>
-            {celebration ? <>
-              <AppText variant="label" accessible={false}>{notice.includesWelcome ? copy.welcomeTitle : copy.milestoneTitle}</AppText>
-              <AppText variant="caption" tone="textSecondary" accessible={false}>{notice.includesWelcome ? copy.welcomePhrase : copy.phrase}</AppText>
-            </> : <AppText variant="label" tone="textSecondary" accessible={false}>{copy.micro}</AppText>}
-          </View>
+          </>}
         </Pressable>
       </Animated.View>
     </View>
@@ -107,7 +122,10 @@ const styles = StyleSheet.create({
   pressed: { opacity: tokens.opacity.pressed },
   mascot: { width: '38%', maxWidth: tokens.spacing.section * 4, aspectRatio: 1 },
   text: { flex: 1, minWidth: 0, gap: tokens.spacing.xs },
-  microText: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', flexShrink: 1, gap: tokens.spacing.md },
+  microText: { flexShrink: 1 },
+  compactContent: { flexDirection: 'column', alignItems: 'stretch', gap: tokens.spacing.xs },
+  compactHeading: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.md },
+  compactMascot: { width: tokens.spacing.section * 2, aspectRatio: 1 },
   metric: { flexDirection: 'row', alignItems: 'center', gap: tokens.spacing.sm, flexShrink: 1 },
   orange: { width: tokens.size.iconSmall, height: tokens.size.iconSmall, borderRadius: tokens.radii.pill, backgroundColor: tokens.colors.primary },
   leaf: { position: 'absolute', top: -tokens.spacing.xs / 2, right: 0, width: tokens.spacing.sm, height: tokens.spacing.xs, borderRadius: tokens.radii.small, backgroundColor: tokens.colors.success, transform: [{ rotate: '-25deg' }] },

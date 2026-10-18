@@ -163,7 +163,7 @@ Only newly granted `welcomeReward` or `activeDayMilestone` credits select
 `celebration`; all ordinary grants select `micro`, regardless of amount.
 `OrangeRewardFeedback` renders one aggregated, nonmodal surface:
 
-- Micro: content-sized amount + orange mark + short encouragement, no mascot;
+- Micro: content-sized amount + orange mark only, no encouragement or mascot;
   220 ms entrance + 1400 ms hold + 180 ms exit = 1.8 seconds.
 - Celebration: compact CHEBU-07 card for welcome/milestones;
   260 ms entrance + 2220 ms hold + 220 ms exit = 2.7 seconds.
@@ -172,7 +172,12 @@ Both support tap or upward swipe dismissal, using built-in Animated/PanResponder
 Only the surface handles touches; the surrounding layer is `box-none`. Tabs,
 quick-add and scrolling remain available. Placement accounts for safe-area insets
 and a toolbar-height upper clearance; it never shifts content. Text may grow/wrap
-with Dynamic Type. Reduced motion removes movement and animation while retaining
+with Dynamic Type. At font scales ≥1.5, celebrations reflow into a small mascot /
+amount row followed by full-width title and supporting copy; the mascot is 64 pt.
+Micro text scales up to 1.5× and celebration text up to 2× to keep transient
+feedback compact even at extreme accessibility settings. Full earned-amount
+announcements remain independent of these visual limits. Normal-size celebration
+layout/copy is unchanged. Reduced motion removes movement and animation while retaining
 the same automatic lifetime. One textual accessibility announcement accompanies
 each notice, without a live region, artwork announcement or focus movement.
 There is no global popup queue, and feedback never increments wallet state.
