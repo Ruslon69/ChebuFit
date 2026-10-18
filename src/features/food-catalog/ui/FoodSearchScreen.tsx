@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, Keyboard, Linking, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Keyboard, Linking, Platform, Pressable, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFoodSearch } from '../../../application/food-catalog/useFoodSearch';
 import { useRewardFeedback } from '../../../application/rewards/RewardFeedbackProvider';
@@ -18,7 +18,6 @@ import { IconButton } from '../../../shared/ui/IconButton';
 import { catalogFoodIdentity } from '../domain/catalogFood';
 import type { CatalogFood } from '../domain/types';
 import { foodNutrientLine, getFoodCatalogMessages } from '../model/messages';
-import { getScannerMessages } from '../model/scannerMessages';
 import { FoodSelectionSheet } from './FoodSelectionSheet';
 import { personalFoodProviderId, personalFoodToCatalog, searchPersonalFoods } from '../../personal-foods/domain/personalFood';
 import { getPersonalFoodMessages } from '../../personal-foods/model/messages';
@@ -26,6 +25,7 @@ import { getPersonalFoodMessages } from '../../personal-foods/model/messages';
 type Context = { date: LocalDateKey; meal: MealType };
 export function FoodSearchScreen({ context }: { context: Context }) {
   const router = useRouter(), feedback = useRewardFeedback();
+  const { fontScale } = useWindowDimensions();
   const locale = appConfig.defaultLocale, copy = getFoodCatalogMessages(locale), nutritionCopy = getNutritionMessages(locale), format = nutritionFormatters(locale);
   const [query, setQuery] = useState(''), [selected, setSelected] = useState<CatalogFood | null>(null);
   const { state, search, recents, recentFailed, personalFoods, personalFailed, disclosure, attribution } = useFoodSearch();
@@ -68,9 +68,9 @@ export function FoodSearchScreen({ context }: { context: Context }) {
         style={({ pressed }) => [styles.row, pressed && { opacity: t.opacity.pressed }]}
       >
         <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.name}</AppText>
-        {food.brand && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.brand}</AppText>}
+        {(food.brand || personal) && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{[food.brand, personal ? personalCopy.badge : null].filter(Boolean).join(' · ')}</AppText>}
         <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{nutrientLine}</AppText>
-        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{personal ? `${personalCopy.badge} · ${copy.per100}` : copy.per100}</AppText>
+        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.per100}</AppText>
       </Pressable>
     );
     return <View key={catalogFoodIdentity(food)} style={styles.resultRow}>
@@ -99,7 +99,6 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           {disclosure === 'illustrativeNutrition' && (
             <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.catalogNote}</AppText>
           )}
-          {search.policy && <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.searchHint}</AppText>}
           {renderRecents()}
           {recentFailed && <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.recentUnavailable}</AppText>}
           <View style={styles.section} testID="food-search-initial">
@@ -120,7 +119,7 @@ export function FoodSearchScreen({ context }: { context: Context }) {
     }
     if (state.status === 'ready') return (
       <View style={styles.section} testID="food-search-ready">
-        <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{Array.from(query.trim()).length < (search.policy?.minimumLength ?? 1) ? copy.minimumQuery : copy.searchHint}</AppText>
+        {Array.from(query.trim()).length < (search.policy?.minimumLength ?? 1) && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.minimumQuery}</AppText>}
         {renderRecents()}
         {renderPrevious()}
       </View>
@@ -165,18 +164,23 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           {nutritionCopy.meals[context.meal]} · {format.date(context.date, getLocalDateKey(new Date()))}
         </AppText>
         <View style={styles.search}>
-          <Icon name="search" />
           <TextInput
             value={query} onChangeText={changeQuery} maxLength={200} placeholder={copy.search} placeholderTextColor={t.colors.textTertiary}
             accessibilityLabel={copy.search} keyboardType="default" returnKeyType="search" autoCorrect={false} autoCapitalize="none"
             onSubmitEditing={submit} maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.input} testID="food-search-input"
           />
           {query.length > 0 && <IconButton icon="close" variant="ghost" label={copy.clear} onPress={() => changeQuery('')} testID="food-search-clear" />}
+          {search.policy && <IconButton icon="search" label={copy.submit} variant="primary" disabled={Array.from(query.trim()).length < search.policy.minimumLength || state.status === 'searching' || (!!retryAt && Math.max(now, Date.now()) < retryAt)} onPress={submit} testID="food-search-submit" />}
         </View>
-        {search.policy && <Button label={copy.submit} variant="secondary" disabled={Array.from(query.trim()).length < search.policy.minimumLength || state.status === 'searching' || (!!retryAt && Math.max(now, Date.now()) < retryAt)} onPress={submit} testID="food-search-submit" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
-        <View style={styles.actions}>
-          <View style={styles.resultContent}><Button label={getScannerMessages(locale).entry} variant="ghost" onPress={() => { Keyboard.dismiss(); router.push({ pathname: '/scan-food', params: context }); }} testID="food-scan-open" maxFontSizeMultiplier={t.accessibility.controlTextScale} /></View>
-          <View style={styles.resultContent}><Button label={personalCopy.create} variant="ghost" onPress={createPersonal} testID="food-personal-create" maxFontSizeMultiplier={t.accessibility.controlTextScale} /></View>
+        <View style={[styles.actions, fontScale > 1.3 && styles.stackedActions]}>
+          <Pressable accessibilityRole="button" accessibilityLabel={copy.scanLabel} onPress={() => { Keyboard.dismiss(); router.push({ pathname: '/scan-food', params: context }); }} testID="food-scan-open" style={({ pressed }) => [styles.action, pressed && { opacity: t.opacity.pressed }]}>
+            <Icon name="barcode" color={t.colors.textSecondary} />
+            <AppText variant="label" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.actionLabel}>{copy.scan}</AppText>
+          </Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel={personalCopy.create} onPress={createPersonal} testID="food-personal-create" style={({ pressed }) => [styles.action, pressed && { opacity: t.opacity.pressed }]}>
+            <Icon name="plus" color={t.colors.textSecondary} />
+            <AppText variant="label" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.actionLabel}>{copy.create}</AppText>
+          </Pressable>
         </View>
         {personalResults.length > 0 && <View style={styles.section} testID="food-personal-results"><AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{personalCopy.mine}</AppText><Card padding="compact">{rows(personalResults)}</Card></View>}
         {personalFailed && <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{personalCopy.personalUnavailable}</AppText>}
@@ -198,10 +202,11 @@ export function FoodSearchScreen({ context }: { context: Context }) {
 
 const styles = StyleSheet.create({
   links: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm }, link: { minHeight: t.size.touchTarget, justifyContent: 'center' },
-  content: { gap: t.spacing.xl }, section: { gap: t.spacing.md },
+  content: { gap: t.spacing.md, paddingTop: t.spacing.lg }, section: { gap: t.spacing.sm },
   search: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, backgroundColor: t.colors.surface, borderRadius: t.radii.control, paddingLeft: t.spacing.lg, paddingRight: t.spacing.xs },
   input: { ...t.typography.body, color: t.colors.text, minHeight: t.size.button, flex: 1, paddingVertical: t.spacing.md },
-  row: { minHeight: t.size.button, gap: t.spacing.xs, padding: t.spacing.sm, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
+  row: { minHeight: t.size.button, gap: t.spacing.none, paddingHorizontal: t.spacing.xs, paddingVertical: t.spacing.xs, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
   status: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md, paddingVertical: t.spacing.lg },
-  resultRow: { flexDirection: 'row', alignItems: 'flex-start' }, resultContent: { flex: 1 }, actions: { flexDirection: 'row', gap: t.spacing.sm },
+  resultRow: { flexDirection: 'row', alignItems: 'flex-start' }, resultContent: { flex: 1 }, actions: { flexDirection: 'row', gap: t.spacing.sm }, stackedActions: { flexDirection: 'column' },
+  action: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: t.spacing.sm, minHeight: t.size.touchTarget, paddingHorizontal: t.spacing.md, paddingVertical: t.spacing.sm, backgroundColor: t.colors.surfaceSecondary, borderRadius: t.radii.control }, actionLabel: { flexShrink: 1 },
 });

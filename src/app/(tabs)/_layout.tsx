@@ -71,8 +71,8 @@ export default function MainTabsLayout() {
           options={{
             title: navigation.nutrition,
             headerShown: false,
-            // Match the quieter 44pt Quick Add while keeping food rows unobscured.
-            sceneStyle: { backgroundColor: tokens.colors.background, paddingBottom: tokens.size.touchTarget + tokens.spacing.lg },
+            // Meal-level actions already preserve the selected diary date and meal.
+            sceneStyle: { backgroundColor: tokens.colors.background, paddingBottom: 0 },
             tabBarButtonTestID: 'tab-nutrition',
             tabBarAccessibilityLabel: navigation.nutrition,
             tabBarIcon: ({ color }) => <Icon name="nutrition" color={color} />,
@@ -87,7 +87,7 @@ export default function MainTabsLayout() {
           options={{ title: navigation.progress, tabBarButtonTestID: 'tab-progress', tabBarAccessibilityLabel: navigation.progress, tabBarIcon: ({ color }) => <Icon name="progress" color={color} /> }}
         />
       </Tabs>
-      <QuickAdd tabBarHeight={tabBarHeight} subdued={nutritionIsVisible} />
+      {!nutritionIsVisible && <QuickAdd tabBarHeight={tabBarHeight} />}
     </View>
   );
 }

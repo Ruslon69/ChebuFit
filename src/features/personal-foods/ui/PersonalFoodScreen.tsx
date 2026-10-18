@@ -122,11 +122,11 @@ export function PersonalFoodScreen({ context, id, barcode }: { context: BarcodeC
   </>;
 }
 const styles = StyleSheet.create({
-  content: { gap: t.spacing.xl }, section: { gap: t.spacing.lg }, field: { gap: t.spacing.sm }, nutrientField: { flexGrow: 1, width: '45%', minWidth: t.size.touchTarget + t.spacing.xl },
+  content: { gap: t.spacing.lg }, section: { gap: t.spacing.md }, field: { gap: t.spacing.sm }, nutrientField: { flexGrow: 1, width: '45%', minWidth: t.size.touchTarget + t.spacing.xl },
   expandedField: { flexBasis: 'auto', width: '100%' }, confirmation: { maxHeight: t.layout.modalMaxHeight },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, backgroundColor: t.colors.surfaceSecondary, borderRadius: t.radii.control, paddingHorizontal: t.spacing.md, borderWidth: t.stroke.thin, borderColor: t.colors.surfaceSecondary },
   invalid: { borderColor: t.colors.destructive }, input: { ...t.typography.body, color: t.colors.text, minHeight: t.size.button, paddingVertical: t.spacing.md, flex: 1 },
-  macroFields: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.lg },
+  macroFields: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.md },
   delete: { minHeight: t.size.touchTarget, justifyContent: 'center', alignItems: 'center' },
   done: { minHeight: t.size.touchTarget, justifyContent: 'center', paddingHorizontal: t.spacing.lg },
   overlay: { flex: 1, backgroundColor: t.colors.scrim, justifyContent: 'center' },

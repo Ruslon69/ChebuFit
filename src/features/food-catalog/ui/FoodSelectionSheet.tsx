@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { createCatalogFoodAdd } from '../../../application/food-catalog/catalog';
 import { createLocalRewardContext } from '../../../application/rewards/localRewardContext';
@@ -23,6 +23,7 @@ type Props = { food: CatalogFood; date: LocalDateKey; initialMeal: MealType; onC
 export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }: Props) {
   const locale = appConfig.defaultLocale, copy = getFoodCatalogMessages(locale), nutritionCopy = getNutritionMessages(locale), format = nutritionFormatters(locale);
   const insets = useSafeAreaInsets();
+  const { fontScale } = useWindowDimensions();
   const [draft, setDraft] = useState('100'), [meal, setMeal] = useState(initialMeal);
   const [busy, setBusy] = useState(false), [failed, setFailed] = useState(false), [focused, setFocused] = useState(false), [visible, setVisible] = useState(true);
   const [operation] = useState(createCatalogFoodAdd);
@@ -41,6 +42,14 @@ export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }
     completed.current = { notice: result.value.notice }; setVisible(false);
     if (Platform.OS !== 'ios') finish();
   };
+  // Large names/brands must scroll rather than consume the entire accessible sheet.
+  const scrollHeading = fontScale > 1.3 && !focused;
+  const heading = (
+    <View style={scrollHeading ? undefined : styles.flex}>
+      <AppText variant="sectionTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale} numberOfLines={focused ? 1 : undefined} testID="food-selection-name">{food.name}</AppText>
+      {!focused && food.brand && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.brand}</AppText>}
+    </View>
+  );
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={close} onDismiss={finish}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.overlay}>
@@ -50,14 +59,12 @@ export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }
           marginTop: insets.top + t.spacing.lg, marginBottom: Math.max(insets.bottom, t.spacing.lg),
         }]}>
           <View style={styles.header}>
-            <View style={styles.flex}>
-              <AppText variant="sectionTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale} numberOfLines={focused ? 1 : undefined} testID="food-selection-name">{food.name}</AppText>
-              {!focused && food.brand && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.brand}</AppText>}
-            </View>
+            {scrollHeading ? <AppText variant="label" tone="textSecondary" style={styles.flex} maxFontSizeMultiplier={t.accessibility.controlTextScale}>{copy.select}</AppText> : heading}
             {focused ? <Pressable accessibilityRole="button" onPress={() => Keyboard.dismiss()} style={styles.done} testID="food-quantity-done"><AppText variant="label" tone="primaryText" maxFontSizeMultiplier={t.accessibility.controlTextScale}>{copy.done}</AppText></Pressable>
               : <IconButton icon="close" label={copy.close} variant="ghost" disabled={busy} onPress={close} testID="food-selection-close" />}
           </View>
           <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" contentContainerStyle={styles.body}>
+            {scrollHeading && heading}
             {!focused && <View style={styles.field}>
               <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.source.providerId === personalFoodProviderId ? `${getPersonalFoodMessages(locale).badge} · ${copy.per100}` : copy.per100}</AppText>
               <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{foodNutrientLine(food.nutrients, locale)}</AppText>
@@ -84,7 +91,7 @@ export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }
               <AppText variant="label" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.meal}</AppText>
               <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} testID="food-selection-date">{format.date(date, getLocalDateKey(new Date()))}</AppText>
               <View style={styles.meals}>{mealTypes.map(value => <Pressable key={value} accessibilityRole="radio" accessibilityState={{ checked: meal === value, disabled: busy }} disabled={busy}
-                onPress={() => setMeal(value)} style={({ pressed }) => [styles.meal, value === meal && styles.selected, pressed && { opacity: t.opacity.pressed }]} testID={`food-meal-${value}`}>
+                onPress={() => setMeal(value)} style={({ pressed }) => [styles.meal, fontScale > 1.3 && styles.expandedMeal, value === meal && styles.selected, pressed && { opacity: t.opacity.pressed }]} testID={`food-meal-${value}`}>
                 <AppText variant="label" align="center" tone={value === meal ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{nutritionCopy.meals[value]}</AppText>
               </Pressable>)}</View>
             </View>}
@@ -101,13 +108,13 @@ export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }
 }
 const styles = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: t.colors.scrim },
-  sheet: { flexShrink: 1, backgroundColor: t.colors.surface, borderRadius: t.radii.card, maxHeight: t.layout.modalMaxHeight, maxWidth: t.layout.contentMaxWidth, padding: t.spacing.xl },
-  header: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, marginBottom: t.spacing.lg }, flex: { flex: 1 },
-  body: { gap: t.spacing.lg, paddingBottom: t.spacing.xs }, field: { gap: t.spacing.sm },
+  sheet: { flexShrink: 1, backgroundColor: t.colors.surface, borderRadius: t.radii.card, maxHeight: t.layout.modalMaxHeight, maxWidth: t.layout.contentMaxWidth, padding: t.spacing.lg },
+  header: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, marginBottom: t.spacing.sm }, flex: { flex: 1 },
+  body: { gap: t.spacing.md, paddingBottom: t.spacing.xs }, field: { gap: t.spacing.xs },
   done: { minHeight: t.size.touchTarget, minWidth: t.size.touchTarget, justifyContent: 'center' },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md, backgroundColor: t.colors.surfaceSecondary, borderRadius: t.radii.control, paddingHorizontal: t.spacing.lg },
-  input: { ...t.typography.cardTitle, color: t.colors.text, flex: 1, minHeight: t.size.button, paddingVertical: t.spacing.md },
-  preview: { gap: t.spacing.sm }, macros: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.lg }, macro: { flexGrow: 1, minWidth: t.size.touchTarget + t.spacing.xl, gap: t.spacing.xs },
-  meals: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm }, meal: { flexGrow: 1, flexBasis: '45%', minHeight: t.size.touchTarget, justifyContent: 'center', padding: t.spacing.sm, borderRadius: t.radii.control, backgroundColor: t.colors.surfaceSecondary },
-  selected: { backgroundColor: t.colors.primarySubtle }, footer: { paddingTop: t.spacing.lg, gap: t.spacing.sm },
+  input: { ...t.typography.cardTitle, color: t.colors.text, flex: 1, minHeight: t.size.touchTarget, paddingVertical: t.spacing.sm },
+  preview: { gap: t.spacing.xs }, macros: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.lg }, macro: { flexGrow: 1, minWidth: t.size.touchTarget + t.spacing.xl, gap: t.spacing.xs },
+  meals: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm }, meal: { flexGrow: 1, width: '45%', minHeight: t.size.touchTarget, justifyContent: 'center', padding: t.spacing.sm, borderRadius: t.radii.control, backgroundColor: t.colors.surfaceSecondary },
+  expandedMeal: { width: '100%' }, selected: { backgroundColor: t.colors.primarySubtle }, footer: { paddingTop: t.spacing.md, gap: t.spacing.sm },
 });

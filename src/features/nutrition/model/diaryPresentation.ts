@@ -33,3 +33,9 @@ export function toDiaryMeals(view: DailyNutritionView) {
     }),
   }));
 }
+
+/** Display policy only: compare canonical integer kcal values before any rounding. */
+export function calorieGoalStatus(view: DailyNutritionView) {
+  const delta = view.targets.energyCentiKcal - view.summary.totals.energyCentiKcal;
+  return { kind: delta < 0 ? 'overTarget' as const : 'remaining' as const, energyCentiKcal: Math.abs(delta) };
+}

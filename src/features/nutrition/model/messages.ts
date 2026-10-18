@@ -6,7 +6,7 @@ const translations = {
   ru: {
     title: 'Питание', today: 'Сегодня', yesterday: 'Вчера', previous: 'Предыдущий день', next: 'Следующий день',
     overview: 'Открыть Сегодня', returnToday: 'Вернуться к сегодняшнему дню',
-    kcal: 'ккал', grams: 'г', of: 'из', remaining: 'Осталось',
+    kcal: 'ккал', grams: 'г', of: 'из', remaining: 'Осталось', overTarget: 'Сверх цели',
     macros: { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' },
     meals: { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snacks: 'Перекусы' },
     add: 'Добавить продукт', addTo: 'Добавить продукт: ', emptyMeal: 'Пока ничего не добавлено',
@@ -20,7 +20,7 @@ const translations = {
   },
   en: {
     title: 'Nutrition', today: 'Today', yesterday: 'Yesterday', previous: 'Previous day', next: 'Next day',
-    overview: 'Open Today', returnToday: 'Return to today', kcal: 'kcal', grams: 'g', of: 'of', remaining: 'Remaining',
+    overview: 'Open Today', returnToday: 'Return to today', kcal: 'kcal', grams: 'g', of: 'of', remaining: 'Remaining', overTarget: 'Above target',
     macros: { protein: 'Protein', fat: 'Fat', carbs: 'Carbs' },
     meals: { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snacks: 'Snacks' },
     add: 'Add food', addTo: 'Add food to: ', emptyMeal: 'Nothing added yet', loading: 'Loading diary…',

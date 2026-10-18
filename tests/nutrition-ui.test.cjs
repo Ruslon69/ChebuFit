@@ -105,3 +105,13 @@ test('combined edit and simultaneous add preserve both changes through the share
   assert.equal(reloaded.diary.entries.find(e=>e.id===entry.id).quantity.milliGrams,150000);
   assert.equal(reloaded.diary.entries.find(e=>e.id==='new-entry').quantity.milliGrams,100000);
 });
+
+test('calorie summary neutrally distinguishes remaining, exact target and positive overage using canonical precision', async () => {
+  const view = ok(await fixture().service().getDay(day));
+  for (const [consumed, kind, expected] of [[194000,'remaining',90500],[284500,'remaining',0],[311100,'overTarget',26600],[284501,'overTarget',1]]) {
+    const selected = { ...view, summary: { ...view.summary, totals: { ...view.summary.totals, energyCentiKcal: consumed } } };
+    const before = JSON.stringify(selected);
+    assert.deepEqual(p.calorieGoalStatus(selected), { kind, energyCentiKcal: expected });
+    assert.equal(JSON.stringify(selected), before);
+  }
+});

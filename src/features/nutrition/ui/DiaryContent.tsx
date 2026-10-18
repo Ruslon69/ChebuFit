@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import type { DailyNutritionView, MealType, NutritionDiaryEntry } from '../domain/types';
 import { toNutritionOverview } from '../model/NutritionOverview';
-import { toDiaryMeals } from '../model/diaryPresentation';
+import { calorieGoalStatus, toDiaryMeals } from '../model/diaryPresentation';
 import type { NutritionCopy } from '../model/messages';
 import { AppText } from '../../../shared/ui/AppText';
 import { Card } from '../../../shared/ui/Card';
@@ -13,6 +13,7 @@ type CopyProps = { copy: NutritionCopy; number: (value: number, decimals?: numbe
 export function NutritionDailySummary({ view, copy, number }: CopyProps & { view: DailyNutritionView }) {
   const { fontScale } = useWindowDimensions();
   const overview = toNutritionOverview(view);
+  const calorieStatus = calorieGoalStatus(view);
   return (
     <Card>
       <View style={styles.summary} testID="nutrition-summary">
@@ -21,9 +22,9 @@ export function NutritionDailySummary({ view, copy, number }: CopyProps & { view
           <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">{copy.of} {number(overview.calories.target)} {copy.kcal}</AppText>
         </View>
         <View style={styles.remaining}>
-          <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label" tone="textSecondary">{copy.remaining}</AppText>
+          <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="label" tone="textSecondary">{copy[calorieStatus.kind]}</AppText>
           <AppText maxFontSizeMultiplier={t.accessibility.headingTextScale} variant="sectionTitle">
-            {number(overview.calories.remaining)} <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">{copy.kcal}</AppText>
+            {number(calorieStatus.energyCentiKcal / 100, calorieStatus.energyCentiKcal > 0 && calorieStatus.energyCentiKcal < 100 ? 2 : 0)} <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale} variant="bodySecondary" tone="textSecondary">{copy.kcal}</AppText>
           </AppText>
         </View>
       </View>

@@ -37,8 +37,13 @@ Search preserves raw input in the form and trims only requests. Local fixture
 search debounce is 300ms;
 each query/clear/retry/dispose invalidates earlier generations and aborts where
 supported. A provider ignoring cancellation still cannot overwrite newer results.
-OFF uses explicit button/keyboard submit (minimum two characters), never debounce
-requests. While typing, local Recents filter immediately. Prior results survive
+OFF uses keyboard Search or the compact search-field icon (minimum two characters),
+never debounce requests. Scan/Create are secondary actions, with vertically stacked
+controls at larger text sizes. The shared selection uses a compact 2×2 meal selector
+that expands for Dynamic Type. At larger text sizes, the product name/brand scroll
+with the sheet body so long names cannot crowd out the form; Close and Add remain
+available. The quantity/Add keyboard behavior is unchanged.
+While typing, local Recents filter immediately. Prior results survive
 remote failures, and typed cooldowns disable Retry. Initial suggestions, ready,
 searching, results, empty, and retryable error states are separate. No fake
 Recent/Frequent history. Recent snapshots remain selectable without a provider
