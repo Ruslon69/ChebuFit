@@ -8,40 +8,42 @@ import { ProgressBar } from '../../../shared/ui/ProgressBar';
 import type { TodayViewModel } from '../model/TodayViewModel';
 import type { TodayCopy, TodayFormatters } from '../model/messages';
 
-type Props = Pick<TodayViewModel, 'calories' | 'macros'> & { copy: TodayCopy; format: TodayFormatters };
+type Props = Pick<TodayViewModel, 'nutrition'> & { copy: TodayCopy; format: TodayFormatters };
 
-export function CaloriesCard({ calories, macros, copy, format }: Props) {
-  const remaining = Math.max(0, calories.target - calories.consumed);
+export function CaloriesCard({ nutrition, copy, format }: Props) {
+  const calories = nutrition?.calories;
+  const macros = nutrition?.macros ?? (['protein', 'fat', 'carbs'] as const).map(id => ({ id, consumed: null, target: null }));
+  const display = (value: number | undefined | null) => value === undefined || value === null ? '—' : format.number(value);
 
   return (
     <Card padding="spacious" testID="today-calories">
       <View style={styles.content}>
         <View style={styles.heading}>
           <AppText variant="cardTitle">{copy.calories}</AppText>
-          <AppText variant="caption" tone="textSecondary">{copy.target} {format.number(calories.target)} {copy.kcal}</AppText>
+          <AppText variant="caption" tone="textSecondary">{copy.target} {display(calories?.target)} {copy.kcal}</AppText>
         </View>
         <View style={styles.balance}>
-          <View style={styles.consumed} accessible accessibilityLabel={`${format.number(calories.consumed)} ${copy.consumed}`}>
-            <AppText variant="display">{format.number(calories.consumed)}</AppText>
+          <View style={styles.consumed} accessible accessibilityLabel={`${display(calories?.consumed)} ${copy.consumed}`}>
+            <AppText variant="display">{display(calories?.consumed)}</AppText>
             <AppText variant="bodySecondary" tone="textSecondary">{copy.consumed}</AppText>
           </View>
-          <View style={styles.remaining} accessible accessibilityLabel={`${copy.remaining} ${format.number(remaining)} ${copy.kcal}`}>
+          <View style={styles.remaining} accessible accessibilityLabel={`${copy.remaining} ${display(calories?.remaining)} ${copy.kcal}`}>
             <AppText variant="caption" tone="textSecondary">{copy.remaining}</AppText>
-            <AppText variant="sectionTitle" tone="primaryText">{format.number(remaining)}</AppText>
+            <AppText variant="sectionTitle" tone="primaryText">{display(calories?.remaining)}</AppText>
             <AppText variant="caption" tone="textSecondary">{copy.kcal}</AppText>
           </View>
         </View>
-        <ProgressBar value={calories.consumed / calories.target} label={copy.calories} testID="today-calorie-progress" />
+        <ProgressBar value={calories && calories.target > 0 ? calories.consumed / calories.target : 0} label={copy.calories} testID="today-calorie-progress" />
         <Divider />
         <View style={styles.macros}>
           {macros.map(macro => (
             <View key={macro.id} style={styles.macro} testID={`today-macro-${macro.id}`}>
               <AppText variant="bodySecondary" tone="textSecondary">{copy.macros[macro.id]}</AppText>
-              <View accessible accessibilityLabel={`${copy.macros[macro.id]} ${format.number(macro.consumed)} / ${format.number(macro.target)} ${copy.grams}`}>
-                <AppText variant="cardTitle">{format.number(macro.consumed)} <AppText variant="caption" tone="textSecondary">{copy.grams}</AppText></AppText>
-                <AppText variant="caption" tone="textTertiary">/ {format.number(macro.target)} {copy.grams}</AppText>
+              <View accessible accessibilityLabel={`${copy.macros[macro.id]} ${display(macro.consumed)} / ${display(macro.target)} ${copy.grams}`}>
+                <AppText variant="cardTitle">{display(macro.consumed)} <AppText variant="caption" tone="textSecondary">{copy.grams}</AppText></AppText>
+                <AppText variant="caption" tone="textTertiary">/ {display(macro.target)} {copy.grams}</AppText>
               </View>
-              <ProgressBar value={macro.consumed / macro.target} label={copy.macros[macro.id]} />
+              <ProgressBar value={macro.consumed !== null && macro.target !== null && macro.target > 0 ? macro.consumed / macro.target : 0} label={copy.macros[macro.id]} />
             </View>
           ))}
         </View>

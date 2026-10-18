@@ -13,6 +13,8 @@ try {
     path.join(project, 'src/infrastructure/rewards/KeyValueOrangeWalletRepository.ts'),
     path.join(project, 'src/application/rewards/waterGoalRewards.ts'),
     path.join(project, 'src/application/rewards/localRewardContext.ts'),
+    path.join(project, 'src/features/nutrition/index.ts'),
+    path.join(project, 'src/infrastructure/nutrition/KeyValueNutritionRepository.ts'),
     path.join(project, 'src/features/water/index.ts'),
     path.join(project, 'src/infrastructure/water/KeyValueWaterRepository.ts'),
     path.join(project, 'src/features/rewards/model/rewardMessages.ts'),
@@ -31,7 +33,7 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),

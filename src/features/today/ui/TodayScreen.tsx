@@ -47,9 +47,9 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
           />
         )}
       />
-      <CaloriesCard calories={model.calories} macros={model.macros} copy={copy} format={format} />
+      <CaloriesCard nutrition={model.nutrition} copy={copy} format={format} />
       <WaterCard water={model.water} onAdd={onAddWater} onRemove={onRemoveWater} copy={copy} format={format} />
-      <MealsOverview meals={model.meals} onOpen={onOpenNutrition} copy={copy} format={format} />
+      <MealsOverview meals={model.nutrition?.meals ?? null} onOpen={onOpenNutrition} copy={copy} format={format} />
       <WorkoutCard workout={model.workout} onStart={() => preview(copy.workoutPreview)} copy={copy} />
       <WeightCard weight={model.weight} onOpen={onOpenProgress} copy={copy} format={format} />
     </Screen>

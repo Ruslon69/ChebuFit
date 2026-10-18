@@ -6,18 +6,6 @@ export const todayMock = {
   name: 'Руслан',
   date: '2026-10-17T12:00:00+02:00',
   orangeBalance: rewardsMock.orangeBalance,
-  calories: { consumed: 1940, target: 2845 },
-  macros: [
-    { id: 'protein', consumed: 128, target: 185 },
-    { id: 'fat', consumed: 47, target: 65 },
-    { id: 'carbs', consumed: 241, target: 380 },
-  ],
-  meals: [
-    { id: 'breakfast', calories: 520 },
-    { id: 'lunch', calories: 680 },
-    { id: 'dinner', calories: 540 },
-    { id: 'snacks', calories: 200 },
-  ],
   workout: { title: 'Грудь + трицепс', exerciseCount: 6, durationMinutes: 55 },
   weight: { kg: 85, changeKg: -0.6, periodDays: 30, changeTone: 'positive' },
-} satisfies Omit<TodayViewModel, 'water'>;
+} satisfies Omit<TodayViewModel, 'water' | 'nutrition'>;

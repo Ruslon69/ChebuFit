@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { router } from 'expo-router';
 
+import { useDailyNutrition } from '../../application/nutrition/useDailyNutrition';
+import { toNutritionOverview } from '../../features/nutrition';
 import { useDailyWater } from '../../application/water/useDailyWater';
 import { waterDefaults, type LocalDateKey } from '../../features/water';
 import { useOrangeWallet } from '../../application/rewards/useOrangeWallet';
@@ -16,10 +18,11 @@ export default function TodayRoute() {
     onWaterGoalReached({ localDay: fact.localDate, occurredAt: fact.occurredAt });
   }, [onWaterGoalReached]);
   const water = useDailyWater(onGoalCrossed);
+  const nutrition = useDailyNutrition();
   return (
     <>
       <TodayScreen
-        model={{ ...todayMock, orangeBalance: wallet.balance, water: {
+        model={{ ...todayMock, nutrition: nutrition.view ? toNutritionOverview(nutrition.view) : null, orangeBalance: wallet.balance, water: {
           consumedMl: water.record?.consumedMl ?? null,
           targetMl: water.record?.goalMl ?? null,
           portionMl: waterDefaults.portionMl,

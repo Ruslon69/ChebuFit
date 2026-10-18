@@ -11,6 +11,8 @@ import { Icon } from '../../../shared/ui/Icon';
 import { IconButton } from '../../../shared/ui/IconButton';
 import { ProgressBar } from '../../../shared/ui/ProgressBar';
 import { SectionHeader } from '../../../shared/ui/SectionHeader';
+import { mealTypes } from '../../nutrition';
+import type { NutritionOverview } from '../../nutrition';
 import type { TodayViewModel } from '../model/TodayViewModel';
 import type { TodayCopy, TodayFormatters } from '../model/messages';
 
@@ -48,20 +50,20 @@ export function WaterCard({ water, onAdd, onRemove, copy, format }: Presentation
 }
 
 export function MealsOverview({ meals, onOpen, copy, format }: Presentation & {
-  meals: TodayViewModel['meals']; onOpen: () => void;
+  meals: NutritionOverview['meals'] | null; onOpen: () => void;
 }) {
   return (
     <View style={styles.content} testID="today-meals">
       <SectionHeader title={copy.nutrition} action={{ label: copy.allMeals, onPress: onOpen }} />
       <Card>
         <View style={styles.meals}>
-          {meals.map((meal, index) => (
+          {(meals ?? mealTypes.map(id => ({ id, calories: null }))).map((meal, index) => (
             <Fragment key={meal.id}>
               {index > 0 && <Divider />}
-              <View style={[styles.row, styles.mealRow]} accessible accessibilityLabel={`${copy.meals[meal.id]}, ${format.number(meal.calories)} ${copy.kcal}`}>
+              <View style={[styles.row, styles.mealRow]} accessible accessibilityLabel={`${copy.meals[meal.id]}, ${meal.calories === null ? '—' : format.number(meal.calories)} ${copy.kcal}`}>
                 <AppText style={styles.mealName}>{copy.meals[meal.id]}</AppText>
                 <View style={styles.mealCalories}>
-                  <AppText variant="cardTitle">{format.number(meal.calories)}</AppText>
+                  <AppText variant="cardTitle">{meal.calories === null ? '—' : format.number(meal.calories)}</AppText>
                   <AppText variant="caption" tone="textSecondary">{copy.kcal}</AppText>
                 </View>
               </View>

@@ -23,6 +23,7 @@
     "react-dom": "19.3.0"
   },
   "scripts": {
+    "test:nutrition": "node scripts/test-rewards.cjs --nutrition",
     "test:water": "node scripts/test-rewards.cjs --hydration",
     "test:reward-feedback": "node scripts/test-rewards.cjs --feedback",
     "test:water-rewards": "node scripts/test-rewards.cjs --water",

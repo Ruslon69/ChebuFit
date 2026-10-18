@@ -10,8 +10,8 @@
   application composition will choose adapters and supply them to use cases.
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress,rewards}` owns each
   product domain. `src/features/today` composes the daily overview presentation from
-  a typed `TodayViewModel` and mock dashboard fixture. The route supplies real
-  wallet/water state through their application hooks. Successful water adds expose
+  a typed `TodayViewModel` and remaining mock greeting/workout/weight fixture. The
+  route supplies real wallet, water and Nutrition diary totals through hooks. Successful water adds expose
   a persisted goal-crossing fact; composition processes rewards. Initial loading
   shows unavailable values, never fake zeroes.
 - `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
@@ -25,7 +25,11 @@
 - `src/features/water/domain` owns pure integer quantities and transitions; its
   `application/` owns versioned daily state, the repository port and serialized
   service. No React/native/storage SDK imports belong in either layer.
-- `src/application` composes AsyncStorage wallet/water adapters, services and React hooks,
+- `src/features/nutrition/domain` owns per-100g snapshots, fixed-precision entry/meal/day
+  calculations and targets. Its application layer owns correctable diary CRUD,
+  versioned state, repository port and serialized service. See its README for
+  precision, provider-neutral snapshots, serving extensions and reward boundaries.
+- `src/application` composes AsyncStorage wallet/water/nutrition adapters, services and React hooks,
   alongside application UI shared across routes such as the Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
 - `src/shared/theme` contains semantic light-theme design tokens, with no runtime React dependency.
@@ -37,7 +41,7 @@
   tooling when real localized features need it. Never translate stored domain IDs.
 - `src/shared/utils` and `src/shared/types` document homes for genuinely shared
   pure helpers/contracts. Shared local-calendar capture and validation live here.
-- `src/infrastructure/{rewards,water}` implements feature repositories through narrow
+- `src/infrastructure/{rewards,water,nutrition}` implements feature repositories through narrow
   key-value ports, supplied with AsyncStorage in application composition. Other
   `src/infrastructure` integrations are added when needed. Root `assets/`
   continues to hold Expo app icons; future exercise media belongs with workouts.
@@ -112,7 +116,10 @@ ledger, and balance updates atomically. Local storage is not a security boundary
 The root renders a four-tab navigation shell and a separate onboarding placeholder.
 Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/development`
 showcase is reachable through a development-only route/header control, outside tabs.
-Today uses illustrative dashboard data from `src/features/today/model/todayMock.ts`.
+Today uses illustrative greeting/workout/weight data from `src/features/today/model/todayMock.ts`.
+Nutrition totals/targets/meals come from `src/application/nutrition/useDailyNutrition`,
+with only display rounding in the feature projection. No canonical nutrition
+aggregates remain in Today mocks. Nutrition seed/read/relaunch never grants oranges.
 Water is real per-day state consumed through `src/application/water/useDailyWater`
 and persisted by the Water service; Today owns no canonical water quantity. The Today
 header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
@@ -130,7 +137,9 @@ Water uses versioned daily records with integer ml and historical goal snapshots
 separate from the wallet. Both use the existing AsyncStorage adapter pattern and
 serialize local operations; cross-device/feature atomicity is not provided. See
 `src/features/water/README.md` for the explicit-date API and future Watch contract.
-No other product persistence, network service clients, authentication, or watch target exists.
+Nutrition additionally persists versioned daily diaries with food snapshots; targets
+remain separate current goals. No other product persistence, network service clients,
+authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
 
