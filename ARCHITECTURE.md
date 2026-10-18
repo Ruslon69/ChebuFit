@@ -211,8 +211,10 @@ additional direct web dependency is introduced here.
 
 Food discovery belongs to `src/features/food-catalog`, separate from diary storage.
 Application composition injects provider/recent ports and coordinates committed
-real adds with Rewards. Infrastructure currently supplies an illustrative local
-catalog and a small versioned recent-food adapter. Provider-neutral snapshots keep
+real adds with Rewards. Infrastructure supplies Open Food Facts by default, an
+explicitly selected development fixture provider, and a versioned recent-food
+adapter. Remote search requires deliberate submission and conservative rate
+spacing; see `docs/OPEN_FOOD_FACTS.md` for data validation, attribution and privacy. Provider-neutral snapshots keep
 existing diary history independent of future network/provider changes. The existing
 reward feedback is hosted once at application root so both Food and Water can
 present persisted grants across navigation. See the feature README for details.

@@ -4,10 +4,13 @@ import { nutritionFormatters } from '../../nutrition/model/messages';
 const translations = {
   ru: {
     title: 'Добавить продукт', search: 'Поиск продуктов', clear: 'Очистить поиск', searching: 'Ищем продукты…',
+    submit: 'Найти', searchHint: 'Введите название и нажмите «Найти» или «Поиск» на клавиатуре.', minimumQuery: 'Для поиска введите хотя бы 2 символа.',
+    rateLimited: 'Слишком много запросов', rateHint: 'Попробуйте немного позже.', lastSearch: 'Предыдущий поиск',
+    source: 'Данные', license: 'Лицензия', remoteNote: 'Поиск отправляется в Open Food Facts.',
     suggestions: 'Популярные', recents: 'Недавние', recentUnavailable: 'Недавние пока недоступны',
     catalogNote: 'Демонстрационный каталог · пищевая ценность примерная',
     noResults: 'Ничего не нашлось', noResultsHint: 'Попробуйте другое название или бренд.',
-    error: 'Не удалось найти продукты', errorHint: 'Попробуйте ещё раз чуть позже.', retry: 'Повторить поиск',
+    error: 'Не удалось найти продукты', errorHint: 'Проверьте подключение к интернету и попробуйте ещё раз.', retry: 'Повторить поиск',
     custom: 'Создать свой · скоро', notFound: 'Не нашли продукт?', per100: 'На 100 г',
     quantity: 'Количество', grams: 'г', kcal: 'ккал', meal: 'Приём пищи', add: 'Добавить в дневник', addShort: 'Добавить',
     done: 'Готово', close: 'Вернуться к поиску', portion: 'В выбранной порции',
@@ -18,6 +21,9 @@ const translations = {
   },
   en: {
     title: 'Add food', search: 'Search foods', clear: 'Clear search', searching: 'Searching foods…',
+    submit: 'Search', searchHint: 'Enter a food name, then tap Search or use the keyboard Search key.', minimumQuery: 'Enter at least 2 characters to search.',
+    rateLimited: 'Too many requests', rateHint: 'Please try again later.', lastSearch: 'Previous search',
+    source: 'Data', license: 'License', remoteNote: 'Search is sent to Open Food Facts.',
     suggestions: 'Popular', recents: 'Recent', recentUnavailable: 'Recent foods are unavailable',
     catalogNote: 'Demo catalog · illustrative nutrition values',
     noResults: 'Nothing found', noResultsHint: 'Try another food name or brand.',

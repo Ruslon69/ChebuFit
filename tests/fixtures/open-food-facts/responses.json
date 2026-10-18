@@ -1,0 +1,68 @@
+{
+  "description": "Synthetic contract fixtures; not verified commercial nutrition. API variants reviewed against official schemas.",
+  "legacy": {
+    "code": "5000171033635",
+    "product_name": "Tuna in spring water",
+    "product_name_ru": "Тунец в собственном соку",
+    "brands": "John West",
+    "nutrition_data_per": "100g",
+    "product_quantity_unit": "g",
+    "nutriments": {
+      "energy-kcal_100g": 110,
+      "energy_100g": 460.24,
+      "energy-kj_100g": 460.24,
+      "proteins_100g": 25,
+      "fat_100g": 1,
+      "carbohydrates_100g": 0
+    }
+  },
+  "v3": {
+    "code": "3017624010701",
+    "product_name": "Hazelnut spread",
+    "brands": "Ferrero",
+    "nutrition": {
+      "aggregated_set": {
+        "per": "100g",
+        "preparation": "as_sold",
+        "nutrients": {
+          "energy-kcal": {
+            "value": 539,
+            "unit": "kcal"
+          },
+          "energy-kj": {
+            "value": 2228,
+            "unit": "kJ"
+          },
+          "proteins": {
+            "value": 6.3,
+            "unit": "g"
+          },
+          "fat": {
+            "value": 30.9,
+            "unit": "g"
+          },
+          "carbohydrates": {
+            "value": 57.5,
+            "unit": "g"
+          }
+        }
+      }
+    }
+  },
+  "notFound": {
+    "status": "failure",
+    "result": {
+      "id": "product_not_found"
+    }
+  },
+  "rateLimited": {
+    "status": 429,
+    "retryAfter": "60"
+  },
+  "unavailable": {
+    "status": 503
+  },
+  "malformed": {
+    "products": null
+  }
+}

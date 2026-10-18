@@ -10,8 +10,8 @@ export function useFoodSearch() {
   useEffect(() => {
     let mounted = true;
     void search.start();
-    void recentFoodsRepository.load().then(result => { if (mounted) { setRecentFailed(!result.ok); if (result.ok) setRecents(result.value); } });
+    void recentFoodsRepository.load().then(result => { if (mounted) { setRecentFailed(!result.ok); if (result.ok) setRecents(result.value.filter(item => foodCatalogProvider.disclosure === 'illustrativeNutrition' || item.food.source.providerId !== 'chebufit-development')); } });
     return () => { mounted = false; search.dispose(); };
   }, [search]);
-  return { state, search, recents, recentFailed, disclosure: foodCatalogProvider.disclosure };
+  return { state, search, recents, recentFailed, disclosure: foodCatalogProvider.disclosure, attribution: foodCatalogProvider.attribution };
 }

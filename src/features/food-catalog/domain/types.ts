@@ -12,11 +12,14 @@ export type CatalogFood = Readonly<{
   serving?: Readonly<{ label: string; grams: number }>;
 }>;
 export type FoodSearchQuery = Readonly<{ text: string }>;
-export type FoodSearchContext = Readonly<{ signal?: AbortSignal; limit?: number; cursor?: string }>;
+export type FoodSearchContext = Readonly<{ signal?: AbortSignal; limit?: number; cursor?: string; languages?: readonly string[]; countryCode?: string }>;
 export type FoodSearchResult = Readonly<{ foods: readonly CatalogFood[]; nextCursor?: string }>;
-export type CatalogError = 'providerUnavailable' | 'invalidFood' | 'storageUnavailable' | 'corruptData' | 'unsupportedSchema';
-export type CatalogResult<T> = Readonly<{ ok: true; value: T }> | Readonly<{ ok: false; error: CatalogError }>;
+export type CatalogError = 'providerUnavailable' | 'invalidFood' | 'storageUnavailable' | 'corruptData' | 'unsupportedSchema'
+  | 'network' | 'timeout' | 'rateLimited' | 'server' | 'malformedResponse' | 'invalidQuery' | 'invalidBarcode' | 'cancelled';
+export type CatalogResult<T> = Readonly<{ ok: true; value: T }> | Readonly<{ ok: false; error: CatalogError; retryAfterMs?: number }>;
 export interface FoodCatalogProvider {
+  readonly searchPolicy?: Readonly<{ trigger: 'submit'; minimumLength: number }>;
+  readonly attribution?: Readonly<{ name: string; url: string; license: string; licenseUrl: string }>;
   readonly disclosure?: 'illustrativeNutrition';
   searchFoods(query: FoodSearchQuery, context?: FoodSearchContext): Promise<CatalogResult<FoodSearchResult>>;
   getSuggestions(context?: FoodSearchContext): Promise<CatalogResult<readonly CatalogFood[]>>;

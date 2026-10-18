@@ -1,12 +1,13 @@
 // Compile with the existing TypeScript dependency, then use Node's built-in runner.
-const { mkdtempSync, rmSync } = require('node:fs');
-const { tmpdir } = require('node:os');
+const { mkdirSync, mkdtempSync, rmSync } = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const ts = require('typescript');
 
 const project = path.resolve(__dirname, '..');
-const output = mkdtempSync(path.join(tmpdir(), 'chebufit-rewards-test-'));
+const artifacts = path.join(project, '.artifacts', 'tests');
+mkdirSync(artifacts, { recursive: true });
+const output = mkdtempSync(path.join(artifacts, 'domain-'));
 try {
   const program = ts.createProgram([
     path.join(project, 'src/features/rewards/index.ts'),
@@ -16,6 +17,7 @@ try {
     path.join(project, 'src/features/nutrition/index.ts'),
     path.join(project, 'src/features/food-catalog/application/FoodSearchController.ts'),
     path.join(project, 'src/infrastructure/food-catalog/DevelopmentFoodCatalog.ts'),
+    path.join(project, 'src/infrastructure/food-catalog/OpenFoodFactsProvider.ts'),
     path.join(project, 'src/infrastructure/food-catalog/KeyValueRecentFoodsRepository.ts'),
     path.join(project, 'src/application/nutrition/addCatalogFood.ts'),
     path.join(project, 'src/features/food-catalog/model/messages.ts'),
@@ -40,7 +42,7 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--off') ? ['open-food-facts.test.cjs'] : process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),

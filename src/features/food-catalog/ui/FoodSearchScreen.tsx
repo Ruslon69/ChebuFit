@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AccessibilityInfo, ActivityIndicator, Keyboard, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { AccessibilityInfo, ActivityIndicator, Keyboard, Linking, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFoodSearch } from '../../../application/food-catalog/useFoodSearch';
 import { useRewardFeedback } from '../../../application/rewards/RewardFeedbackProvider';
@@ -25,10 +25,18 @@ export function FoodSearchScreen({ context }: { context: Context }) {
   const router = useRouter(), feedback = useRewardFeedback();
   const locale = appConfig.defaultLocale, copy = getFoodCatalogMessages(locale), nutritionCopy = getNutritionMessages(locale), format = nutritionFormatters(locale);
   const [query, setQuery] = useState(''), [selected, setSelected] = useState<CatalogFood | null>(null);
-  const { state, search, recents, recentFailed, disclosure } = useFoodSearch();
+  const { state, search, recents, recentFailed, disclosure, attribution } = useFoodSearch();
+  const [now, setNow] = useState(Date.now);
+  const retryAt = state.status === 'error' ? state.retryAt : undefined;
+  useEffect(() => {
+    if (!retryAt) return;
+    const timer = setTimeout(() => setNow(Date.now()), Math.max(0, retryAt - Date.now()) + 10);
+    return () => clearTimeout(timer);
+  }, [retryAt]);
+  const submit = () => { Keyboard.dismiss(); void search.submit(); };
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
-    if (state.status === 'error' || (state.status === 'initial' && state.failed)) AccessibilityInfo.announceForAccessibility(copy.error);
+    if (state.status === 'error' || (state.status === 'initial' && state.failed)) AccessibilityInfo.announceForAccessibility(state.status === 'error' && state.error === 'rateLimited' ? copy.rateLimited : copy.error);
     else if (state.status === 'empty') AccessibilityInfo.announceForAccessibility(copy.noResults);
     else if (state.status === 'searching') {
       const timer = setTimeout(() => AccessibilityInfo.announceForAccessibility(copy.searching), 600);
@@ -59,10 +67,16 @@ export function FoodSearchScreen({ context }: { context: Context }) {
       </Pressable>
     );
   });
-  const renderRecents = () => recents.length > 0 && (
+  const filteredRecents = search.policy && query.trim()
+    ? recents.filter(item => `${item.food.name} ${item.food.brand ?? ''}`.toLocaleLowerCase(locale).includes(query.trim().toLocaleLowerCase(locale))) : recents;
+  const previous = search.getPrevious();
+  const renderPrevious = () => previous && previous.foods.length > 0 && (
+    <View style={styles.section}><AppText variant="label" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.lastSearch}: {previous.query}</AppText><Card padding="compact">{rows(previous.foods)}</Card></View>
+  );
+  const renderRecents = (all = false) => (all ? recents : filteredRecents).length > 0 && (
     <View style={styles.section}>
       <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{copy.recents}</AppText>
-      <Card padding="compact" testID="food-recents">{rows(recents.map(item => item.food))}</Card>
+      <Card padding="compact" testID="food-recents">{rows((all ? recents : filteredRecents).map(item => item.food))}</Card>
     </View>
   );
   const renderSearchState = () => {
@@ -73,6 +87,7 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           {disclosure === 'illustrativeNutrition' && (
             <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.catalogNote}</AppText>
           )}
+          {search.policy && <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.searchHint}</AppText>}
           {renderRecents()}
           {recentFailed && <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.recentUnavailable}</AppText>}
           <View style={styles.section} testID="food-search-initial">
@@ -91,22 +106,32 @@ export function FoodSearchScreen({ context }: { context: Context }) {
         </>
       );
     }
+    if (state.status === 'ready') return (
+      <View style={styles.section} testID="food-search-ready">
+        <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{Array.from(query.trim()).length < (search.policy?.minimumLength ?? 1) ? copy.minimumQuery : copy.searchHint}</AppText>
+        {renderRecents()}
+        {renderPrevious()}
+      </View>
+    );
     if (state.status === 'searching') return (
+      <>
       <View style={styles.status} accessibilityLiveRegion="polite" testID="food-search-loading">
         <ActivityIndicator color={t.colors.primaryText} />
         <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.searching}</AppText>
       </View>
+      {renderRecents()}{renderPrevious()}
+      </>
     );
     if (state.status === 'error') return (
       <>
         <Card testID="food-search-error">
           <View style={styles.section} accessibilityLiveRegion="polite">
-            <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{copy.error}</AppText>
-            <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.errorHint}</AppText>
-            <Button label={copy.retry} variant="secondary" onPress={() => void search.retry()} testID="food-search-retry" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
+            <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{state.error === 'rateLimited' ? copy.rateLimited : copy.error}</AppText>
+            <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{state.error === 'rateLimited' ? copy.rateHint : copy.errorHint}</AppText>
+            <Button label={copy.retry} variant="secondary" disabled={!!retryAt && Math.max(now, Date.now()) < retryAt} onPress={() => void search.retry()} testID="food-search-retry" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
           </View>
         </Card>
-        {renderRecents()}
+        {renderRecents(true)}{renderPrevious()}
       </>
     );
     if (state.status === 'empty') return (
@@ -130,13 +155,21 @@ export function FoodSearchScreen({ context }: { context: Context }) {
         <View style={styles.search}>
           <Icon name="search" />
           <TextInput
-            value={query} onChangeText={changeQuery} placeholder={copy.search} placeholderTextColor={t.colors.textTertiary}
+            value={query} onChangeText={changeQuery} maxLength={200} placeholder={copy.search} placeholderTextColor={t.colors.textTertiary}
             accessibilityLabel={copy.search} keyboardType="default" returnKeyType="search" autoCorrect={false} autoCapitalize="none"
-            onSubmitEditing={() => Keyboard.dismiss()} maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.input} testID="food-search-input"
+            onSubmitEditing={submit} maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.input} testID="food-search-input"
           />
           {query.length > 0 && <IconButton icon="close" variant="ghost" label={copy.clear} onPress={() => changeQuery('')} testID="food-search-clear" />}
         </View>
+        {search.policy && <Button label={copy.submit} variant="secondary" disabled={Array.from(query.trim()).length < search.policy.minimumLength || state.status === 'searching' || (!!retryAt && Math.max(now, Date.now()) < retryAt)} onPress={submit} testID="food-search-submit" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
         {renderSearchState()}
+        {attribution && <View style={styles.section}>
+          <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.remoteNote}</AppText>
+          <View style={styles.links}>
+            <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(attribution.url).catch(() => {})} style={styles.link}><AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.source}: {attribution.name}</AppText></Pressable>
+            <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(attribution.licenseUrl).catch(() => {})} style={styles.link}><AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{attribution.license}</AppText></Pressable>
+          </View>
+        </View>}
       </Screen>
       {selected && (
         <FoodSelectionSheet key={catalogFoodIdentity(selected)} food={selected} date={context.date} initialMeal={context.meal} onClose={() => setSelected(null)} onAdded={added} />
@@ -146,6 +179,7 @@ export function FoodSearchScreen({ context }: { context: Context }) {
 }
 
 const styles = StyleSheet.create({
+  links: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm }, link: { minHeight: t.size.touchTarget, justifyContent: 'center' },
   content: { gap: t.spacing.xl }, section: { gap: t.spacing.md },
   search: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, backgroundColor: t.colors.surface, borderRadius: t.radii.control, paddingLeft: t.spacing.lg, paddingRight: t.spacing.xs },
   input: { ...t.typography.body, color: t.colors.text, minHeight: t.size.button, flex: 1, paddingVertical: t.spacing.md },

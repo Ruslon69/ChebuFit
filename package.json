@@ -35,7 +35,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test:nutrition-ui": "node scripts/test-rewards.cjs --nutrition-ui",
-    "test:food-catalog": "node scripts/test-rewards.cjs --food-catalog"
+    "test:food-catalog": "node scripts/test-rewards.cjs --food-catalog",
+    "test:off": "node scripts/test-rewards.cjs --off"
   },
   "private": true
 }

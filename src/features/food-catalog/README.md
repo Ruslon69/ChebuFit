@@ -6,10 +6,13 @@ never imports catalog/provider code. `application/FoodSearchController` is a pur
 async presentation model. React composition lives in `src/application/food-catalog`;
 provider and AsyncStorage adapters live in `src/infrastructure/food-catalog`.
 
-The current composition explicitly supplies a deterministic **development**
-catalog of 26 illustrative foods. Values, including named brands, are examples,
+The normal runtime composition supplies Open Food Facts. See
+`docs/OPEN_FOOD_FACTS.md` for endpoints, rates, validation, attribution and privacy.
+An explicit development-only switch retains a deterministic catalog of 26
+illustrative foods. Values, including named brands, are examples,
 not verified commercial nutrition. Its optional provider-neutral disclosure is
-shown in discovery. No network, camera, barcode implementation or remote images.
+shown in discovery. The fixture provider uses no network; neither provider adds
+camera or remote images.
 To add another provider, replace/compose `FoodCatalogProvider` in application
 composition; normalize responses into `CatalogFood`, not provider-shaped objects.
 
@@ -30,13 +33,17 @@ The default is 100g; positive decimal grams (comma/dot, up to three places) driv
 a domain-derived live preview. Numeric keyboard has Done and a fixed Add footer;
 preview condenses while the field is focused. Search scrolls above the keyboard.
 
-Search preserves raw input in the form and trims only requests. Debounce is 300ms;
+Search preserves raw input in the form and trims only requests. Local fixture
+search debounce is 300ms;
 each query/clear/retry/dispose invalidates earlier generations and aborts where
 supported. A provider ignoring cancellation still cannot overwrite newer results.
-Initial suggestions, searching, results, empty, and retryable error states are
-separate. No fake Recent/Frequent history. Recent snapshots remain selectable
-without a provider response, including alongside search errors. Barcode lookup is
-an optional future port; scanner UI is omitted. Custom creation is visibly marked
+OFF uses explicit button/keyboard submit (minimum two characters), never debounce
+requests. While typing, local Recents filter immediately. Prior results survive
+remote failures, and typed cooldowns disable Retry. Initial suggestions, ready,
+searching, results, empty, and retryable error states are separate. No fake
+Recent/Frequent history. Recent snapshots remain selectable without a provider
+response, including alongside search errors. OFF implements the optional barcode
+port using v3.6; scanner UI is omitted. Custom creation is visibly marked
 as coming later and disabled. Pagination and frequent-food ranking are future work.
 
 ## Commit, rewards and recents
@@ -76,4 +83,5 @@ because an optional follow-up failed. Future backend/sync must supply durable
 idempotency, reconciliation and authoritative atomic wallet enforcement. In-process
 submission deduplication is not crash-safe or an anti-cheat boundary.
 
-Run `npm run test:food-catalog` plus existing Nutrition/Water/wallet/reward tests.
+Run `npm run test:off`, `npm run test:food-catalog` and the existing
+Nutrition/Water/wallet/reward tests. Offline fixtures never use live OFF servers.
