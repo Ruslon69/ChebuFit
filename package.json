@@ -38,7 +38,8 @@
     "test:nutrition-ui": "node scripts/test-rewards.cjs --nutrition-ui",
     "test:food-catalog": "node scripts/test-rewards.cjs --food-catalog",
     "test:off": "node scripts/test-rewards.cjs --off",
-    "test:scanner": "node scripts/test-rewards.cjs --scanner"
+    "test:scanner": "node scripts/test-rewards.cjs --scanner",
+    "test:personal-foods": "node scripts/test-rewards.cjs --personal-foods"
   },
   "private": true
 }

@@ -172,6 +172,7 @@ src/app/
     progress.tsx        /progress
   add-food.tsx          /add-food, catalog search + selection; explicit date/meal
   scan-food.tsx         /scan-food, camera/manual discovery; explicit date/meal
+  personal-food.tsx     /personal-food, create/edit local food; explicit date/meal
   onboarding.tsx        /onboarding, outside the tab shell
   design-system.tsx     development-only visual review, outside the tab shell
 ```
@@ -227,3 +228,12 @@ Found food reuses the same selection, quantity, Add, recents and reward operatio
 as search. Camera SDK access stays in feature presentation; focus/background/lookup
 state gates the preview. See `docs/BARCODE_SCANNING.md` for permission and privacy
 boundaries and physical-device verification status.
+
+Personal foods live in `src/features/personal-foods`, with a separate schema-v1
+repository and serialized service; production starts empty. This catalog is not
+owned by diary snapshots or Recents. Discovery composes immediate local search
+alongside deliberate OFF search, and personal-first barcode lookup. Shared Add
+resolves current personal values and stores a detached Nutrition snapshot. Catalog
+edit/delete never changes historical diary/economy records. Personal Recents are
+reconciled with canonical identity and deleted references are hidden/cleaned. See
+`src/features/personal-foods/README.md` for limits, form flow and future sync.

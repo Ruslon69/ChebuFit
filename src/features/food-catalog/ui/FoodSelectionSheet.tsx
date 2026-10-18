@@ -16,6 +16,8 @@ import { IconButton } from '../../../shared/ui/IconButton';
 import { previewCatalogFood } from '../domain/catalogFood';
 import type { CatalogFood } from '../domain/types';
 import { foodNutrientLine, getFoodCatalogMessages } from '../model/messages';
+import { personalFoodProviderId } from '../../personal-foods/domain/personalFood';
+import { getPersonalFoodMessages } from '../../personal-foods/model/messages';
 
 type Props = { food: CatalogFood; date: LocalDateKey; initialMeal: MealType; onClose: () => void; onAdded: (notice: OrangeRewardNotice | null) => void };
 export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }: Props) {
@@ -57,7 +59,7 @@ export function FoodSelectionSheet({ food, date, initialMeal, onClose, onAdded }
           </View>
           <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" contentContainerStyle={styles.body}>
             {!focused && <View style={styles.field}>
-              <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.per100}</AppText>
+              <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.source.providerId === personalFoodProviderId ? `${getPersonalFoodMessages(locale).badge} · ${copy.per100}` : copy.per100}</AppText>
               <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{foodNutrientLine(food.nutrients, locale)}</AppText>
             </View>}
             <View style={styles.field}>

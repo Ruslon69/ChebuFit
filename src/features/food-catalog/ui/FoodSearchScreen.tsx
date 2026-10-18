@@ -20,13 +20,18 @@ import type { CatalogFood } from '../domain/types';
 import { foodNutrientLine, getFoodCatalogMessages } from '../model/messages';
 import { getScannerMessages } from '../model/scannerMessages';
 import { FoodSelectionSheet } from './FoodSelectionSheet';
+import { personalFoodProviderId, personalFoodToCatalog, searchPersonalFoods } from '../../personal-foods/domain/personalFood';
+import { getPersonalFoodMessages } from '../../personal-foods/model/messages';
 
 type Context = { date: LocalDateKey; meal: MealType };
 export function FoodSearchScreen({ context }: { context: Context }) {
   const router = useRouter(), feedback = useRewardFeedback();
   const locale = appConfig.defaultLocale, copy = getFoodCatalogMessages(locale), nutritionCopy = getNutritionMessages(locale), format = nutritionFormatters(locale);
   const [query, setQuery] = useState(''), [selected, setSelected] = useState<CatalogFood | null>(null);
-  const { state, search, recents, recentFailed, disclosure, attribution } = useFoodSearch();
+  const { state, search, recents, recentFailed, personalFoods, personalFailed, disclosure, attribution } = useFoodSearch();
+  const personalCopy = getPersonalFoodMessages(locale);
+  const personalResults = useMemo(() => searchPersonalFoods(personalFoods, query).map(personalFoodToCatalog), [personalFoods, query]);
+  const createPersonal = () => { Keyboard.dismiss(); router.push({ pathname: '/personal-food', params: context }); };
   const [now, setNow] = useState(Date.now);
   const retryAt = state.status === 'error' ? state.retryAt : undefined;
   useEffect(() => {
@@ -54,30 +59,36 @@ export function FoodSearchScreen({ context }: { context: Context }) {
   const recentIdentities = useMemo(() => new Set(recents.map(item => catalogFoodIdentity(item.food))), [recents]);
   const rows = (foods: readonly CatalogFood[]) => foods.map(food => {
     const nutrientLine = foodNutrientLine(food.nutrients, locale);
-    return (
+    const personal = food.source.providerId === personalFoodProviderId;
+    const row = (
       <Pressable
-        key={catalogFoodIdentity(food)} testID={`food-result-${food.source.providerId}-${food.source.foodId}`}
-        accessibilityRole="button" accessibilityLabel={`${food.name}${food.brand ? `, ${food.brand}` : ''}. ${nutrientLine}. ${copy.per100}`}
+        testID={`food-result-${food.source.providerId}-${food.source.foodId}`}
+        accessibilityRole="button" accessibilityLabel={`${food.name}${food.brand ? `, ${food.brand}` : ''}. ${personal ? `${personalCopy.badge}. ` : ''}${nutrientLine}. ${copy.per100}`}
         accessibilityHint={copy.select} onPress={() => select(food)}
         style={({ pressed }) => [styles.row, pressed && { opacity: t.opacity.pressed }]}
       >
         <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.name}</AppText>
         {food.brand && <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{food.brand}</AppText>}
         <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{nutrientLine}</AppText>
-        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.per100}</AppText>
+        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{personal ? `${personalCopy.badge} · ${copy.per100}` : copy.per100}</AppText>
       </Pressable>
     );
+    return <View key={catalogFoodIdentity(food)} style={styles.resultRow}>
+      <View style={styles.resultContent}>{row}</View>
+      {personal && <IconButton icon="edit" variant="ghost" label={`${personalCopy.edit}: ${food.name}`} onPress={() => router.push({ pathname: '/personal-food', params: { ...context, id: food.source.foodId } })} testID={`personal-edit-${food.source.foodId}`} />}
+    </View>;
   });
+  const externalRecents = recents.filter(item => item.food.source.providerId !== personalFoodProviderId);
   const filteredRecents = search.policy && query.trim()
-    ? recents.filter(item => `${item.food.name} ${item.food.brand ?? ''}`.toLocaleLowerCase(locale).includes(query.trim().toLocaleLowerCase(locale))) : recents;
+    ? externalRecents.filter(item => `${item.food.name} ${item.food.brand ?? ''}`.toLocaleLowerCase(locale).includes(query.trim().toLocaleLowerCase(locale))) : externalRecents;
   const previous = search.getPrevious();
   const renderPrevious = () => previous && previous.foods.length > 0 && (
     <View style={styles.section}><AppText variant="label" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.lastSearch}: {previous.query}</AppText><Card padding="compact">{rows(previous.foods)}</Card></View>
   );
-  const renderRecents = (all = false) => (all ? recents : filteredRecents).length > 0 && (
+  const renderRecents = (all = false) => (all ? externalRecents : filteredRecents).length > 0 && (
     <View style={styles.section}>
       <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{copy.recents}</AppText>
-      <Card padding="compact" testID="food-recents">{rows((all ? recents : filteredRecents).map(item => item.food))}</Card>
+      <Card padding="compact" testID="food-recents">{rows((all ? externalRecents : filteredRecents).map(item => item.food))}</Card>
     </View>
   );
   const renderSearchState = () => {
@@ -141,11 +152,11 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{copy.noResults}</AppText>
           <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.noResultsHint}</AppText>
           <AppText variant="label" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.notFound}</AppText>
-          <Button label={copy.custom} disabled variant="secondary" onPress={() => {}} maxFontSizeMultiplier={t.accessibility.controlTextScale} />
+          <Button label={personalCopy.create} variant="secondary" onPress={createPersonal} maxFontSizeMultiplier={t.accessibility.controlTextScale} />
         </View>
       </Card>
     );
-    return <Card padding="compact" testID="food-search-results">{rows(state.foods)}</Card>;
+    return <View style={styles.section}><AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{attribution?.name ?? copy.suggestions}</AppText><Card padding="compact" testID="food-search-results">{rows(state.foods)}</Card></View>;
   };
   return (
     <>
@@ -163,7 +174,12 @@ export function FoodSearchScreen({ context }: { context: Context }) {
           {query.length > 0 && <IconButton icon="close" variant="ghost" label={copy.clear} onPress={() => changeQuery('')} testID="food-search-clear" />}
         </View>
         {search.policy && <Button label={copy.submit} variant="secondary" disabled={Array.from(query.trim()).length < search.policy.minimumLength || state.status === 'searching' || (!!retryAt && Math.max(now, Date.now()) < retryAt)} onPress={submit} testID="food-search-submit" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
-        <Button label={getScannerMessages(locale).entry} variant="ghost" onPress={() => { Keyboard.dismiss(); router.push({ pathname: '/scan-food', params: context }); }} testID="food-scan-open" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
+        <View style={styles.actions}>
+          <View style={styles.resultContent}><Button label={getScannerMessages(locale).entry} variant="ghost" onPress={() => { Keyboard.dismiss(); router.push({ pathname: '/scan-food', params: context }); }} testID="food-scan-open" maxFontSizeMultiplier={t.accessibility.controlTextScale} /></View>
+          <View style={styles.resultContent}><Button label={personalCopy.create} variant="ghost" onPress={createPersonal} testID="food-personal-create" maxFontSizeMultiplier={t.accessibility.controlTextScale} /></View>
+        </View>
+        {personalResults.length > 0 && <View style={styles.section} testID="food-personal-results"><AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{personalCopy.mine}</AppText><Card padding="compact">{rows(personalResults)}</Card></View>}
+        {personalFailed && <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{personalCopy.personalUnavailable}</AppText>}
         {renderSearchState()}
         {attribution && <View style={styles.section}>
           <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.remoteNote}</AppText>
@@ -187,4 +203,5 @@ const styles = StyleSheet.create({
   input: { ...t.typography.body, color: t.colors.text, minHeight: t.size.button, flex: 1, paddingVertical: t.spacing.md },
   row: { minHeight: t.size.button, gap: t.spacing.xs, padding: t.spacing.sm, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
   status: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.md, paddingVertical: t.spacing.lg },
+  resultRow: { flexDirection: 'row', alignItems: 'flex-start' }, resultContent: { flex: 1 }, actions: { flexDirection: 'row', gap: t.spacing.sm },
 });

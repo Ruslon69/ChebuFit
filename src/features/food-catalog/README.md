@@ -45,7 +45,8 @@ Recent/Frequent history. Recent snapshots remain selectable without a provider
 response, including alongside search errors. OFF implements the optional barcode
 port using v3.6. `/scan-food?date=YYYY-MM-DD&meal=...` adds camera/manual discovery
 through the same provider and selection sheet; see `docs/BARCODE_SCANNING.md`.
-Custom creation is visibly marked as coming later and disabled. Pagination and frequent-food ranking are future work.
+Personal creation/editing is available outside the tab shell through `/personal-food`;
+see `src/features/personal-foods/README.md`. Pagination and frequent-food ranking are future work.
 
 ## Commit, rewards and recents
 
@@ -86,3 +87,9 @@ submission deduplication is not crash-safe or an anti-cheat boundary.
 
 Run `npm run test:scanner`, `npm run test:off`, `npm run test:food-catalog` and the existing
 Nutrition/Water/wallet/reward tests. Offline fixtures never use live OFF servers.
+
+Personal search is a separate immediate local section; OFF submission policy stays
+unchanged. Barcode discovery checks the personal service first, then the existing
+external adapter. Personal Recent references resolve to canonical values; missing
+ones are filtered, and duplicates already in My Foods are not rendered again.
+The shared Add operation rechecks personal identity before snapshot conversion.

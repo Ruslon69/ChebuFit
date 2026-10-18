@@ -29,4 +29,5 @@ export type RecentFood = Readonly<{ food: CatalogFood; addedAt: string }>;
 export interface RecentFoodsRepository {
   load(): Promise<CatalogResult<readonly RecentFood[]>>;
   record(food: CatalogFood, addedAt: string): Promise<CatalogResult<void>>;
+  remove?(source: CatalogFood['source']): Promise<CatalogResult<void>>;
 }

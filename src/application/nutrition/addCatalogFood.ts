@@ -1,5 +1,5 @@
 import { catalogFoodToSnapshot, parseCatalogFood } from '../../features/food-catalog/domain/catalogFood';
-import type { CatalogFood, RecentFoodsRepository } from '../../features/food-catalog/domain/types';
+import type { CatalogFood, CatalogResult, RecentFoodsRepository } from '../../features/food-catalog/domain/types';
 import type { LocalDateKey, MealType, NutritionChange, NutritionResult, NutritionService } from '../../features/nutrition';
 import { createOrangeRewardNotice, type OrangeRewardNotice, type OrangeWalletService } from '../../features/rewards';
 import { rewardFoodEntryAdded } from '../rewards/foodEntryRewards';
@@ -8,15 +8,21 @@ import type { LocalRewardContext } from '../rewards/localRewardContext';
 type Input = Readonly<{ food: CatalogFood; localDate: LocalDateKey; meal: MealType; quantityGrams: number; rewardContext: LocalRewardContext }>;
 export type FoodAddResult = NutritionResult<Readonly<{ change: NutritionChange; notice: OrangeRewardNotice | null; rewardFailed: boolean; recentSaved: boolean }>>;
 /** One selection/confirmation operation: concurrent/repeated submissions share its successful result. */
-export function createFoodAddOperation(deps: { nutrition: NutritionService; wallet: OrangeWalletService; recents: RecentFoodsRepository }) {
+export function createFoodAddOperation(deps: { nutrition: NutritionService; wallet: OrangeWalletService; recents: RecentFoodsRepository;
+  resolveFood?: (food: CatalogFood) => Promise<CatalogResult<CatalogFood>> }) {
   let pending: Promise<FoodAddResult> | null = null;
   const perform = async (input: Input): Promise<FoodAddResult> => {
     const rewardContext = { ...input.rewardContext };
-    const valid = parseCatalogFood(input.food);
+    const { localDate, meal, quantityGrams } = input;
+    const captured = parseCatalogFood(input.food);
+    if (!captured.ok) return { ok: false, error: 'invalidSnapshot' };
+    const resolved = deps.resolveFood ? await deps.resolveFood(captured.value) : captured;
+    if (!resolved.ok) return { ok: false, error: resolved.error === 'storageUnavailable' ? 'storageUnavailable' : 'invalidSnapshot' };
+    const valid = parseCatalogFood(resolved.value);
     if (!valid.ok) return { ok: false, error: 'invalidSnapshot' };
     const snapshot = catalogFoodToSnapshot(valid.value);
     if (!snapshot.ok) return snapshot;
-    const changed = await deps.nutrition.addEntry({ localDate: input.localDate, meal: input.meal, food: snapshot.value, quantityGrams: input.quantityGrams });
+    const changed = await deps.nutrition.addEntry({ localDate, meal, food: snapshot.value, quantityGrams });
     if (!changed.ok) return changed;
     // The diary is already committed. Later optional failures must never invite a duplicate Add.
     let notice: OrangeRewardNotice | null = null, rewardFailed = false, recentSaved = false;

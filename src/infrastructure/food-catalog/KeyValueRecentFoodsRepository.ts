@@ -26,6 +26,16 @@ export function createKeyValueRecentFoodsRepository(storage: Storage, mode: 'rea
   };
   return {
     load,
+    remove(source) {
+      const identity = catalogFoodIdentity({ source });
+      const operation = (queues.get(key) ?? Promise.resolve()).then(async (): Promise<CatalogResult<void>> => {
+        const previous = await load(); if (!previous.ok) return previous;
+        const foods = previous.value.filter(item => catalogFoodIdentity(item.food) !== identity);
+        try { await storage.setItem(key, JSON.stringify({ schemaVersion: 1, foods })); return { ok: true, value: undefined }; }
+        catch { return { ok: false, error: 'storageUnavailable' }; }
+      });
+      queues.set(key, operation.then(() => undefined, () => undefined)); return operation;
+    },
     record(food, addedAt) {
       const captured = parseCatalogFood(food);
       if (!captured.ok || !isTimestamp(addedAt)) return Promise.resolve({ ok: false, error: 'invalidFood' });

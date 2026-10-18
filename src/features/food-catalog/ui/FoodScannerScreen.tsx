@@ -19,6 +19,7 @@ import { Card } from '../../../shared/ui/Card';
 import { Button } from '../../../shared/ui/Button';
 import { Icon } from '../../../shared/ui/Icon';
 import { FoodSelectionSheet } from './FoodSelectionSheet';
+import { getPersonalFoodMessages } from '../../personal-foods/model/messages';
 
 export function FoodScannerScreen({ context }: { context: BarcodeContext }) {
   const router = useRouter(), feedback = useRewardFeedback();
@@ -108,8 +109,10 @@ export function FoodScannerScreen({ context }: { context: BarcodeContext }) {
             {heading(state.status === 'notFound' ? copy.notFound : state.error === 'rateLimited' ? catalogCopy.rateLimited : state.error === 'invalidFood' ? copy.unusable : copy.lookupError)}
             {text(state.status === 'notFound' ? copy.notFoundHint : state.error === 'rateLimited' ? catalogCopy.rateHint : state.error === 'invalidFood' ? copy.unusableHint : copy.lookupHint)}
             {text(`${copy.code}: ${state.code}`)}
+            {(state.status === 'notFound' || state.error === 'invalidFood') && <Button label={getPersonalFoodMessages(locale).create}
+              onPress={() => router.push({ pathname: '/personal-food', params: { ...context, barcode: state.lookupCode } })} testID="scanner-create-personal" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
             {state.status === 'error' && <Button label={copy.retry} disabled={!!retryAt && Math.max(now, Date.now()) < retryAt} onPress={() => void controller.retry()} testID="barcode-retry" maxFontSizeMultiplier={t.accessibility.controlTextScale} />}
-            <Button label={copy.search} variant={state.status === 'notFound' ? 'primary' : 'ghost'} onPress={searchByName} testID="scanner-search" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
+            <Button label={copy.search} variant="ghost" onPress={searchByName} testID="scanner-search" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
             <Button label={copy.another} variant="secondary" onPress={enterManual} testID="scanner-manual" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
             <Button label={copy.rescan} variant="ghost" onPress={rescan} testID="scanner-rescan" maxFontSizeMultiplier={t.accessibility.controlTextScale} />
           </View></Card>

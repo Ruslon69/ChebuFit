@@ -8,8 +8,8 @@ export type BarcodeLookupState =
   | Readonly<{ status: 'idle' | 'invalid' }>
   | Readonly<{ status: 'lookingUp'; code: string }>
   | Readonly<{ status: 'found'; code: string; food: CatalogFood; context: BarcodeContext }>
-  | Readonly<{ status: 'notFound'; code: string }>
-  | Readonly<{ status: 'error'; code: string; error: CatalogError; retryAt?: number }>;
+  | Readonly<{ status: 'notFound'; code: string; lookupCode: string }>
+  | Readonly<{ status: 'error'; code: string; lookupCode: string; error: CatalogError; retryAt?: number }>;
 
 /** Discovery only. No diary, wallet, persistence or navigation dependencies. */
 export function createBarcodeLookupController(provider: FoodCatalogProvider, context: BarcodeContext, now = Date.now) {
@@ -32,14 +32,14 @@ export function createBarcodeLookupController(provider: FoodCatalogProvider, con
         : { ok: false, error: 'providerUnavailable' } as const;
       if (!active || generation !== revision) return;
       if (!result.ok) {
-        emit({ status: 'error', code: barcode.displayCode, error: result.error,
+        emit({ status: 'error', code: barcode.displayCode, lookupCode: barcode.lookupCode, error: result.error,
           ...(result.retryAfterMs ? { retryAt: now() + result.retryAfterMs } : {}) }); return;
       }
-      if (result.value === null) { emit({ status: 'notFound', code: barcode.displayCode }); return; }
+      if (result.value === null) { emit({ status: 'notFound', code: barcode.displayCode, lookupCode: barcode.lookupCode }); return; }
       const food = parseCatalogFood(result.value);
-      if (!food.ok) { emit({ status: 'error', code: barcode.displayCode, error: 'invalidFood' }); return; }
+      if (!food.ok) { emit({ status: 'error', code: barcode.displayCode, lookupCode: barcode.lookupCode, error: 'invalidFood' }); return; }
       emit({ status: 'found', code: barcode.displayCode, food: food.value, context: capturedContext });
-    } catch { if (active && generation === revision) emit({ status: 'error', code: barcode.displayCode, error: 'network' }); }
+    } catch { if (active && generation === revision) emit({ status: 'error', code: barcode.displayCode, lookupCode: barcode.lookupCode, error: 'network' }); }
   };
   return {
     getSnapshot: () => state,

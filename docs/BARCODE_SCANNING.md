@@ -22,8 +22,9 @@ reward rules. Native presentation calls the existing singleton provider's
 Found food uses the same Add operation as search: snapshot → diary commit → eligible
 reward batch → recent snapshot → one feedback. Scan, lookup, permission, failure,
 view and cancel grant nothing and create no Recent. Corrections remain possible;
-wallet identities prevent delete/re-add farming. No custom-food editor is built;
-a future not-found action can launch it with the detected code and captured context.
+wallet identities prevent delete/re-add farming. Not-found/incomplete products can open the personal-food editor with the normalized
+lookup code and captured context. Personal catalog matches resolve locally before OFF;
+see `../src/features/personal-foods/README.md`.
 
 ## Formats and normalization
 
