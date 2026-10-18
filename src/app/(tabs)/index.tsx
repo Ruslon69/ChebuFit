@@ -7,13 +7,12 @@ import { useDailyWater } from '../../application/water/useDailyWater';
 import { waterDefaults, type LocalDateKey } from '../../features/water';
 import { useOrangeWallet } from '../../application/rewards/useOrangeWallet';
 import { useWaterGoalRewards } from '../../application/rewards/useWaterGoalRewards';
-import { OrangeRewardFeedback } from '../../features/rewards/ui/OrangeRewardFeedback';
 import { todayMock } from '../../features/today/model/todayMock';
 import { TodayScreen } from '../../features/today/ui/TodayScreen';
 
 export default function TodayRoute() {
   const wallet = useOrangeWallet();
-  const { notice, dismiss, onWaterGoalReached } = useWaterGoalRewards();
+  const { onWaterGoalReached } = useWaterGoalRewards();
   const onGoalCrossed = useCallback((fact: { localDate: LocalDateKey; occurredAt: string }) => {
     onWaterGoalReached({ localDay: fact.localDate, occurredAt: fact.occurredAt });
   }, [onWaterGoalReached]);
@@ -33,7 +32,6 @@ export default function TodayRoute() {
         onAddWater={() => { void water.addWater(waterDefaults.portionMl); }}
         onRemoveWater={() => { void water.removeWater(waterDefaults.portionMl); }}
       />
-      <OrangeRewardFeedback notice={notice} onDismiss={dismiss} />
     </>
   );
 }

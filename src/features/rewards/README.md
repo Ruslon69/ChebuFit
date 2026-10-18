@@ -185,8 +185,22 @@ the same automatic lifetime. One textual accessibility announcement accompanies
 each notice, without a live region, artwork announcement or focus movement.
 There is no global popup queue, and feedback never increments wallet state.
 Future producers should use the same fact → ordered committed batch → one notice
-pattern. No meal/workout/weight UI integration or automatic milestone producer.
+pattern. No workout/weight UI integration or automatic milestone producer.
+The Food Add producer below now follows this same pattern.
 
 Run `npm run test:water-rewards` for the end-to-end application workflow tests.
 
 Run `npm run test:reward-feedback` for presentation classification/aggregation checks.
+
+## Real Food Add producer
+
+Add Food composition rewards only a successful persisted user `entryAdded` fact.
+`src/application/rewards/foodEntryRewards.ts` batches meal → active day → eligible
+welcome using the current local **action day**, independently of the selected
+diary date. Historical diary browsing cannot multiply today's logging rewards.
+Food and Water share the existing wallet identities, active-day and lifetime
+welcome guarantees. Corrections/deletes retain ledger history. No planned-meals
+reward is emitted. One root presentation host displays the existing micro or
+celebration notice after returning from selection; wallet persistence remains
+authoritative. A diary save and wallet batch are separate local commits; future
+reconciliation/outbox work remains documented, not implemented here.

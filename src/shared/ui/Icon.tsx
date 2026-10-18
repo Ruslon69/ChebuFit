@@ -6,6 +6,7 @@ import { tokens } from '../theme/tokens';
 
 const symbols = {
   home: { ios: 'house', android: 'home', web: 'home' },
+  search: { ios: 'magnifyingglass', android: 'search', web: 'search' },
   nutrition: { ios: 'fork.knife', android: 'restaurant', web: 'restaurant' },
   workouts: { ios: 'dumbbell', android: 'fitness_center', web: 'fitness_center' },
   progress: { ios: 'chart.xyaxis.line', android: 'trending_up', web: 'trending_up' },

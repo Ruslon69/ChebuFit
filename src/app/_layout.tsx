@@ -1,3 +1,4 @@
+import { RewardFeedbackProvider } from '../application/rewards/RewardFeedbackProvider';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -12,7 +13,7 @@ export default function RootLayout() {
   const messages = useMessages();
 
   return (
-    <>
+    <RewardFeedbackProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -33,6 +34,6 @@ export default function RootLayout() {
           <Stack.Screen name="design-system" options={{ title: messages.navigation.designSystem }} />
         </Stack.Protected>
       </Stack>
-    </>
+    </RewardFeedbackProvider>
   );
 }

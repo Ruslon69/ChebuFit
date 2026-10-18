@@ -93,9 +93,10 @@ from entries, not aggregate seed constants. Today remains visually populated.
 ## Boundaries and future work
 
 A successful real `addEntry` returns one `entryAdded` fact (entry/date/meal/time).
-Seed, reads, quantity edits, moves and deletes do not return that fact. No Nutrition
-operation grants oranges yet. Future real Add Food composition may pass a committed
-fact to Rewards; it must not award seed/read/relaunch events. Corrections must not
+Seed, reads, quantity edits, moves and deletes do not return that fact. Nutrition
+domain/service operations do not grant oranges themselves. Real Add Food
+application composition now passes a committed user-add fact to Rewards;
+seed/read/relaunch events never qualify. Corrections must not
 rewrite/reverse granted oranges: see the product-wide correctable tracking rule.
 
 Future Open Food Facts/FatSecret/custom/recent/barcode adapters provide snapshots;
@@ -108,7 +109,7 @@ snapshot math remains interpretable; no serving/provider/search UI is built here
 Local JSON persistence is not a security, cross-process, or multi-device transaction
 boundary. Future sync needs authoritative conflict resolution, stable delivery IDs,
 and atomic writes. Whole-record history is adequate for MVP; growth eventually
-needs a storage migration. No backend or nutrition rewards.
+needs a storage migration. No backend or cross-device synchronization.
 
 Run `npm run test:nutrition` and the existing Water/reward/wallet/presentation tests.
 
@@ -132,11 +133,12 @@ semantics. Failed writes keep the editor open with a retryable message. The shee
 scrolls with the keyboard and keeps Save reachable; all mutations notify Today.
 
 `/add-food?date=YYYY-MM-DD&meal=breakfast|lunch|dinner|snacks` is a typed navigation
-contract. The placeholder validates explicit context, shows meal/date, and performs
-no diary reads or writes. It does not simulate search or additions. Global Quick
-Add remains unchanged. No seed/read/date-navigation/edit/move/delete/placeholder
-operation grants rewards. Future real additions must deliberately connect committed
-add facts to Rewards.
+contract. The Food Catalog feature now implements search and selection using an
+injected development provider. It converts the selected catalog food to a snapshot
+and persists through NutritionService before optional reward/recent follow-ups.
+Global Quick Add remains unchanged. Seed/read/date-navigation/edit/move/delete
+operations still grant nothing. See `../food-catalog/README.md` for action-day vs
+diary-date semantics, catalog ports, recent snapshots and failure boundaries.
 
 UI copy is centralized in `model/messages.ts`; dates/numbers use locale formatters.
 Read errors/loading show no fabricated totals. Meal progress and controls expose

@@ -157,7 +157,7 @@ src/app/
     nutrition.tsx       /nutrition, persistent daily diary
     workouts.tsx        /workouts
     progress.tsx        /progress
-  add-food.tsx          /add-food, explicit local date + meal context placeholder
+  add-food.tsx          /add-food, catalog search + selection; explicit date/meal
   onboarding.tsx        /onboarding, outside the tab shell
   design-system.tsx     development-only visual review, outside the tab shell
 ```
@@ -195,3 +195,11 @@ Expo Router pulls in `react-dom` transitively. Its version is pinned to the inst
 React version via an npm override so optional web peers cannot select an incompatible
 newer renderer. Revisit the pin alongside a future Expo/React upgrade; no web UI or
 additional direct web dependency is introduced here.
+
+Food discovery belongs to `src/features/food-catalog`, separate from diary storage.
+Application composition injects provider/recent ports and coordinates committed
+real adds with Rewards. Infrastructure currently supplies an illustrative local
+catalog and a small versioned recent-food adapter. Provider-neutral snapshots keep
+existing diary history independent of future network/provider changes. The existing
+reward feedback is hosted once at application root so both Food and Water can
+present persisted grants across navigation. See the feature README for details.

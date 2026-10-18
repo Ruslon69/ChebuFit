@@ -7,16 +7,19 @@ import { tokens } from '../theme/tokens';
 type ScreenProps = PropsWithChildren<{
   edges?: Edge[];
   scroll?: boolean;
+  keyboardAware?: boolean;
   contentContainerStyle?: StyleProp<ViewStyle>;
   testID?: string;
 }>;
 
-export function Screen({ children, edges, scroll = false, contentContainerStyle, testID }: ScreenProps) {
+export function Screen({ children, edges, scroll = false, keyboardAware = false, contentContainerStyle, testID }: ScreenProps) {
   return (
     <SafeAreaView edges={edges} style={styles.screen} testID={testID}>
       {scroll ? (
         <ScrollView
           contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustKeyboardInsets={keyboardAware}
+          keyboardDismissMode={keyboardAware ? 'interactive' : 'none'}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={[styles.content, contentContainerStyle]}
         >
