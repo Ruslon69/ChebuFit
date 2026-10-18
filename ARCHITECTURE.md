@@ -1,5 +1,18 @@
 # ChebuFit architecture
 
+## Local development artifacts
+
+All ChebuFit-generated development artifacts must stay under the project root.
+Save task screenshots and visual validation captures in
+`.artifacts/screenshots/task-XX/` (for example, `task-19` or `task-18.1`). Use
+other sensible `.artifacts/` subdirectories for temporary runtime scripts, logs,
+exports and validation output. Do not create `~/Desktop/ChebuFit-TaskXX` folders.
+
+`.artifacts/` is ignored local workspace storage; do not commit screenshots or
+temporary runtime artifacts. Source code, tests, documentation and production
+assets stay in their normal tracked locations. Preserve existing captures when
+organizing artifacts and never silently overwrite different files.
+
 ## Responsibilities
 
 - `expo-router/entry` registers the app; `src/app/_layout.tsx` composes its root

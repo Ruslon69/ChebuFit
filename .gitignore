@@ -26,6 +26,9 @@ npm-debug.*
 yarn-debug.*
 yarn-error.*
 
+# local development screenshots and temporary task artifacts
+.artifacts/
+
 # macOS
 .DS_Store
 *.pem
