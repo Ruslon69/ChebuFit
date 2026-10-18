@@ -99,7 +99,9 @@ profile-side column. Its orange balance is asynchronously reconstructed from the
 local wallet. Development uses an explicit 248 demo opening credit and empty ledger;
 real-mode wallets start at zero in a separate namespace. The first integrated reward action is a Today water-goal transition. Application
 composition commits water/active-day/welcome credits in order and shows one
-CHEBU-07 notice for the actual positive total. Other feature actions and the store
+notice for the actual positive total. Presentation policy selects a brief micro
+toast for ordinary grants, or a compact CHEBU-07 celebration when newly granted
+welcome/milestone credits are present. Both are nonmodal and dismissible. Other feature actions and the store
 remain unconnected.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.

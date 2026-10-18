@@ -29,7 +29,7 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),

@@ -54,7 +54,7 @@ test('C–G/P/Q: goal transition commits 2 + 5 + 10 in order, one save, one noti
   assert.equal(f.writes - writes, 1);
   assert.deepEqual(snapshots, [265], 'one published committed balance, no partial updates');
   const notice = createOrangeRewardNotice(batch, 'goal');
-  assert.deepEqual(notice, { id: 'goal', amount: 17, includesWelcome: true });
+  assert.deepEqual(notice, { id: 'goal', amount: 17, includesWelcome: true, kind: 'celebration' });
   assert.equal(notice.amount, value.wallet.balance - 248);
   unsubscribe();
   assert.deepEqual(addWaterPortion(2500, 2500, 250), { consumedMl: 2500, goalReached: false });

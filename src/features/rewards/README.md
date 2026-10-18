@@ -158,10 +158,27 @@ batch path. Local storage retains its single-runtime limitations described above
 `createOrangeRewardNotice` creates one notice from the committed aggregate only:
 fresh demo 248 can earn 2+5+10=17 and become 265; established wallets normally earn
 7, or less when some identities already exist. Zero/error produces no notice.
-`OrangeRewardFeedback` shows decorative CHEBU-07, accessible amount text, a subtle
-220 ms entrance, dismissal, and a short timeout. It is nonmodal, respects reduced
-motion, and never increments wallet state. No global popup queue is introduced.
+`getRewardFeedbackKind` is a presentation policy, separate from economy rules.
+Only newly granted `welcomeReward` or `activeDayMilestone` credits select
+`celebration`; all ordinary grants select `micro`, regardless of amount.
+`OrangeRewardFeedback` renders one aggregated, nonmodal surface:
+
+- Micro: content-sized amount + orange mark + short encouragement, no mascot;
+  220 ms entrance + 1400 ms hold + 180 ms exit = 1.8 seconds.
+- Celebration: compact CHEBU-07 card for welcome/milestones;
+  260 ms entrance + 2220 ms hold + 220 ms exit = 2.7 seconds.
+
+Both support tap or upward swipe dismissal, using built-in Animated/PanResponder.
+Only the surface handles touches; the surrounding layer is `box-none`. Tabs,
+quick-add and scrolling remain available. Placement accounts for safe-area insets
+and a toolbar-height upper clearance; it never shifts content. Text may grow/wrap
+with Dynamic Type. Reduced motion removes movement and animation while retaining
+the same automatic lifetime. One textual accessibility announcement accompanies
+each notice, without a live region, artwork announcement or focus movement.
+There is no global popup queue, and feedback never increments wallet state.
 Future producers should use the same fact → ordered committed batch → one notice
 pattern. No meal/workout/weight UI integration or automatic milestone producer.
 
 Run `npm run test:water-rewards` for the end-to-end application workflow tests.
+
+Run `npm run test:reward-feedback` for presentation classification/aggregation checks.

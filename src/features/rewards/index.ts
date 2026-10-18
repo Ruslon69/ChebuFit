@@ -12,6 +12,8 @@ export { createOrangeWalletService } from './application/OrangeWalletService';
 export type { OrangeWalletService, RewardBatchResult } from './application/OrangeWalletService';
 export { createOrangeRewardNotice } from './application/OrangeRewardNotice';
 export type { OrangeRewardNotice } from './application/OrangeRewardNotice';
+export { getRewardFeedbackKind, rewardFeedbackTiming } from './application/rewardFeedbackPolicy';
+export type { RewardFeedbackKind } from './application/rewardFeedbackPolicy';
 export { createInitialWallet, decodeOrangeWallet, getWalletSnapshot } from './application/OrangeWallet';
 export type { OrangeWalletMode, OrangeWalletState, OrangeWalletSnapshot, OrangeWalletError, WalletResult } from './application/OrangeWallet';
 export type { OrangeWalletRepository } from './application/OrangeWalletRepository';
