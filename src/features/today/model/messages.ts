@@ -16,6 +16,7 @@ type TodayMessages = {
   kg: string;
   macros: Record<MacroId, string>;
   water: string;
+  waterUnavailable: string;
   waterRemaining: (litres: string) => string;
   waterAdd: (ml: number) => string;
   waterComplete: string;
@@ -49,7 +50,7 @@ const messages = {
     },
     remaining: 'Осталось', target: 'Цель', kcal: 'ккал', grams: 'г', litres: 'л', kg: 'кг',
     macros: { protein: 'Белки', fat: 'Жиры', carbs: 'Углеводы' },
-    water: 'Вода', waterRemaining: (litres: string) => `Ещё ${litres} л до цели`,
+    water: 'Вода', waterUnavailable: 'Пока недоступно', waterRemaining: (litres: string) => `Ещё ${litres} л до цели`,
     waterAdd: (ml: number) => `+${ml} мл`, waterComplete: 'Цель достигнута',
     nutrition: 'Питание', allMeals: 'Все приёмы',
     meals: { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин', snacks: 'Перекусы' },
@@ -68,7 +69,7 @@ const messages = {
     orangeBalanceLabel: (balance: number, formattedBalance: string) => `Balance: ${formattedBalance} ${balance === 1 ? 'orange' : 'oranges'}`,
     remaining: 'Remaining', target: 'Goal', kcal: 'kcal', grams: 'g', litres: 'l', kg: 'kg',
     macros: { protein: 'Protein', fat: 'Fat', carbs: 'Carbs' },
-    water: 'Water', waterRemaining: (litres: string) => `${litres} l to go`,
+    water: 'Water', waterUnavailable: 'Currently unavailable', waterRemaining: (litres: string) => `${litres} l to go`,
     waterAdd: (ml: number) => `+${ml} ml`, waterComplete: 'Goal reached',
     nutrition: 'Nutrition', allMeals: 'All meals',
     meals: { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snacks: 'Snacks' },

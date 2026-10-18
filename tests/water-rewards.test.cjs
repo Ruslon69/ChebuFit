@@ -5,7 +5,12 @@ const { createOrangeWalletService, createOrangeRewardNotice } = require(path.joi
 const { createKeyValueOrangeWalletRepository } = require(process.env.CHEBUFIT_WALLET_ADAPTER_BUILD);
 const { rewardWaterGoalReached } = require(path.join(process.env.CHEBUFIT_BUILD, 'application/rewards/waterGoalRewards.js'));
 const { createLocalRewardContext } = require(path.join(process.env.CHEBUFIT_BUILD, 'application/rewards/localRewardContext.js'));
-const { addWaterPortion } = require(path.join(process.env.CHEBUFIT_BUILD, 'features/water/model/waterTracking.js'));
+const { changeWater } = require(path.join(process.env.CHEBUFIT_BUILD, 'features/water/index.js'));
+function addWaterPortion(consumedMl, goalMl, portionMl) {
+  const timestamp = '2026-10-17T12:00:00Z';
+  const result = changeWater({ consumedMl, goalMl, localDate: '2026-10-17', createdAt: timestamp, updatedAt: timestamp }, portionMl, 'add', timestamp);
+  return result.ok ? { consumedMl: result.value.record.consumedMl, goalReached: result.value.crossedGoal } : { consumedMl, goalReached: false };
+}
 const { getRewardMessages } = require(path.join(process.env.CHEBUFIT_REWARDS_BUILD, 'model/rewardMessages.js'));
 
 const context = { localDay: '2026-10-17', occurredAt: '2026-10-17T23:30:00-03:00' };
@@ -57,7 +62,7 @@ test('C–G/P/Q: goal transition commits 2 + 5 + 10 in order, one save, one noti
   assert.deepEqual(notice, { id: 'goal', amount: 17, includesWelcome: true, kind: 'celebration' });
   assert.equal(notice.amount, value.wallet.balance - 248);
   unsubscribe();
-  assert.deepEqual(addWaterPortion(2500, 2500, 250), { consumedMl: 2500, goalReached: false });
+  assert.deepEqual(addWaterPortion(2500, 2500, 250), { consumedMl: 2750, goalReached: false });
 });
 
 test('H: established wallet earns only 7, relative to its actual starting balance', async () => {
@@ -136,12 +141,12 @@ test('already-rewarded water can earn only the missing active-day bonus for an e
   assert.equal(ok(await rewardWaterGoalReached(service, context)).amount, 5);
 });
 
-test('local context uses local calendar getters, water caps safely, copy has correct Russian units', () => {
+test('local context uses local calendar getters, water remains uncapped, copy has correct Russian units', () => {
   const local = new Date(2026, 9, 18, 0, 15);
   const result = createLocalRewardContext(local);
   assert.equal(result.localDay, '2026-10-18');
   assert.equal(result.occurredAt, local.toISOString());
-  assert.deepEqual(addWaterPortion(2450, 2500, 250), { consumedMl: 2500, goalReached: true });
+  assert.deepEqual(addWaterPortion(2450, 2500, 250), { consumedMl: 2700, goalReached: true });
   assert.equal(addWaterPortion(2250, 0, 250).goalReached, false);
   const copy = getRewardMessages('ru');
   assert.deepEqual([1, 2, 7, 17, 21].map(copy.unit), ['апельсин', 'апельсина', 'апельсинов', 'апельсинов', 'апельсин']);

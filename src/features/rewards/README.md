@@ -141,11 +141,14 @@ Tests use the existing TypeScript compiler and Node runner; AsyncStorage is the 
 
 ## First producer: Today water goal
 
-The water model emits a fact only when a +250 ml action crosses from below the
-personal goal to the goal; mount/relaunch and already-complete amounts emit nothing.
-Water quantities stay in local component state. The rewards domain never inspects
-quantities. Application composition captures the current device-local date and
-occurrence timestamp once, rather than using the dashboard's illustrative date.
+The water model emits a fact only when an add crosses from below the
+daily goal to or above the goal; mount/relaunch and already-complete amounts emit nothing.
+Water quantities and historical goals are persisted by the independent Water
+feature (`../water/README.md`); the rewards domain never inspects quantities.
+Application composition captures the device-local date and occurrence timestamp
+before the add, then forwards a crossing only after water saves successfully.
+Reload/read and already-above-goal adds never trigger rewards. The dashboard's
+illustrative date is never used for attribution.
 
 `rewardWaterGoalReached` uses a serialized wallet batch in this order:
 `waterGoalCompleted` → `activeDayQualified` (`waterTracking`) → `welcomeReward`.

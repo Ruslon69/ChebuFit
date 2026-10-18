@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { Alert, Image, StyleSheet } from 'react-native';
 
 import { mascotAssets } from '../../../shared/assets/mascot';
@@ -10,7 +10,6 @@ import { createTodayFormatters, getTodayMessages } from '../model/messages';
 import { CaloriesCard } from './CaloriesCard';
 import { MealsOverview, WaterCard, WeightCard, WorkoutCard } from './DailyOverview';
 import { TodayHeader } from './TodayHeader';
-import { addWaterPortion } from '../../water';
 
 type TodayScreenProps = {
   model: TodayViewModel;
@@ -18,21 +17,13 @@ type TodayScreenProps = {
   onOpenProgress: () => void;
   onOpenDesignSystem?: () => void;
   headerArtwork?: ReactElement;
-  onWaterGoalReached?: () => void;
+  onAddWater: () => void;
 };
 
-export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesignSystem, headerArtwork, onWaterGoalReached }: TodayScreenProps) {
+export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesignSystem, headerArtwork, onAddWater }: TodayScreenProps) {
   const copy = getTodayMessages(appConfig.defaultLocale);
   const format = createTodayFormatters(appConfig.defaultLocale);
-  const [waterMl, setWaterMl] = useState(model.water.consumedMl);
-  const waterRef = useRef(model.water.consumedMl);
   const preview = (message: string) => Alert.alert(copy.previewTitle, message, [{ text: copy.dismiss }]);
-  const addWater = () => {
-    const transition = addWaterPortion(waterRef.current, model.water.targetMl, model.water.portionMl);
-    waterRef.current = transition.consumedMl;
-    setWaterMl(transition.consumedMl);
-    if (transition.goalReached) onWaterGoalReached?.();
-  };
 
   return (
     <Screen scroll edges={['top', 'left', 'right']} testID="today-screen" contentContainerStyle={styles.page}>
@@ -56,7 +47,7 @@ export function TodayScreen({ model, onOpenNutrition, onOpenProgress, onOpenDesi
         )}
       />
       <CaloriesCard calories={model.calories} macros={model.macros} copy={copy} format={format} />
-      <WaterCard water={model.water} consumedMl={waterMl} onAdd={addWater} copy={copy} format={format} />
+      <WaterCard water={model.water} onAdd={onAddWater} copy={copy} format={format} />
       <MealsOverview meals={model.meals} onOpen={onOpenNutrition} copy={copy} format={format} />
       <WorkoutCard workout={model.workout} onStart={() => preview(copy.workoutPreview)} copy={copy} />
       <WeightCard weight={model.weight} onOpen={onOpenProgress} copy={copy} format={format} />

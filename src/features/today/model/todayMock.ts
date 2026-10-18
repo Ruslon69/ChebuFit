@@ -12,7 +12,6 @@ export const todayMock = {
     { id: 'fat', consumed: 47, target: 65 },
     { id: 'carbs', consumed: 241, target: 380 },
   ],
-  water: { consumedMl: 1500, targetMl: 2500, portionMl: 250 },
   meals: [
     { id: 'breakfast', calories: 520 },
     { id: 'lunch', calories: 680 },
@@ -21,4 +20,4 @@ export const todayMock = {
   ],
   workout: { title: 'Грудь + трицепс', exerciseCount: 6, durationMinutes: 55 },
   weight: { kg: 85, changeKg: -0.6, periodDays: 30, changeTone: 'positive' },
-} satisfies TodayViewModel;
+} satisfies Omit<TodayViewModel, 'water'>;

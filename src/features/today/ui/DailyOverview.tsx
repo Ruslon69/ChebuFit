@@ -15,10 +15,12 @@ import type { TodayCopy, TodayFormatters } from '../model/messages';
 
 type Presentation = { copy: TodayCopy; format: TodayFormatters };
 
-export function WaterCard({ water, consumedMl, onAdd, copy, format }: Presentation & {
-  water: TodayViewModel['water']; consumedMl: number; onAdd: () => void;
+export function WaterCard({ water, onAdd, copy, format }: Presentation & {
+  water: TodayViewModel['water']; onAdd: () => void;
 }) {
-  const complete = consumedMl >= water.targetMl;
+  const { consumedMl, targetMl } = water;
+  const ready = consumedMl !== null && targetMl !== null;
+  const complete = ready && consumedMl >= targetMl;
   return (
     <Card testID="today-water">
       <View style={styles.content}>
@@ -28,14 +30,14 @@ export function WaterCard({ water, consumedMl, onAdd, copy, format }: Presentati
             <AppText variant="cardTitle">{copy.water}</AppText>
           </View>
           <AppText variant="caption" tone={complete ? 'success' : 'textSecondary'} accessibilityLiveRegion="polite">
-            {complete ? copy.waterComplete : copy.waterRemaining(format.number((water.targetMl - consumedMl) / 1000))}
+            {!ready ? copy.waterUnavailable : complete ? copy.waterComplete : copy.waterRemaining(format.number((targetMl - consumedMl) / 1000))}
           </AppText>
         </View>
         <View style={styles.row}>
-          <AppText variant="sectionTitle" testID="today-water-value">{format.number(consumedMl / 1000)} <AppText variant="bodySecondary" tone="textSecondary">/ {format.number(water.targetMl / 1000)} {copy.litres}</AppText></AppText>
-          <Button label={copy.waterAdd(water.portionMl)} variant="secondary" disabled={complete} onPress={onAdd} testID="today-water-add" />
+          <AppText variant="sectionTitle" testID="today-water-value">{ready ? format.number(consumedMl / 1000) : '—'} <AppText variant="bodySecondary" tone="textSecondary">/ {ready ? format.number(targetMl / 1000) : '—'} {copy.litres}</AppText></AppText>
+          <Button label={copy.waterAdd(water.portionMl)} variant="secondary" disabled={!ready} onPress={onAdd} testID="today-water-add" />
         </View>
-        <ProgressBar value={consumedMl / water.targetMl} tone="success" label={copy.water} testID="today-water-progress" />
+        <ProgressBar value={ready ? consumedMl / targetMl : 0} tone="success" label={copy.water} testID="today-water-progress" />
       </View>
     </Card>
   );

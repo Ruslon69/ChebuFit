@@ -10,10 +10,10 @@
   application composition will choose adapters and supply them to use cases.
 - `src/features/{onboarding,profile,nutrition,water,workouts,progress,rewards}` owns each
   product domain. `src/features/today` composes the daily overview presentation from
-  a typed `TodayViewModel` and mock dashboard fixture. The Today route overrides
-  the fixture balance from `src/application/rewards/useOrangeWallet`. Its UI emits
-  a water-goal fact; application composition processes rewards. Loading/errors
-  show an unavailable balance, never a fake zero.
+  a typed `TodayViewModel` and mock dashboard fixture. The route supplies real
+  wallet/water state through their application hooks. Successful water adds expose
+  a persisted goal-crossing fact; composition processes rewards. Initial loading
+  shows unavailable values, never fake zeroes.
 - `src/features/rewards/domain` owns pure event evaluation, configurable rewards,
   stable local-day/week and lifetime identities, caps, qualified active-day
   milestones, welcome eligibility, and integer ledger calculation. Its public
@@ -22,7 +22,10 @@
   amounts and pricing guidance are documented in `docs/ORANGE_ECONOMY_V1.md`.
 - `src/features/rewards/application` owns the wallet schema, repository port, and
   serialized wallet service. No React/native/storage SDK imports belong there.
-- `src/application` composes the AsyncStorage wallet adapter/service and React hook,
+- `src/features/water/domain` owns pure integer quantities and transitions; its
+  `application/` owns versioned daily state, the repository port and serialized
+  service. No React/native/storage SDK imports belong in either layer.
+- `src/application` composes AsyncStorage wallet/water adapters, services and React hooks,
   alongside application UI shared across routes such as the Quick Add preview modal. Keep it outside the file-based route directory.
 - `src/shared/ui` contains reusable, product-neutral React Native components.
 - `src/shared/theme` contains semantic light-theme design tokens, with no runtime React dependency.
@@ -33,9 +36,9 @@
   when user/device locale selection is implemented; add pluralization and formatting
   tooling when real localized features need it. Never translate stored domain IDs.
 - `src/shared/utils` and `src/shared/types` document homes for genuinely shared
-  pure helpers/contracts. They have no speculative implementations yet.
-- `src/infrastructure/rewards` implements the wallet repository through a narrow
-  key-value port, supplied with AsyncStorage in application composition. Other
+  pure helpers/contracts. Shared local-calendar capture and validation live here.
+- `src/infrastructure/{rewards,water}` implements feature repositories through narrow
+  key-value ports, supplied with AsyncStorage in application composition. Other
   `src/infrastructure` integrations are added when needed. Root `assets/`
   continues to hold Expo app icons; future exercise media belongs with workouts.
 
@@ -92,8 +95,9 @@ ledger, and balance updates atomically. Local storage is not a security boundary
 The root renders a four-tab navigation shell and a separate onboarding placeholder.
 Shared visual primitives follow `DESIGN_SYSTEM.md`. The internal `src/development`
 showcase is reachable through a development-only route/header control, outside tabs.
-Today uses illustrative data from `src/features/today/model/todayMock.ts`. Water
-changes stay in component state and reset when the screen remounts. The Today
+Today uses illustrative dashboard data from `src/features/today/model/todayMock.ts`.
+Water is real per-day state consumed through `src/application/water/useDailyWater`
+and persisted by the Water service; Today owns no canonical water quantity. The Today
 header uses CHEBU-02 (`mascotAssets.greeting`) as decorative artwork in its bounded
 profile-side column. Its orange balance is asynchronously reconstructed from the
 local wallet. Development uses an explicit 248 demo opening credit and empty ledger;
@@ -105,6 +109,10 @@ welcome/milestone credits are present. Both are nonmodal and dismissible. Other 
 remain unconnected.
 Meals/history open existing tabs; workout/profile and Quick Add actions remain
 unconnected previews.
+Water uses versioned daily records with integer ml and historical goal snapshots,
+separate from the wallet. Both use the existing AsyncStorage adapter pattern and
+serialize local operations; cross-device/feature atomicity is not provided. See
+`src/features/water/README.md` for the explicit-date API and future Watch contract.
 No other product persistence, network service clients, authentication, or watch target exists.
 Add concrete abstractions with their first consumer instead of filling each
 documented layer in advance.
