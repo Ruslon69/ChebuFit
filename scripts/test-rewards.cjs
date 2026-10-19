@@ -14,6 +14,8 @@ try {
     path.join(project, 'src/application/workouts/exerciseCatalog.ts'),
     path.join(project, 'src/features/workouts/index.ts'),
     path.join(project, 'src/features/workouts/model/exercisePresentation.ts'),
+    path.join(project, 'src/features/workouts/model/exerciseMedia.ts'),
+    path.join(project, 'src/shared/assets/exercises.ts'),
     path.join(project, 'src/features/personal-foods/application/PersonalFoodService.ts'),
     path.join(project, 'src/features/personal-foods/model/form.ts'),
     path.join(project, 'src/infrastructure/personal-foods/KeyValuePersonalFoodRepository.ts'),

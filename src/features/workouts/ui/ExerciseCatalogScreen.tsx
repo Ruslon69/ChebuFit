@@ -13,7 +13,8 @@ import { IconButton } from '../../../shared/ui/IconButton';
 import { Screen } from '../../../shared/ui/Screen';
 import { equipmentTypes, muscles, type Equipment, type Muscle } from '../domain/exercise';
 import { exerciseRoute, presentExercise } from '../model/exercisePresentation';
-import { getExerciseMessages } from '../model/messages';
+import { formatExerciseCount, getExerciseMessages } from '../model/messages';
+import { ExerciseArtwork } from './ExerciseArtwork';
 
 export function ExerciseCatalogScreen() {
   const locale = appConfig.defaultLocale, copy = getExerciseMessages(locale), router = useRouter();
@@ -42,22 +43,22 @@ export function ExerciseCatalogScreen() {
       </View>
       <View style={[styles.filters, fontScale > 1.3 && styles.stacked]}>
         <Pressable accessibilityRole="button" accessibilityLabel={`${copy.muscle}: ${muscle ? copy.muscles[muscle] : copy.allMuscles}`} accessibilityState={{ selected: !!muscle }} onPress={() => openFilter('muscle')}
-          style={({ pressed }) => [styles.filter, !!muscle && styles.selected, pressed && styles.pressed]} testID="exercise-filter-muscle">
-          <AppText variant="label" tone={muscle ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{muscle ? copy.muscles[muscle] : copy.muscle}</AppText>
+          style={({ pressed }) => [styles.filter, pressed && styles.pressed]} testID="exercise-filter-muscle">
+          <View style={[styles.filterSurface, !!muscle && styles.selected]}><AppText variant="label" tone={muscle ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{muscle ? copy.muscles[muscle] : copy.muscle}</AppText></View>
         </Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel={`${copy.equipment}: ${equipment ? copy.equipmentLabels[equipment] : copy.allEquipment}`} accessibilityState={{ selected: !!equipment }} onPress={() => openFilter('equipment')}
-          style={({ pressed }) => [styles.filter, !!equipment && styles.selected, pressed && styles.pressed]} testID="exercise-filter-equipment">
-          <AppText variant="label" tone={equipment ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{equipment ? copy.equipmentLabels[equipment] : copy.equipment}</AppText>
+          style={({ pressed }) => [styles.filter, pressed && styles.pressed]} testID="exercise-filter-equipment">
+          <View style={[styles.filterSurface, !!equipment && styles.selected]}><AppText variant="label" tone={equipment ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{equipment ? copy.equipmentLabels[equipment] : copy.equipment}</AppText></View>
         </Pressable>
       </View>
       <View style={styles.context}>
-        <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} accessibilityLiveRegion="polite" testID="exercise-result-count">{copy.found}: {results.length}</AppText>
+        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} accessibilityLiveRegion="polite" testID="exercise-result-count">{formatExerciseCount(results.length, locale, !!(query.trim() || muscle || equipment))}</AppText>
         {(muscle || equipment) && <Pressable accessibilityRole="button" onPress={resetFilters} style={styles.reset} testID="exercise-filter-reset"><AppText variant="bodySecondary" tone="primaryText" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.resetFilters}</AppText></Pressable>}
       </View>
       {results.length ? <Card padding="compact" testID="exercise-results">{results.map(exercise => <Pressable key={exercise.id}
         accessibilityRole="button" accessibilityLabel={`${exercise.name}. ${exercise.primaryMuscles.join(', ')}. ${exercise.equipment.join(', ')}`} accessibilityHint={copy.openExercise}
         onPress={() => { Keyboard.dismiss(); router.push(exerciseRoute(exercise.id)); }} testID={`exercise-row-${exercise.id}`} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
-        <View style={styles.thumbnail}><Icon name="workouts" /></View>
+        <ExerciseArtwork media={exercise.media} context="thumbnail" />
         <View style={styles.rowCopy}>
           <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.name}</AppText>
           <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.primaryMuscles.join(' · ')}</AppText>
@@ -97,13 +98,14 @@ const styles = StyleSheet.create({
   content: { gap: t.spacing.md, paddingTop: t.spacing.lg }, flex: { flex: 1 }, section: { gap: t.spacing.md },
   search: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, backgroundColor: t.colors.surface, borderRadius: t.radii.control, paddingLeft: t.spacing.lg, paddingRight: t.spacing.xs },
   input: { ...t.typography.body, color: t.colors.text, flex: 1, minHeight: t.size.button, paddingVertical: t.spacing.md },
-  filters: { flexDirection: 'row', gap: t.spacing.sm }, stacked: { flexDirection: 'column' },
-  filter: { flex: 1, minHeight: t.size.touchTarget, padding: t.spacing.md, alignItems: 'center', justifyContent: 'center', borderRadius: t.radii.control, backgroundColor: t.colors.surfaceSecondary },
+  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm, alignItems: 'flex-start' }, stacked: { flexDirection: 'column' },
+  filter: { minHeight: t.size.touchTarget, maxWidth: '100%', justifyContent: 'center', paddingVertical: t.spacing.xs },
+  filterSurface: { paddingHorizontal: t.spacing.md, paddingVertical: t.spacing.sm, borderRadius: t.radii.pill, backgroundColor: t.colors.surfaceSecondary },
   selected: { backgroundColor: t.colors.primarySubtle }, pressed: { opacity: t.opacity.pressed },
   context: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: t.spacing.sm },
   reset: { minHeight: t.size.touchTarget, justifyContent: 'center' },
-  row: { minHeight: t.size.button, flexDirection: 'row', alignItems: 'center', gap: t.spacing.md, paddingVertical: t.spacing.sm, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
-  rowCopy: { flex: 1, minWidth: 0 }, thumbnail: { width: t.size.touchTarget, height: t.size.touchTarget, borderRadius: t.radii.control, backgroundColor: t.colors.surfaceSecondary, alignItems: 'center', justifyContent: 'center' },
+  row: { minHeight: t.size.button, flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, paddingVertical: t.spacing.xs, borderBottomWidth: t.stroke.thin, borderBottomColor: t.colors.divider },
+  rowCopy: { flex: 1, minWidth: 0 },
   overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: t.colors.scrim },
   sheet: { flexShrink: 1, backgroundColor: t.colors.surface, borderRadius: t.radii.card, padding: t.spacing.lg, maxHeight: t.layout.modalMaxHeight, gap: t.spacing.sm },
   header: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm }, options: { gap: t.spacing.xs },

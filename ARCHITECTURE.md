@@ -113,9 +113,11 @@ ledger, and balance updates atomically. Local storage is not a security boundary
 - Nutrition diary entries preserve the nutrient snapshot used when logged,
   together with serving quantity and units. Source product updates do not change
   historical diary values.
-- Exercise media supports ordered static key-position images first and an
-  optional animation asset. Renderers choose how to display media; adding animation
-  should extend the media description without replacing the exercise model.
+- Exercise media references first-party local illustration keys, with an optional
+  thumbnail override. A presentation registry binds approved assets; one canonical
+  illustration can serve both contexts. Missing assets use a neutral fallback.
+  Future technique frames/animation may extend media without replacing ExerciseId
+  or the exercise model; those renderers are not implemented yet.
 - Workouts own platform-neutral session identity and rules. Future native watchOS
   code will exchange versioned, serializable session data/events through a watch
   adapter, using the same logical session IDs as mobile persistence/backend sync.

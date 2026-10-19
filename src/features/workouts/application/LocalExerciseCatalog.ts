@@ -13,7 +13,7 @@ export function createLocalExerciseCatalog(source: readonly Exercise[]): Exercis
   // Freeze detached data so consumers cannot mutate the shared catalog through a read.
   const frozen = source.map(exercise => {
     const content = Object.fromEntries(Object.entries(exercise.content).filter(([, value]) => value !== undefined).map(([locale, value]) => [locale, Object.freeze({ ...value, instructions: Object.freeze([...value.instructions]), ...(value.tips ? { tips: Object.freeze([...value.tips]) } : {}) })]));
-    return Object.freeze({ ...exercise, content: Object.freeze(content) as Exercise['content'], aliases: Object.freeze([...exercise.aliases]), primaryMuscles: Object.freeze([...exercise.primaryMuscles]), ...(exercise.secondaryMuscles ? { secondaryMuscles: Object.freeze([...exercise.secondaryMuscles]) } : {}), equipment: Object.freeze([...exercise.equipment]), ...(exercise.media ? { media: Object.freeze({ positionAssetKeys: Object.freeze([...exercise.media.positionAssetKeys]) }) } : {}) });
+    return Object.freeze({ ...exercise, content: Object.freeze(content) as Exercise['content'], aliases: Object.freeze([...exercise.aliases]), primaryMuscles: Object.freeze([...exercise.primaryMuscles]), ...(exercise.secondaryMuscles ? { secondaryMuscles: Object.freeze([...exercise.secondaryMuscles]) } : {}), equipment: Object.freeze([...exercise.equipment]), ...(exercise.media ? { media: Object.freeze({ ...exercise.media }) } : {}) });
   });
   const all: readonly Exercise[] = Object.freeze(frozen.sort(alphabetical));
   if (new Set(all.map(exercise => exercise.id)).size !== all.length) throw new Error('Duplicate exercise identity');

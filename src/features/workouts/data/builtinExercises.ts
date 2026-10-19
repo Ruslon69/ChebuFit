@@ -4,6 +4,7 @@ import type { Exercise, ExerciseId } from '../domain/exercise';
 export const builtinExercises: readonly Exercise[] = [
   {
     "id": "barbell-bench-press" as ExerciseId,
+    "media": { "illustrationAssetKey": "barbell-bench-press" },
     "content": {
       "ru": {
         "name": "Жим штанги лёжа",
@@ -564,6 +565,7 @@ export const builtinExercises: readonly Exercise[] = [
   },
   {
     "id": "barbell-back-squat" as ExerciseId,
+    "media": { "illustrationAssetKey": "barbell-back-squat" },
     "content": {
       "ru": {
         "name": "Приседания со штангой",
@@ -951,6 +953,7 @@ export const builtinExercises: readonly Exercise[] = [
   },
   {
     "id": "plank" as ExerciseId,
+    "media": { "illustrationAssetKey": "plank" },
     "content": {
       "ru": {
         "name": "Планка",

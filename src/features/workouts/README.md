@@ -63,16 +63,49 @@ IDs and tracking metadata without importing screens or Expo APIs.
 Technique instructions (four short steps per exercise) and cues are original
 ChebuFit copy describing common movement concepts. No commercial descriptions,
 photos, watermarks or scraped media are imported. No exercise artwork is generated.
-The warm neutral dumbbell visual is deliberately decorative and does not claim to
-illustrate a particular movement. A future owned media registry can resolve ordered
-`media.positionAssetKeys` for static key-position images, with optional animation
-added later. Asset metadata stays separate from the native renderer. Do not assume
-all exercises require media to remain useful or available offline.
+ExerciseMedia holds logical `illustrationAssetKey` and optional `thumbnailAssetKey`.
+`model/exerciseMedia.ts` resolves these against the local Metro asset registry in
+`src/shared/assets/exercises.ts`; the domain never imports native images. A single
+canonical illustration is reused in both contexts unless an optimized thumbnail
+is explicitly supplied. Unbound/missing media and image decode errors keep the
+neutral fallback; they never hide exercise information. There are no URI/remote
+image sources. Three reserved keys currently have **no assets bound**:
+`barbell-bench-press`, `barbell-back-squat`, `plank`.
+
+See [exercise asset convention](../../../assets/exercises/README.md) for approved
+file registration. The hero uses a 3:2 frame capped at 200pt; the thumbnail is a
+44pt square. Both use `contain`, independent of Dynamic Type. The hero fallback
+has only subtle context; thumbnails are plain warm-neutral tiles. All artwork is
+hidden from VoiceOver because exercise names, muscles and instructions provide
+the meaningful information. Future technique frames/video can extend media later;
+no player, animation or multi-frame API is implemented now.
+
+## Exercise art specification — DRAFT
+
+This direction remains **DRAFT until three reference illustrations are approved**.
+Reference exercises: bench press (`barbell-bench-press`), back squat
+(`barbell-back-squat`) and plank (`plank`). Do not scale production to the remaining
+catalog until those three establish the style.
+
+- First-party local artwork, consistent premium 3D fitness illustration.
+- Neutral athletic human model with realistic athletic proportions, not exaggerated
+  bodybuilding; clean fitted sportswear.
+- Warm light/cream neutral background, dark neutral equipment and restrained
+  ChebuFit orange accents. Optional subtle orange emphasis on primary working
+  muscles; no medical/anatomical exposed-muscle rendering.
+- Consistent camera, lens, lighting and rendering across the set. Correct exercise
+  biomechanics, coherent equipment geometry, and every important body/equipment
+  part visible with safe margins. Compose for both the detail hero and small square
+  thumbnail using contain; never depend on text or a cropped pose to explain it.
+- No baked-in text, logos, watermarks, external copyrighted exercise artwork,
+  scraped assets or mixed visual styles.
+- No images are generated, downloaded or supplied in TASK 23.1A. Approval will
+  determine final production dimensions/style before wider artwork production.
 
 Run `npm run test:exercises` for catalog invariants, queries, filters, bodyweight/
 duration, immutable reads, localization, detail/route projections and offline tests.
 Native route/back/filter/keyboard/Dynamic Type checks additionally run in iOS
-Simulator; screenshots stay under `.artifacts/screenshots/task-23/`.
+Simulator; screenshots stay under `.artifacts/screenshots/task-23.1a/` for this media/density pass.
 
 ## Built-in exercise identities
 

@@ -102,3 +102,56 @@ test('catalog, queries, detail and projections operate with no network or storag
   const original=global.fetch;let calls=0;global.fetch=()=>{calls++;throw Error('Must remain offline')};
   try{for(const e of catalog.search({text:'bench'})){const resolved=p.resolveExercise(catalog,e.id);assert.ok(resolved);assert.ok(p.presentExercise(resolved,'ru').instructions.length);}assert.equal(calls,0);}finally{global.fetch=original;}
 });
+
+const media = require(path.join(root,'features/workouts/model/exerciseMedia.js'));
+const assets = require(path.join(root,'shared/assets/exercises.js'));
+const { formatExerciseCount } = require(path.join(root,'features/workouts/model/messages.js'));
+test('exactly three reference exercises reserve local canonical artwork; no missing file is required',()=>{
+  const expected=['barbell-back-squat','barbell-bench-press','plank'];
+  assert.deepEqual(Object.keys(assets.exerciseArtworkReservations).sort(),expected);
+  assert.deepEqual(catalog.getAll().filter(e=>e.media).map(e=>e.id).sort(),expected);
+  for(const id of expected){
+    assert.equal(catalog.getById(id).media.illustrationAssetKey,id);
+    assert.equal(assets.exerciseArtworkReservations[id],`assets/exercises/app/${id}.png`);
+    for(const context of ['detail','thumbnail'])assert.deepEqual(media.resolveExerciseArtwork(catalog.getById(id).media,context,assets.exerciseImageAssets),{kind:'fallback'});
+  }
+});
+test('one registered local illustration serves thumbnail and detail without duplicate assets',()=>{
+  const reference=bench.media, registry={['barbell-bench-press']:17};
+  for(const context of ['detail','thumbnail'])assert.deepEqual(media.resolveExerciseArtwork(reference,context,registry),{kind:'image',assetKey:bench.id,source:17});
+  assert.deepEqual(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'bench-thumb'},'thumbnail',{...registry,'bench-thumb':18}),{kind:'image',assetKey:'bench-thumb',source:18});
+  assert.equal(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'pending-thumb'},'thumbnail',registry).source,17);
+  assert.equal(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'bench-thumb'},'detail',{...registry,'bench-thumb':18}).source,17);
+});
+test('absent, unknown or invalid handles safely fall back; external URI images are never accepted',()=>{
+  const reference={illustrationAssetKey:'x'};
+  for(const context of ['detail','thumbnail']){
+    assert.deepEqual(media.resolveExerciseArtwork(undefined,context,{x:1}),{kind:'fallback'});
+    assert.deepEqual(media.resolveExerciseArtwork(reference,context,{}),{kind:'fallback'});
+    for(const x of [0,-1,1.5,Infinity,NaN,'https://example.org/image.png',{uri:'https://example.org/image.png'},undefined])
+      assert.deepEqual(media.resolveExerciseArtwork(reference,context,{x}),{kind:'fallback'});
+    assert.deepEqual(media.resolveExerciseArtwork({illustrationAssetKey:'toString'},context,{}),{kind:'fallback'});
+  }
+});
+test('media stays detached/immutable and never changes routing, names or instructions',()=>{
+  const source=structuredClone(bench),local=createLocalExerciseCatalog([source]);source.media.illustrationAssetKey='changed';
+  const exercise=local.getById(bench.id);assert.equal(exercise.media.illustrationAssetKey,bench.id);assert.ok(Object.isFrozen(exercise.media));
+  for(const e of [exercise,{...exercise,media:undefined}]){
+    const v=p.presentExercise(e,'ru');assert.equal(v.name,bench.content.ru.name);assert.deepEqual(v.instructions,bench.content.ru.instructions);assert.deepEqual(p.exerciseRoute(v.id),p.exerciseRoute(bench.id));
+  }
+  const long=catalog.getById('bulgarian-split-squat');assert.equal(p.presentExercise(long,'ru').name,'Болгарские сплит-приседания с гантелями');
+});
+test('artwork contract has bounded font-independent geometry and needs zero network calls',()=>{
+  assert.equal(media.exerciseArtworkLayout.thumbnailSize,44);assert.ok(media.exerciseArtworkLayout.heroMaxHeight<=200);assert.ok(media.exerciseArtworkLayout.heroAspectRatio>1);
+  const original=global.fetch;global.fetch=()=>{throw Error('Artwork must be local')};
+  try{for(const e of catalog.getAll())assert.equal(media.resolveExerciseArtwork(e.media,'detail',assets.exerciseImageAssets).kind,'fallback');}finally{global.fetch=original;}
+});
+test('quiet default count uses natural Russian plural forms; filtered count stays explicit',()=>{
+  for(const [n,label] of [[0,'упражнений'],[1,'упражнение'],[2,'упражнения'],[5,'упражнений'],[11,'упражнений'],[12,'упражнений'],[14,'упражнений'],[21,'упражнение'],[22,'упражнения'],[36,'упражнений'],[111,'упражнений']])assert.equal(formatExerciseCount(n,'ru',false),`${n} ${label}`);
+  assert.equal(formatExerciseCount(3,'ru',true),'Найдено: 3');assert.equal(formatExerciseCount(1,'en',false),'1 exercise');assert.equal(formatExerciseCount(36,'en',false),'36 exercises');
+});
+
+test('count formatting also works on Hermes runtimes without Intl.PluralRules',()=>{
+  const original=Intl.PluralRules;Intl.PluralRules=undefined;
+  try{assert.equal(formatExerciseCount(36,'ru',false),'36 упражнений');}finally{Intl.PluralRules=original;}
+});

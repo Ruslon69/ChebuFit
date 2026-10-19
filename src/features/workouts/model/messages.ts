@@ -31,3 +31,12 @@ const translations: Record<AppLocale, ExerciseCopy> = {
   },
 };
 export const getExerciseMessages = (locale: AppLocale) => translations[locale];
+
+export function formatExerciseCount(count: number, locale: AppLocale, active: boolean) {
+  if (active) return `${getExerciseMessages(locale).found}: ${count}`;
+  if (locale === 'en') return `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
+  // Hermes does not guarantee Intl.PluralRules; counts are nonnegative integers.
+  const last = count % 10, lastTwo = count % 100;
+  const noun = last === 1 && lastTwo !== 11 ? 'упражнение' : last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14) ? 'упражнения' : 'упражнений';
+  return `${count} ${noun}`;
+}
