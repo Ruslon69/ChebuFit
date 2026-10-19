@@ -1,0 +1,953 @@
+[
+  {
+    "catalogNumber": "EX-001",
+    "requestedId": "barbell-bench-press",
+    "id": "barbell-bench-press",
+    "name": "Жим штанги лёжа",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "equipment": [
+      "barbell",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-002",
+    "requestedId": "dumbbell-bench-press",
+    "id": "dumbbell-bench-press",
+    "name": "Жим гантелей лёжа",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-003",
+    "requestedId": "incline-dumbbell-press",
+    "id": "incline-dumbbell-press",
+    "name": "Жим гантелей на наклонной скамье",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-004",
+    "requestedId": "incline-barbell-bench-press",
+    "id": "incline-barbell-bench-press",
+    "name": "Жим штанги на наклонной скамье",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "triceps"
+    ],
+    "equipment": [
+      "barbell",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-005",
+    "requestedId": "cable-chest-fly",
+    "id": "cable-fly",
+    "name": "Сведение рук в кроссовере",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-006",
+    "requestedId": "dumbbell-chest-fly",
+    "id": "dumbbell-fly",
+    "name": "Разведение гантелей лёжа",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-007",
+    "requestedId": "push-up",
+    "id": "push-up",
+    "name": "Отжимания",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "triceps",
+      "shoulders"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-008",
+    "requestedId": "chest-dip",
+    "id": "chest-dip",
+    "name": "Отжимания на брусьях",
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "equipment": [
+      "dipBars"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-009",
+    "requestedId": "pull-up",
+    "id": "pull-up",
+    "name": "Подтягивания",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps"
+    ],
+    "equipment": [
+      "pullUpBar"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-010",
+    "requestedId": "lat-pulldown",
+    "id": "lat-pulldown",
+    "name": "Тяга верхнего блока",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps"
+    ],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-011",
+    "requestedId": "barbell-bent-over-row",
+    "id": "barbell-row",
+    "name": "Тяга штанги в наклоне",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "rearShoulders"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-012",
+    "requestedId": "one-arm-dumbbell-row",
+    "id": "dumbbell-row",
+    "name": "Тяга гантели одной рукой",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-013",
+    "requestedId": "seated-cable-row",
+    "id": "seated-cable-row",
+    "name": "Горизонтальная тяга блока",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "rearShoulders"
+    ],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-014",
+    "requestedId": "t-bar-row",
+    "id": "t-bar-row",
+    "name": "Тяга Т-грифа",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "rearShoulders"
+    ],
+    "equipment": [
+      "machineOrBarbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-015",
+    "requestedId": "straight-arm-pulldown",
+    "id": "straight-arm-pulldown",
+    "name": "Пуловер на верхнем блоке",
+    "primaryMuscles": [
+      "back"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-016",
+    "requestedId": "back-extension",
+    "id": "back-extension",
+    "name": "Гиперэкстензия",
+    "primaryMuscles": [
+      "lowerBack"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "equipment": [
+      "bench"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-017",
+    "requestedId": "barbell-overhead-press",
+    "id": "barbell-overhead-press",
+    "name": "Жим штанги над головой",
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-018",
+    "requestedId": "seated-dumbbell-shoulder-press",
+    "id": "dumbbell-shoulder-press",
+    "name": "Жим гантелей сидя",
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-019",
+    "requestedId": "arnold-press",
+    "id": "arnold-press",
+    "name": "Жим Арнольда",
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-020",
+    "requestedId": "dumbbell-lateral-raise",
+    "id": "dumbbell-lateral-raise",
+    "name": "Подъём гантелей в стороны",
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-021",
+    "requestedId": "dumbbell-front-raise",
+    "id": "dumbbell-front-raise",
+    "name": "Подъём гантелей перед собой",
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-022",
+    "requestedId": "dumbbell-reverse-fly",
+    "id": "rear-delt-fly",
+    "name": "Обратное разведение гантелей",
+    "primaryMuscles": [
+      "rearShoulders"
+    ],
+    "secondaryMuscles": [
+      "back"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-023",
+    "requestedId": "face-pull",
+    "id": "face-pull",
+    "name": "Face Pull",
+    "primaryMuscles": [
+      "rearShoulders"
+    ],
+    "secondaryMuscles": [
+      "back"
+    ],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-024",
+    "requestedId": "shrug",
+    "id": "shrug",
+    "name": "Шраги",
+    "primaryMuscles": [
+      "traps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-025",
+    "requestedId": "barbell-curl",
+    "id": "barbell-curl",
+    "name": "Сгибание рук со штангой",
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-026",
+    "requestedId": "dumbbell-curl",
+    "id": "dumbbell-curl",
+    "name": "Сгибание рук с гантелями",
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-027",
+    "requestedId": "hammer-curl",
+    "id": "hammer-curl",
+    "name": "Молотковые сгибания",
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-028",
+    "requestedId": "preacher-curl",
+    "id": "preacher-curl",
+    "name": "Сгибание рук на скамье Скотта",
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "barbellOrEzBar",
+      "preacherBench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-029",
+    "requestedId": "cable-biceps-curl",
+    "id": "cable-biceps-curl",
+    "name": "Сгибание рук на нижнем блоке",
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-030",
+    "requestedId": "cable-triceps-pushdown",
+    "id": "triceps-pushdown",
+    "name": "Разгибание рук на блоке",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-031",
+    "requestedId": "lying-triceps-extension",
+    "id": "lying-triceps-extension",
+    "name": "Французский жим",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "barbellOrEzBar",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-032",
+    "requestedId": "overhead-dumbbell-triceps-extension",
+    "id": "overhead-triceps-extension",
+    "name": "Разгибание гантели из-за головы",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-033",
+    "requestedId": "close-grip-bench-press",
+    "id": "close-grip-bench-press",
+    "name": "Узкий жим штанги лёжа",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [
+      "chest"
+    ],
+    "equipment": [
+      "barbell",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-034",
+    "requestedId": "overhead-cable-triceps-extension",
+    "id": "overhead-cable-triceps-extension",
+    "name": "Разгибание рук на блоке над головой",
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-035",
+    "requestedId": "barbell-back-squat",
+    "id": "barbell-back-squat",
+    "name": "Приседания со штангой",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": [
+      "barbell",
+      "rack"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-036",
+    "requestedId": "barbell-front-squat",
+    "id": "barbell-front-squat",
+    "name": "Фронтальные приседания",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "core"
+    ],
+    "equipment": [
+      "barbell",
+      "rack"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-037",
+    "requestedId": "leg-press",
+    "id": "leg-press",
+    "name": "Жим ногами",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-038",
+    "requestedId": "leg-extension",
+    "id": "leg-extension",
+    "name": "Разгибание ног в тренажёре",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-039",
+    "requestedId": "dumbbell-lunge",
+    "id": "dumbbell-lunge",
+    "name": "Выпады с гантелями",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-040",
+    "requestedId": "bulgarian-split-squat",
+    "id": "bulgarian-split-squat",
+    "name": "Болгарские сплит-приседания",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": [
+      "dumbbells",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-041",
+    "requestedId": "goblet-squat",
+    "id": "goblet-squat",
+    "name": "Goblet-приседания",
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "equipment": [
+      "dumbbellOrKettlebell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-042",
+    "requestedId": "romanian-deadlift",
+    "id": "romanian-deadlift",
+    "name": "Румынская тяга",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "lowerBack"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-043",
+    "requestedId": "lying-leg-curl",
+    "id": "leg-curl",
+    "name": "Сгибание ног лёжа",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-044",
+    "requestedId": "seated-leg-curl",
+    "id": "seated-leg-curl",
+    "name": "Сгибание ног сидя",
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-045",
+    "requestedId": "conventional-deadlift",
+    "id": "conventional-deadlift",
+    "name": "Становая тяга",
+    "primaryMuscles": [
+      "posteriorChain"
+    ],
+    "secondaryMuscles": [
+      "back",
+      "glutes",
+      "hamstrings"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-046",
+    "requestedId": "barbell-hip-thrust",
+    "id": "barbell-hip-thrust",
+    "name": "Hip Thrust со штангой",
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings"
+    ],
+    "equipment": [
+      "barbell",
+      "bench"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-047",
+    "requestedId": "glute-bridge",
+    "id": "glute-bridge",
+    "name": "Ягодичный мост",
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-048",
+    "requestedId": "cable-glute-kickback",
+    "id": "cable-glute-kickback",
+    "name": "Отведение ноги назад в кроссовере",
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-049",
+    "requestedId": "hip-abduction-machine",
+    "id": "hip-abduction-machine",
+    "name": "Отведение ног в тренажёре",
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-050",
+    "requestedId": "standing-calf-raise",
+    "id": "standing-calf-raise",
+    "name": "Подъём на носки стоя",
+    "primaryMuscles": [
+      "calves"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-051",
+    "requestedId": "seated-calf-raise",
+    "id": "seated-calf-raise",
+    "name": "Подъём на носки сидя",
+    "primaryMuscles": [
+      "calves"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "machine"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-052",
+    "requestedId": "crunch",
+    "id": "crunch",
+    "name": "Скручивания",
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-053",
+    "requestedId": "hanging-leg-raise",
+    "id": "hanging-leg-raise",
+    "name": "Подъём ног в висе",
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [
+      "hipFlexors"
+    ],
+    "equipment": [
+      "pullUpBar"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-054",
+    "requestedId": "hanging-knee-raise",
+    "id": "hanging-knee-raise",
+    "name": "Подъём коленей в висе",
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [
+      "hipFlexors"
+    ],
+    "equipment": [
+      "pullUpBar"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-055",
+    "requestedId": "plank",
+    "id": "plank",
+    "name": "Планка",
+    "primaryMuscles": [
+      "core"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "shoulders"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "duration"
+  },
+  {
+    "catalogNumber": "EX-056",
+    "requestedId": "side-plank",
+    "id": "side-plank",
+    "name": "Боковая планка",
+    "primaryMuscles": [
+      "obliques"
+    ],
+    "secondaryMuscles": [
+      "shoulders"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "duration"
+  },
+  {
+    "catalogNumber": "EX-057",
+    "requestedId": "cable-crunch",
+    "id": "cable-crunch",
+    "name": "Скручивания на верхнем блоке",
+    "primaryMuscles": [
+      "abs"
+    ],
+    "secondaryMuscles": [],
+    "equipment": [
+      "cable"
+    ],
+    "trackingType": "weightReps"
+  },
+  {
+    "catalogNumber": "EX-058",
+    "requestedId": "russian-twist",
+    "id": "russian-twist",
+    "name": "Русские скручивания",
+    "primaryMuscles": [
+      "obliques"
+    ],
+    "secondaryMuscles": [
+      "abs"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "reps"
+  },
+  {
+    "catalogNumber": "EX-059",
+    "requestedId": "farmers-walk",
+    "id": "farmers-walk",
+    "name": "Фермерская прогулка",
+    "primaryMuscles": [
+      "core"
+    ],
+    "secondaryMuscles": [
+      "traps",
+      "forearms"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "trackingType": "duration"
+  },
+  {
+    "catalogNumber": "EX-060",
+    "requestedId": "burpee",
+    "id": "burpee",
+    "name": "Берпи",
+    "primaryMuscles": [
+      "fullBody"
+    ],
+    "secondaryMuscles": [
+      "legs",
+      "chest",
+      "shoulders",
+      "core"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "trackingType": "reps"
+  }
+]

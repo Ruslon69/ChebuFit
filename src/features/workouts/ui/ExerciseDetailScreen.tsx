@@ -20,6 +20,7 @@ export function ExerciseDetailScreen({ id }: { id: unknown }) {
   </Screen>;
   const view = presentExercise(exercise, locale);
   return <Screen scroll edges={['left', 'right', 'bottom']} contentContainerStyle={styles.content} testID="exercise-detail-screen">
+    <AppText variant="caption" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} testID="exercise-catalog-number">{view.catalogNumber} · {view.groupLabel}</AppText>
     <AppText variant="pageTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale} testID="exercise-detail-name">{view.name}</AppText>
     <ExerciseArtwork media={view.media} context="detail" fallbackLabel={copy.visual} />
     <Card><View style={styles.section}>

@@ -113,7 +113,7 @@ ledger, and balance updates atomically. Local storage is not a security boundary
 - Nutrition diary entries preserve the nutrient snapshot used when logged,
   together with serving quantity and units. Source product updates do not change
   historical diary values.
-- Exercise media references first-party local illustration keys, with an optional
+- Exercise media references first-party local CHEBU-01 illustration keys, with an optional
   thumbnail override. A presentation registry binds approved assets; one canonical
   illustration can serve both contexts. Missing assets use a neutral fallback.
   Future technique frames/animation may extend media without replacing ExerciseId
@@ -242,8 +242,11 @@ edit/delete never changes historical diary/economy records. Personal Recents are
 reconciled with canonical identity and deleted references are hidden/cleaned. See
 `src/features/personal-foods/README.md` for limits, form flow and future sync.
 
-The Workouts feature owns a pure local exercise catalog with immutable stable-ID
-reads, muscle/equipment filters and optional owned-media references. `/exercises`
+The Workouts feature owns the approved 60-exercise v1 local catalog with immutable
+stable-ID reads, permanent EX-001…EX-060 public numbers, eight browsing groups,
+detailed muscle/equipment filters and optional first-party CHEBU-01 media references.
+Numbers never depend on sorting/array position and are never reassigned; additions
+start EX-061. Compatible alternate slugs resolve to retained canonical ExerciseIds. `/exercises`
 and its detail route use it without storage or networking. Future templates should
 reference ExerciseId; historical sessions need appropriate snapshots/versioning.
 See `src/features/workouts/README.md` for taxonomy, content and future Watch/custom

@@ -10,9 +10,9 @@ const p = require(path.join(root,'features/workouts/model/exercisePresentation.j
 const { getExerciseMessages } = require(path.join(root,'features/workouts/model/messages.js'));
 const ids = rows => rows.map(e=>e.id);
 const bench = catalog.getById('barbell-bench-press');
-test('curated catalog has 36 unique stable machine identities and polished Russian content',()=>{
-  assert.equal(builtinExercises.length,36);assert.equal(new Set(ids(builtinExercises)).size,36);
-  for(const e of builtinExercises){assert.equal(domain.parseExerciseId(e.id),e.id);assert.match(e.content.ru.name,/[а-яё]/i);assert.equal(e.content.ru.name,e.content.ru.name.trim());assert.ok(e.aliases.some(a=>/[a-z]/i.test(a)));}
+test('curated catalog has 60 unique stable machine identities and polished Russian content',()=>{
+  assert.equal(builtinExercises.length,60);assert.equal(new Set(ids(builtinExercises)).size,60);
+  for(const e of builtinExercises){assert.equal(domain.parseExerciseId(e.id),e.id);assert.ok(e.content.ru.name.trim().length > 0);assert.equal(e.content.ru.name,e.content.ru.name.trim());assert.ok(e.aliases.some(a=>/[a-z]/i.test(a)));}
 });
 test('every muscle reference is controlled, primary nonempty and primary/secondary sets disjoint',()=>{
   for(const e of catalog.getAll()){
@@ -29,7 +29,7 @@ test('every exercise has 3–5 original nonempty steps and optional concise cues
   for(const e of catalog.getAll()){assert.ok(e.content.ru.instructions.length>=3&&e.content.ru.instructions.length<=5);assert.ok(e.content.ru.instructions.every(s=>s.trim().length>10));assert.ok((e.content.ru.tips??[]).every(s=>s.trim().length>0));}
 });
 test('bodyweight and duration do not require fictitious external weights',()=>{
-  for(const id of ['push-up','pull-up','hanging-leg-raise']){const e=catalog.getById(id);assert.equal(e.trackingType,'reps');assert.ok(e.equipment.includes('bodyweight'));}
+  for(const id of ['push-up','pull-up','hanging-leg-raise']){const e=catalog.getById(id);assert.equal(e.trackingType,'reps');assert.ok(e.equipment.includes(id==='push-up'?'bodyweight':'pullUpBar'));}
   assert.equal(catalog.getById('plank').trackingType,'duration');assert.deepEqual(catalog.getById('plank').equipment,['bodyweight']);
 });
 test('read model is detached and immutable; accidental duplicate identities are rejected',()=>{
@@ -74,11 +74,11 @@ test('equipment filtering requires the chosen item while preserving multi-item r
   assert.ok(ids(catalog.search({equipment:'barbell'})).includes(bench.id));
 });
 test('muscle and equipment combine with AND; chest + dumbbell and back + cable are useful',()=>{
-  for(const [muscle,equipment] of [['chest','dumbbell'],['back','cable']]){const rows=catalog.search({muscle,equipment});assert.ok(rows.length>=3);assert.ok(rows.every(e=>e.equipment.includes(equipment)&&(e.primaryMuscles.includes(muscle)||e.secondaryMuscles?.includes(muscle))));}
-  assert.deepEqual(catalog.search({muscle:'calves',equipment:'pullupBar'}),[]);
+  for(const [muscle,equipment] of [['chest','dumbbells'],['back','cable']]){const rows=catalog.search({muscle,equipment});assert.ok(rows.length>=3);assert.ok(rows.every(e=>e.equipment.includes(equipment)&&(e.primaryMuscles.includes(muscle)||e.secondaryMuscles?.includes(muscle))));}
+  assert.deepEqual(catalog.search({muscle:'calves',equipment:'pullUpBar'}),[]);
 });
 test('search + filters combine; resetting filters restores the same catalog without modifying source',()=>{
-  const before=JSON.stringify(catalog.getAll());const rows=catalog.search({text:'жим',muscle:'chest',equipment:'dumbbell'});assert.equal(rows.length,2);
+  const before=JSON.stringify(catalog.getAll());const rows=catalog.search({text:'жим',muscle:'chest',equipment:'dumbbells'});assert.equal(rows.length,2);
   assert.deepEqual(ids(catalog.search({text:'',muscle:undefined,equipment:undefined})),ids(catalog.getAll()));assert.equal(JSON.stringify(catalog.getAll()),before);
 });
 test('empty catalog and zero-result queries return clean empty states',()=>{
@@ -106,19 +106,17 @@ test('catalog, queries, detail and projections operate with no network or storag
 const media = require(path.join(root,'features/workouts/model/exerciseMedia.js'));
 const assets = require(path.join(root,'shared/assets/exercises.js'));
 const { formatExerciseCount } = require(path.join(root,'features/workouts/model/messages.js'));
-test('exactly three reference exercises reserve local canonical artwork; no missing file is required',()=>{
-  const expected=['barbell-back-squat','barbell-bench-press','plank'];
-  assert.deepEqual(Object.keys(assets.exerciseArtworkReservations).sort(),expected);
-  assert.deepEqual(catalog.getAll().filter(e=>e.media).map(e=>e.id).sort(),expected);
-  for(const id of expected){
-    assert.equal(catalog.getById(id).media.illustrationAssetKey,id);
-    assert.equal(assets.exerciseArtworkReservations[id],`assets/exercises/app/${id}.png`);
-    for(const context of ['detail','thumbnail'])assert.deepEqual(media.resolveExerciseArtwork(catalog.getById(id).media,context,assets.exerciseImageAssets),{kind:'fallback'});
+test('all 60 Chebu illustration reservations use permanent numbers and canonical IDs; absent files are never required',()=>{
+  assert.equal(Object.keys(assets.exerciseArtworkReservations).length,60);
+  for(const e of catalog.getAll()){
+    const key=`${e.catalogNumber}-${e.id}`;assert.equal(e.media.illustrationAssetKey,key);
+    assert.equal(assets.exerciseArtworkReservations[key],`assets/exercises/app/${key}.png`);
+    for(const context of ['detail','thumbnail','start','end'])assert.deepEqual(media.resolveExerciseArtwork(e.media,context,assets.exerciseImageAssets),{kind:'fallback'});
   }
 });
 test('one registered local illustration serves thumbnail and detail without duplicate assets',()=>{
-  const reference=bench.media, registry={['barbell-bench-press']:17};
-  for(const context of ['detail','thumbnail'])assert.deepEqual(media.resolveExerciseArtwork(reference,context,registry),{kind:'image',assetKey:bench.id,source:17});
+  const reference=bench.media, registry={[reference.illustrationAssetKey]:17};
+  for(const context of ['detail','thumbnail'])assert.deepEqual(media.resolveExerciseArtwork(reference,context,registry),{kind:'image',assetKey:reference.illustrationAssetKey,source:17});
   assert.deepEqual(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'bench-thumb'},'thumbnail',{...registry,'bench-thumb':18}),{kind:'image',assetKey:'bench-thumb',source:18});
   assert.equal(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'pending-thumb'},'thumbnail',registry).source,17);
   assert.equal(media.resolveExerciseArtwork({...reference,thumbnailAssetKey:'bench-thumb'},'detail',{...registry,'bench-thumb':18}).source,17);
@@ -135,11 +133,11 @@ test('absent, unknown or invalid handles safely fall back; external URI images a
 });
 test('media stays detached/immutable and never changes routing, names or instructions',()=>{
   const source=structuredClone(bench),local=createLocalExerciseCatalog([source]);source.media.illustrationAssetKey='changed';
-  const exercise=local.getById(bench.id);assert.equal(exercise.media.illustrationAssetKey,bench.id);assert.ok(Object.isFrozen(exercise.media));
+  const exercise=local.getById(bench.id);assert.equal(exercise.media.illustrationAssetKey,bench.media.illustrationAssetKey);assert.ok(Object.isFrozen(exercise.media));
   for(const e of [exercise,{...exercise,media:undefined}]){
     const v=p.presentExercise(e,'ru');assert.equal(v.name,bench.content.ru.name);assert.deepEqual(v.instructions,bench.content.ru.instructions);assert.deepEqual(p.exerciseRoute(v.id),p.exerciseRoute(bench.id));
   }
-  const long=catalog.getById('bulgarian-split-squat');assert.equal(p.presentExercise(long,'ru').name,'Болгарские сплит-приседания с гантелями');
+  const long=catalog.getById('bulgarian-split-squat');assert.equal(p.presentExercise(long,'ru').name,'Болгарские сплит-приседания');
 });
 test('artwork contract has bounded font-independent geometry and needs zero network calls',()=>{
   assert.equal(media.exerciseArtworkLayout.thumbnailSize,44);assert.ok(media.exerciseArtworkLayout.heroMaxHeight<=200);assert.ok(media.exerciseArtworkLayout.heroAspectRatio>1);
@@ -154,4 +152,77 @@ test('quiet default count uses natural Russian plural forms; filtered count stay
 test('count formatting also works on Hermes runtimes without Intl.PluralRules',()=>{
   const original=Intl.PluralRules;Intl.PluralRules=undefined;
   try{assert.equal(formatExerciseCount(36,'ru',false),'36 упражнений');}finally{Intl.PluralRules=original;}
+});
+
+const approved = require('./fixtures/exercise-catalog-v1.json');
+const { exerciseIdAliases, retiredExerciseIds } = require(path.join(root,'features/workouts/data/exerciseCompatibility.js'));
+test('approved v1 manifest matches all 60 numbers, names, muscles, equipment and tracking choices',()=>{
+  assert.deepEqual(builtinExercises.map(e=>e.catalogNumber).sort(),Array.from({length:60},(_,i)=>`EX-${String(i+1).padStart(3,'0')}`));
+  for(const row of approved){
+    const e=catalog.getById(row.id);assert.ok(e);assert.equal(e.catalogNumber,row.catalogNumber);assert.equal(e.content.ru.name,row.name);
+    for(const key of ['primaryMuscles','secondaryMuscles','equipment','trackingType'])assert.deepEqual(e[key],row[key],`${row.catalogNumber} ${key}`);
+    assert.equal(catalog.getById(row.requestedId),e);
+  }
+});
+test('catalog numbers survive reorder, alphabetical sort, search and filters; EX-061+ is supported',()=>{
+  const reverse=createLocalExerciseCatalog([...builtinExercises].reverse());
+  for(const e of catalog.getAll())assert.equal(reverse.getById(e.id).catalogNumber,e.catalogNumber);
+  for(const e of catalog.search({text:'жим',group:'chest',equipment:'dumbbells'}))assert.equal(reverse.getById(e.id).catalogNumber,e.catalogNumber);
+  for(const value of ['EX-001','EX-060','EX-061','EX-999','EX-1000'])assert.equal(domain.parseExerciseCatalogNumber(value),value);
+  for(const value of ['EX-000','EX-1','EX-0001','EX-1.5','EX--1','EX-NaN',undefined])assert.equal(domain.parseExerciseCatalogNumber(value),null);
+  assert.throws(()=>createLocalExerciseCatalog([bench,{...bench,id:'another-exercise'}]),/Duplicate exercise catalog number/);
+  assert.throws(()=>createLocalExerciseCatalog([{...bench,catalogNumber:'EX-000'}]),/Invalid exercise catalog number/);
+});
+test('existing canonical IDs are retained; approved alternate slugs do not create duplicate rows or numbers',()=>{
+  assert.equal(Object.keys(exerciseIdAliases).length,9);assert.equal(catalog.getAll().length,60);
+  for(const [alias,id] of Object.entries(exerciseIdAliases))assert.equal(catalog.getById(alias),catalog.getById(id));
+  const aliases={alternate:bench.id};const local=createLocalExerciseCatalog([bench],aliases);aliases.alternate='plank';assert.equal(local.getById('alternate').id,bench.id);
+  assert.throws(()=>createLocalExerciseCatalog([bench],{[bench.id]:bench.id}),/Invalid exercise identity alias/);
+  assert.throws(()=>createLocalExerciseCatalog([bench],{alternate:'missing'}),/Invalid exercise identity alias/);
+  assert.throws(()=>createLocalExerciseCatalog([bench],{'bad id':bench.id}),/Invalid exercise identity alias/);
+  for(const id of retiredExerciseIds)assert.equal(catalog.getById(id),null);
+});
+test('all detailed primary muscles map to eight canonical user groups; Farmer carry has explicit extra discovery',()=>{
+  assert.equal(domain.exerciseGroups.length,8);
+  for(const e of catalog.getAll())assert.ok(domain.exerciseGroups.includes(domain.primaryExerciseGroup(e)));
+  assert.equal(domain.primaryExerciseGroup(catalog.getById('farmers-walk')),'core');
+  assert.ok(ids(catalog.search({group:'fullBody'})).includes('farmers-walk'));
+  assert.ok(ids(catalog.search({group:'core'})).includes('farmers-walk'));
+  assert.equal(catalog.search({group:'chest'}).length,8);assert.equal(catalog.search({group:'legs'}).length,13);
+  assert.equal(catalog.search({group:'arms'}).length,10);
+  for(const g of domain.exerciseGroups)assert.ok(catalog.search({group:g}).every(e=>domain.matchesExerciseGroup(e,g)));
+});
+test('detailed filters retain secondary muscles and combine with group/equipment/search using AND',()=>{
+  assert.ok(ids(catalog.search({muscle:'rearShoulders'})).includes('barbell-row'));
+  assert.ok(ids(catalog.search({muscle:'hipFlexors'})).includes('hanging-knee-raise'));
+  assert.ok(ids(catalog.search({muscle:'posteriorChain'})).includes('conventional-deadlift'));
+  const rows=catalog.search({group:'chest',muscle:'shoulders',equipment:'dumbbells',text:'жим'});assert.equal(rows.length,2);
+  assert.ok(rows.every(e=>domain.primaryExerciseGroup(e)==='chest'&&e.secondaryMuscles.includes('shoulders')&&domain.matchesEquipment(e,'dumbbells')));
+  assert.deepEqual(catalog.search({group:'chest',equipment:'pullUpBar'}),[]);
+  assert.deepEqual(ids(catalog.search({group:undefined,muscle:undefined,equipment:undefined})),ids(catalog.getAll()));
+});
+test('one-of equipment alternatives are searchable by each valid item, without requiring both',()=>{
+  for(const [id,items] of [['t-bar-row',['machine','barbell']],['preacher-curl',['barbell','ezBar']],['goblet-squat',['dumbbells','kettlebell']]]){
+    const e=catalog.getById(id);for(const item of items){assert.ok(domain.matchesEquipment(e,item));assert.ok(ids(catalog.search({equipment:item})).includes(id));}
+    assert.equal(domain.matchesEquipment(e,'cable'),false);
+  }
+  assert.ok(domain.matchesEquipment(catalog.getById('preacher-curl'),'preacherBench'));
+  assert.equal(domain.filterEquipmentTypes.includes('machineOrBarbell'),false);
+});
+test('English aliases and whitespace normalization cover new movements and approved examples',()=>{
+  for(const [query,number] of [['bench','EX-001'],['RDL','EX-042'],['планка','EX-055'],['front squat','EX-036'],['arnold','EX-019'],['goblet','EX-041'],['farmer','EX-059'],['burpee','EX-060']])assert.ok(catalog.search({text:query}).some(e=>e.catalogNumber===number));
+  assert.deepEqual(ids(catalog.search({text:' BARBELL   BENCH  PRESS '})),ids(catalog.search({text:'barbell bench press'})));
+  const deadlifts=catalog.search({text:'deadlift'});assert.ok(deadlifts.some(e=>e.catalogNumber==='EX-042'));assert.ok(deadlifts.some(e=>e.catalogNumber==='EX-045'));
+});
+test('optional static start/end phases remain absent-safe, detached and local-only',()=>{
+  const reference={...bench.media,phaseAssetKeys:{start:'bench-start',end:'bench-end'}};
+  assert.deepEqual(media.resolveExerciseArtwork(reference,'start',{'bench-start':21}),{kind:'image',assetKey:'bench-start',source:21});
+  assert.deepEqual(media.resolveExerciseArtwork(bench.media,'start',{[bench.media.illustrationAssetKey]:21}),{kind:'fallback'});
+  assert.deepEqual(media.resolveExerciseArtwork(reference,'end',{'bench-end':{uri:'https://example.org/end.png'}}),{kind:'fallback'});
+  const e={...bench,media:reference};const local=createLocalExerciseCatalog([e]);reference.phaseAssetKeys.start='changed';assert.equal(local.getById(bench.id).media.phaseAssetKeys.start,'bench-start');assert.ok(Object.isFrozen(local.getById(bench.id).media.phaseAssetKeys));
+});
+test('presentation exposes permanent number and localized group; all group/taxonomy labels exist',()=>{
+  const v=p.presentExercise(bench,'ru');assert.equal(v.catalogNumber,'EX-001');assert.equal(v.group,'chest');assert.equal(v.groupLabel,'Грудь');
+  for(const locale of ['ru','en']){const copy=getExerciseMessages(locale);for(const g of domain.exerciseGroups)assert.ok(copy.groups[g]);for(const m of domain.muscles)assert.ok(copy.muscles[m]);for(const e of domain.equipmentTypes)assert.ok(copy.equipmentLabels[e]);}
+  assert.equal(formatExerciseCount(60,'ru',false),'60 упражнений');assert.equal(formatExerciseCount(8,'ru',true),'Найдено: 8');
 });

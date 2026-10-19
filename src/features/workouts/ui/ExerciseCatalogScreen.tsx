@@ -11,7 +11,7 @@ import { Card } from '../../../shared/ui/Card';
 import { Icon } from '../../../shared/ui/Icon';
 import { IconButton } from '../../../shared/ui/IconButton';
 import { Screen } from '../../../shared/ui/Screen';
-import { equipmentTypes, muscles, type Equipment, type Muscle } from '../domain/exercise';
+import { filterEquipmentTypes, matchesEquipment, exerciseGroups, muscles, type ExerciseGroup, type Equipment, type Muscle } from '../domain/exercise';
 import { exerciseRoute, presentExercise } from '../model/exercisePresentation';
 import { formatExerciseCount, getExerciseMessages } from '../model/messages';
 import { ExerciseArtwork } from './ExerciseArtwork';
@@ -19,11 +19,13 @@ import { ExerciseArtwork } from './ExerciseArtwork';
 export function ExerciseCatalogScreen() {
   const locale = appConfig.defaultLocale, copy = getExerciseMessages(locale), router = useRouter();
   const [query, setQuery] = useState(''), [muscle, setMuscle] = useState<Muscle>(), [equipment, setEquipment] = useState<Equipment>();
+  const [group, setGroup] = useState<ExerciseGroup>();
   const [filter, setFilter] = useState<'muscle' | 'equipment' | null>(null);
   const { fontScale } = useWindowDimensions(), insets = useSafeAreaInsets();
-  const results = useMemo(() => exerciseCatalog.search({ text: query, muscle, equipment }).map(exercise => presentExercise(exercise, locale)), [query, muscle, equipment, locale]);
-  const availableEquipment = useMemo(() => equipmentTypes.filter(item => exerciseCatalog.getAll().some(exercise => exercise.equipment.includes(item))), []);
-  const resetFilters = () => { setMuscle(undefined); setEquipment(undefined); };
+  const results = useMemo(() => exerciseCatalog.search({ text: query, group, muscle, equipment }).map(exercise => presentExercise(exercise, locale)), [query, group, muscle, equipment, locale]);
+  const availableEquipment = useMemo(() => filterEquipmentTypes.filter(item => exerciseCatalog.getAll().some(exercise => matchesEquipment(exercise, item))), []);
+  const sections = group ? [{ id: group, label: copy.groups[group], entries: results }] : query.trim() ? [{ id: 'search', label: null, entries: results }] : exerciseGroups.map(id => ({ id, label: copy.groups[id], entries: results.filter(exercise => exercise.group === id) })).filter(section => section.entries.length > 0);
+  const resetFilters = () => { setGroup(undefined); setMuscle(undefined); setEquipment(undefined); };
   const openFilter = (value: typeof filter) => { Keyboard.dismiss(); setFilter(value); };
   const option = (id: string, label: string, selected: boolean, onPress: () => void) => (
     <Pressable key={id} accessibilityRole="radio" accessibilityState={{ checked: selected }} accessibilityLabel={label} onPress={onPress}
@@ -41,6 +43,13 @@ export function ExerciseCatalogScreen() {
           maxFontSizeMultiplier={t.accessibility.controlTextScale} style={styles.input} testID="exercise-search-input" />
         {!!query && <IconButton icon="close" variant="ghost" label={copy.clearSearch} onPress={() => setQuery('')} testID="exercise-search-clear" />}
       </View>
+      <ScrollView horizontal style={styles.groupScroll} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.groupStrip} testID="exercise-groups">
+        {[undefined, ...exerciseGroups].map(value => <Pressable key={value ?? 'all'} accessibilityRole="button" accessibilityState={{ selected: group === value }}
+          accessibilityLabel={`${copy.groupNavigation}: ${value ? copy.groups[value] : copy.allGroups}`} onPress={() => { Keyboard.dismiss(); setGroup(value); }}
+          style={({ pressed }) => [styles.filter, pressed && styles.pressed]} testID={`exercise-group-${value ?? 'all'}`}>
+          <View style={[styles.filterSurface, group === value && styles.selected]}><AppText variant="label" tone={group === value ? 'primaryText' : 'textSecondary'} maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{value ? copy.groups[value] : copy.allGroups}</AppText></View>
+        </Pressable>)}
+      </ScrollView>
       <View style={[styles.filters, fontScale > 1.3 && styles.stacked]}>
         <Pressable accessibilityRole="button" accessibilityLabel={`${copy.muscle}: ${muscle ? copy.muscles[muscle] : copy.allMuscles}`} accessibilityState={{ selected: !!muscle }} onPress={() => openFilter('muscle')}
           style={({ pressed }) => [styles.filter, pressed && styles.pressed]} testID="exercise-filter-muscle">
@@ -52,23 +61,26 @@ export function ExerciseCatalogScreen() {
         </Pressable>
       </View>
       <View style={styles.context}>
-        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} accessibilityLiveRegion="polite" testID="exercise-result-count">{formatExerciseCount(results.length, locale, !!(query.trim() || muscle || equipment))}</AppText>
-        {(muscle || equipment) && <Pressable accessibilityRole="button" onPress={resetFilters} style={styles.reset} testID="exercise-filter-reset"><AppText variant="bodySecondary" tone="primaryText" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.resetFilters}</AppText></Pressable>}
+        <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale} accessibilityLiveRegion="polite" testID="exercise-result-count">{formatExerciseCount(results.length, locale, !!(query.trim() || group || muscle || equipment))}</AppText>
+        {(group || muscle || equipment) && <Pressable accessibilityRole="button" onPress={resetFilters} style={styles.reset} testID="exercise-filter-reset"><AppText variant="bodySecondary" tone="primaryText" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.resetFilters}</AppText></Pressable>}
       </View>
-      {results.length ? <Card padding="compact" testID="exercise-results">{results.map(exercise => <Pressable key={exercise.id}
-        accessibilityRole="button" accessibilityLabel={`${exercise.name}. ${exercise.primaryMuscles.join(', ')}. ${exercise.equipment.join(', ')}`} accessibilityHint={copy.openExercise}
+      {results.length ? <View style={styles.section} testID="exercise-results">{sections.map(section => <View key={section.id} style={styles.section} testID={`exercise-section-${section.id}`}>
+        {!!section.label && <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{section.label}</AppText>}
+        <Card padding="compact">{section.entries.map(exercise => <Pressable key={exercise.id}
+        accessibilityRole="button" accessibilityLabel={`${exercise.catalogNumber}. ${exercise.name}. ${exercise.primaryMuscles.join(', ')}. ${exercise.equipment.join(', ')}`} accessibilityHint={copy.openExercise}
         onPress={() => { Keyboard.dismiss(); router.push(exerciseRoute(exercise.id)); }} testID={`exercise-row-${exercise.id}`} style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
         <ExerciseArtwork media={exercise.media} context="thumbnail" />
         <View style={styles.rowCopy}>
           <AppText maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.name}</AppText>
           <AppText variant="bodySecondary" tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.primaryMuscles.join(' · ')}</AppText>
-          <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.equipment.join(' · ')}</AppText>
+          <AppText variant="caption" tone="textTertiary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{exercise.catalogNumber} · {exercise.equipment.join(' · ')}</AppText>
         </View>
         <Icon name="chevron" size="small" />
-      </Pressable>)}</Card> : <Card testID="exercise-empty"><View style={styles.section}>
+      </Pressable>)}</Card>
+      </View>)}</View> : <Card testID="exercise-empty"><View style={styles.section}>
         <AppText variant="cardTitle" maxFontSizeMultiplier={t.accessibility.headingTextScale}>{copy.empty}</AppText>
         <AppText tone="textSecondary" maxFontSizeMultiplier={t.accessibility.bodyTextScale}>{copy.emptyHint}</AppText>
-        {(query || muscle || equipment) && <Button label={copy.resetAll} variant="secondary" maxFontSizeMultiplier={t.accessibility.controlTextScale} onPress={() => { setQuery(''); resetFilters(); }} testID="exercise-reset-all" />}
+        {(query || group || muscle || equipment) && <Button label={copy.resetAll} variant="secondary" maxFontSizeMultiplier={t.accessibility.controlTextScale} onPress={() => { setQuery(''); resetFilters(); }} testID="exercise-reset-all" />}
       </View></Card>}
     </Screen>
     <Modal visible={filter !== null} transparent animationType="fade" onRequestClose={() => setFilter(null)}>
@@ -98,6 +110,8 @@ const styles = StyleSheet.create({
   content: { gap: t.spacing.md, paddingTop: t.spacing.lg }, flex: { flex: 1 }, section: { gap: t.spacing.md },
   search: { flexDirection: 'row', alignItems: 'center', gap: t.spacing.sm, backgroundColor: t.colors.surface, borderRadius: t.radii.control, paddingLeft: t.spacing.lg, paddingRight: t.spacing.xs },
   input: { ...t.typography.body, color: t.colors.text, flex: 1, minHeight: t.size.button, paddingVertical: t.spacing.md },
+  groupScroll: { flexGrow: 0, flexShrink: 0 },
+  groupStrip: { gap: t.spacing.sm, paddingRight: t.spacing.md },
   filters: { flexDirection: 'row', flexWrap: 'wrap', gap: t.spacing.sm, alignItems: 'flex-start' }, stacked: { flexDirection: 'column' },
   filter: { minHeight: t.size.touchTarget, maxWidth: '100%', justifyContent: 'center', paddingVertical: t.spacing.xs },
   filterSurface: { paddingHorizontal: t.spacing.md, paddingVertical: t.spacing.sm, borderRadius: t.radii.pill, backgroundColor: t.colors.surfaceSecondary },
