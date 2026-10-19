@@ -173,6 +173,8 @@ src/app/
   add-food.tsx          /add-food, catalog search + selection; explicit date/meal
   scan-food.tsx         /scan-food, camera/manual discovery; explicit date/meal
   personal-food.tsx     /personal-food, create/edit local food; explicit date/meal
+  exercises/index.tsx   /exercises, local exercise search and filters
+  exercises/[id].tsx     /exercises/:id, stable-ID technique detail
   onboarding.tsx        /onboarding, outside the tab shell
   design-system.tsx     development-only visual review, outside the tab shell
 ```
@@ -184,8 +186,8 @@ explicit loading state. Those guards must gate both tab routes and protected
 detail/modal routes, including incoming deep links. They do not replace backend
 authorization. No fake onboarding or authentication state is introduced now.
 
-Add profile/settings, product details, active workout, exercise
-details, weight entry, and measurement entry as root stack routes when their
+Add profile/settings, product details, active workout,
+weight entry, and measurement entry as root stack routes when their
 features are built. For example, `product/[productId]` and `workout/[sessionId]`
 receive IDs; feature application operations load the data. Modal entry/scanner
 flows can set `presentation: 'modal'` on their root stack screen. Profile will open
@@ -237,3 +239,10 @@ resolves current personal values and stores a detached Nutrition snapshot. Catal
 edit/delete never changes historical diary/economy records. Personal Recents are
 reconciled with canonical identity and deleted references are hidden/cleaned. See
 `src/features/personal-foods/README.md` for limits, form flow and future sync.
+
+The Workouts feature owns a pure local exercise catalog with immutable stable-ID
+reads, muscle/equipment filters and optional owned-media references. `/exercises`
+and its detail route use it without storage or networking. Future templates should
+reference ExerciseId; historical sessions need appropriate snapshots/versioning.
+See `src/features/workouts/README.md` for taxonomy, content and future Watch/custom
+exercise boundaries. No workout builder or session logging exists yet.

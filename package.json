@@ -39,7 +39,8 @@
     "test:food-catalog": "node scripts/test-rewards.cjs --food-catalog",
     "test:off": "node scripts/test-rewards.cjs --off",
     "test:scanner": "node scripts/test-rewards.cjs --scanner",
-    "test:personal-foods": "node scripts/test-rewards.cjs --personal-foods"
+    "test:personal-foods": "node scripts/test-rewards.cjs --personal-foods",
+    "test:exercises": "node scripts/test-rewards.cjs --exercises"
   },
   "private": true
 }

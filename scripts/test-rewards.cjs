@@ -11,6 +11,9 @@ const output = mkdtempSync(path.join(artifacts, 'domain-'));
 try {
   const program = ts.createProgram([
     path.join(project, 'src/features/rewards/index.ts'),
+    path.join(project, 'src/application/workouts/exerciseCatalog.ts'),
+    path.join(project, 'src/features/workouts/index.ts'),
+    path.join(project, 'src/features/workouts/model/exercisePresentation.ts'),
     path.join(project, 'src/features/personal-foods/application/PersonalFoodService.ts'),
     path.join(project, 'src/features/personal-foods/model/form.ts'),
     path.join(project, 'src/infrastructure/personal-foods/KeyValuePersonalFoodRepository.ts'),
@@ -48,7 +51,7 @@ try {
     }));
     process.exitCode = 1;
   } else {
-    const testFiles = process.argv.includes('--personal-foods') ? ['personal-foods.test.cjs'] : process.argv.includes('--scanner') ? ['barcode-scanner.test.cjs'] : process.argv.includes('--off') ? ['open-food-facts.test.cjs'] : process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
+    const testFiles = process.argv.includes('--exercises') ? ['exercise-catalog.test.cjs'] : process.argv.includes('--personal-foods') ? ['personal-foods.test.cjs'] : process.argv.includes('--scanner') ? ['barcode-scanner.test.cjs'] : process.argv.includes('--off') ? ['open-food-facts.test.cjs'] : process.argv.includes('--food-catalog') ? ['food-catalog.test.cjs'] : process.argv.includes('--nutrition-ui') ? ['nutrition-ui.test.cjs'] : process.argv.includes('--nutrition') ? ['nutrition.test.cjs'] : process.argv.includes('--hydration') ? ['water.test.cjs'] : process.argv.includes('--feedback') ? ['reward-feedback.test.cjs'] : process.argv.includes('--water') ? ['water-rewards.test.cjs'] : process.argv.includes('--wallet') ? ['wallet.test.cjs'] : ['rewards.test.cjs'];
     const result = spawnSync(process.execPath, ['--test', ...testFiles.map(file => path.join(project, 'tests', file))], {
       stdio: 'inherit', env: {
         ...process.env, CHEBUFIT_REWARDS_BUILD: path.join(output, 'features/rewards'),
